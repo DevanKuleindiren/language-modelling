@@ -6,10 +6,10 @@ def main():
 
     print(trigram._trie)
 
-    #while True:
-    #    x = input("Sequence  : ")
-    #    word_seq = x.split(" ")
-    #    print("Prediction: %s" % trigram.predict(word_seq))
+    while True:
+        x = input("Sequence  : ")
+        word_seq = x.split(" ")
+        print("Prediction: %s" % trigram.predict(word_seq))
 
 if __name__ == "__main__":
     main()

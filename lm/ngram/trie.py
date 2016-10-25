@@ -11,6 +11,48 @@ class Trie:
             self._total_counts[n] = 0
         self._total_counts[n] += 1
 
+    def count(self, seq):
+        node = self.get_node(seq)
+        if node:
+            return node.get_count()
+        return 0
+
+    def words_following(self, seq):
+        node = self.get_node(seq)
+        if node:
+            return list(node.get_children().keys())
+        return []
+
+    def sum_following(self, seq):
+        node = self.get_node(seq[:-1])
+        count = 0
+        if node:
+            for child in node.get_children():
+                count += node.get_child(child).get_count()
+        return count
+
+    def count_following(self, seq):
+        node = self.get_node(seq[:-1])
+        if node:
+            return len(node.get_children())
+        return 0
+
+    def count_preceding(self, seq):
+        count = 0
+        for start_word in self._root.get_children():
+            if self.count([start_word] + seq) > 0:
+                count += 1
+        return count
+
+    def count_preceding_and_following(self, seq):
+        count = 0
+        for start_word in self._root.get_children():
+            count += self.count_following([start_word] + seq)
+        return count
+
+    def total_seqs_of_len(self, n):
+        return self._total_counts[n]
+
     def insert(self, ngram):
         if ngram:
             node = self._root

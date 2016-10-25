@@ -14,12 +14,12 @@ class NGramLM(lm.LM):
         prediction = ""
         max_count = 0
 
-        end_word_node = self._trie.get_node(word_seq[(-self._n + 1):])
-        if end_word_node:
-            for child in end_word_node.get_children():
-                if end_word_node.get_child(child).get_count() > max_count:
-                    max_count = end_word_node.get_child(child).get_count()
-                    prediction = child
+        print(word_seq)
+        print(self._trie.words_following(word_seq))
+
+        for word in self._trie.words_following(word_seq):
+            if self._trie.count(word_seq + [word]) > max_count:
+                prediction = word
 
         return prediction
 
