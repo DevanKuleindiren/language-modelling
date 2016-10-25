@@ -1,8 +1,12 @@
 # Apple
 .DS_Store
 
+# Bazel
+bazel-*
+
 # IntelliJ
 .idea/
 
 # Python
 __pycache__
+*.pyc
