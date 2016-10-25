@@ -1,3 +1,5 @@
+from collections import deque
+
 class Trie:
 
     def __init__(self):
@@ -9,15 +11,8 @@ class Trie:
             self._total_counts[n] = 0
         self._total_counts[n] += 1
 
-    def insert_all(self, word_seq):
-        n_gram = []
-
-        for word in reversed(word_seq):
-            n_gram.insert(0, word)
-            self.insert_ngram(n_gram)
-
-    def insert_ngram(self, ngram):
-        if ngram != []:
+    def insert(self, ngram):
+        if ngram:
             node = self._root
             last_word = ngram[-1]
 
@@ -42,17 +37,19 @@ class Trie:
         return node
 
     def __str__(self):
-        to_visit = deque([("ROOT", self._root)])
+        to_visit = deque([(0, self._root)])
         result = ""
 
+        result += "digraph TRIE {\n"
+        count = 0
         while to_visit:
-            name, node = to_visit.popleft()
-            for child in node._children:
-                result += "%s -> %s\n" % (name, child)
-                to_visit.append((child, node._children[child]))
-            result += "---\n"
-        result += "***\n"
-
+            c, node = to_visit.popleft()
+            result += "    %d [label=\"%d\"];\n" % (c, node.get_count())
+            for child in node.get_children():
+                count += 1
+                result += "    %d -> %d [label=\"%s\"];\n" % (c, count, child)
+                to_visit.append((count, node.get_child(child)))
+        result += "}\n"
         return result
 
     def print_ngrams(self):
@@ -63,10 +60,11 @@ class Trie:
             print("%s: %d" % (ngram, ngram_dict[ngram]))
 
     def dfs(self, node, path, ngram_dict):
-        ngram_dict[' '.join(path)] = node._count
+        ngram_dict[' '.join(path)] = node.get_count()
 
-        for child in node._children:
-            self.dfs(node._children[child], path + [child], ngram_dict)
+        for child in node.get_children():
+            self.dfs(node.get_children()[child], path + [child], ngram_dict)
+
 
 class Node:
     def __init__(self):
