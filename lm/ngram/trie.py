@@ -4,56 +4,62 @@ class Trie:
 
     def __init__(self):
         self._root = Node()
-        self._total_counts = {}
-
-    def _increment_total_count(self, n):
-        if not n in self._total_counts:
-            self._total_counts[n] = 0
-        self._total_counts[n] += 1
+        self._total_sums = {}
 
     def count(self, seq):
-        node = self.get_node(seq)
+        node = self._get_node(seq)
         if node:
             return node.get_count()
         return 0
 
-    def words_following(self, seq):
-        node = self.get_node(seq)
-        if node:
-            return list(node.get_children().keys())
-        return []
-
-    def sum_following(self, seq):
-        node = self.get_node(seq[:-1])
-        count = 0
-        if node:
-            for child in node.get_children():
-                count += node.get_child(child).get_count()
-        return count
-
     def count_following(self, seq):
-        node = self.get_node(seq[:-1])
-        if node:
-            return len(node.get_children())
+        if seq:
+            node = self._get_node(seq)
+            if node:
+                return len(node.get_children())
         return 0
 
     def count_preceding(self, seq):
         count = 0
-        for start_word in self._root.get_children():
-            if self.count([start_word] + seq) > 0:
-                count += 1
+        if seq:
+            for start_word in self._root.get_children():
+                if self.count([start_word] + seq) > 0:
+                    count += 1
         return count
 
     def count_preceding_and_following(self, seq):
         count = 0
-        for start_word in self._root.get_children():
-            count += self.count_following([start_word] + seq)
+        if seq:
+            for start_word in self._root.get_children():
+                count += self.count_following([start_word] + seq)
         return count
 
+    def sum_following(self, seq):
+        count = 0
+        if seq:
+            node = self._get_node(seq)
+            if node:
+                for child in node.get_children():
+                    count += node.get_child(child).get_count()
+        return count
+
+    def words_following(self, seq):
+        if seq:
+            node = self._get_node(seq)
+            if node:
+                return list(node.get_children().keys())
+        return []
+
+    def vocab(self):
+        return list(self._root.get_children().keys())
+
     def total_seqs_of_len(self, n):
-        return self._total_counts[n]
+        if n in self._total_sums:
+            return self._total_sums[n]
+        return 0
 
     def insert(self, ngram):
+        assert isinstance(ngram, list)
         if ngram:
             node = self._root
             last_word = ngram[-1]
@@ -66,9 +72,10 @@ class Trie:
             if not node.has_child(last_word):
                 node.add_child(last_word)
             node.get_child(last_word).inc()
-        self._increment_total_count(len(ngram))
+            self._increment_total_count(len(ngram))
 
-    def get_node(self, word_seq):
+    def _get_node(self, word_seq):
+        assert isinstance(word_seq, list)
         node = self._root
 
         for word in word_seq:
@@ -77,6 +84,11 @@ class Trie:
             node = node.get_child(word)
 
         return node
+
+    def _increment_total_count(self, n):
+        if not n in self._total_sums:
+            self._total_sums[n] = 0
+        self._total_sums[n] += 1
 
     def __str__(self):
         to_visit = deque([(0, self._root)])

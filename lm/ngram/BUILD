@@ -7,3 +7,10 @@ py_library(
     visibility = ["//visibility:public"],
     deps = []
 )
+
+py_test(
+    name = "trie_test",
+    size = "small",
+    srcs = ["trie_test.py"],
+    deps = ["//lm/ngram:ngram"],
+)
