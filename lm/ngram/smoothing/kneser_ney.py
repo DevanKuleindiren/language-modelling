@@ -7,23 +7,13 @@ class KneserNey(ngram.NGramLM):
         super().__init__(n)
         self._discount = discount
 
-    def predict(self, word_seq):
-        prediction = ""
-        max_p = 0
+    def prob(self, word, word_seq):
         trimmed_word_seq = word_seq[-self._n+1:]
-
-        for word in self._trie.words_following(trimmed_word_seq):
-            max_numerator = max(self._trie.count(trimmed_word_seq + [word]) - self._discount, 0)
-            sum_following = float(self._trie.sum_following(trimmed_word_seq))
-            num_following = self._trie.count_following(trimmed_word_seq)
-            p = (max_numerator +
-                 self._discount * num_following * self._prob_kn(word, word_seq[-self._n+2:])) / sum_following
-
-            if p > max_p:
-                max_p = p
-                prediction = word
-
-        return prediction
+        max_numerator = max(self._trie.count(trimmed_word_seq + [word]) - self._discount, 0)
+        sum_following = float(self._trie.sum_following(trimmed_word_seq))
+        num_following = self._trie.count_following(trimmed_word_seq)
+        return (max_numerator +
+                self._discount * num_following * self._prob_kn(word, word_seq[-self._n+2:])) / sum_following
 
     def _prob_kn(self, word, word_seq):
         l = len(word_seq)
