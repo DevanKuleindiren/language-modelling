@@ -13,9 +13,12 @@ class NGramLM(lm.LM):
     def predict(self, word_seq):
         prediction = ""
         max_count = 0
+        trimmed_word_seq = word_seq[-self._n+1:]
 
-        for word in self._trie.words_following(word_seq):
-            if self._trie.count(word_seq + [word]) > max_count:
+        for word in self._trie.words_following(trimmed_word_seq):
+            count = self._trie.count(trimmed_word_seq + [word])
+            if count > max_count:
+                max_count = count
                 prediction = word
 
         return prediction
