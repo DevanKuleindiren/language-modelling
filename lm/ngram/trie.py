@@ -1,10 +1,12 @@
 from collections import deque
 
+
 class Trie:
 
     def __init__(self):
         self._root = Node()
         self._total_sums = {}
+        self._vocab_size = 0
 
     def count(self, seq):
         node = self._get_node(seq)
@@ -53,6 +55,9 @@ class Trie:
     def vocab(self):
         return list(self._root.get_children().keys())
 
+    def vocab_size(self):
+        return self._vocab_size
+
     def total_seqs_of_len(self, n):
         if n in self._total_sums:
             return self._total_sums[n]
@@ -64,6 +69,10 @@ class Trie:
             node = self._root
             last_word = ngram[-1]
 
+            # Increment the vocabulary size count if new word added to root.
+            if not self._root.has_child(ngram[0]):
+                self._vocab_size += 1
+
             for word in ngram[:-1]:
                 if not node.has_child(word):
                     node.add_child(word)
@@ -72,6 +81,8 @@ class Trie:
             if not node.has_child(last_word):
                 node.add_child(last_word)
             node.get_child(last_word).inc()
+
+            # Increment the ngram count for n.
             self._increment_total_count(len(ngram))
 
     def _get_node(self, word_seq):

@@ -84,6 +84,9 @@ class TrieTest(unittest.TestCase):
         self.assertEqual(collections.Counter(self._under_test.vocab()), collections.Counter(["the", "cat", "sat",
                                                                                             "on", "mat", "floor", "."]))
 
+    def test_vocab_size(self):
+        self.assertEqual(self._under_test.vocab_size(), len(self._under_test.vocab()))
+
     def test_total_seqs_of_len(self):
         self.assertEqual(self._under_test.total_seqs_of_len(-1), 0)
         self.assertEqual(self._under_test.total_seqs_of_len(4), 0)
