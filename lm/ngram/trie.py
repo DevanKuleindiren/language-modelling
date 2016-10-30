@@ -7,6 +7,7 @@ class Trie:
         self._root = Node()
         self._total_sums = {}
         self._vocab_size = 0
+        self._calc_cache = CountCache()
 
     def count(self, seq):
         node = self._get_node(seq)
@@ -15,34 +16,75 @@ class Trie:
         return 0
 
     def count_following(self, seq):
+        count = 0
+        method_name = "count_following"
+        seq_length = len(seq)
+
         if seq:
+            # Use cached value if possible.
+            cached_seq, cached_count = self._calc_cache.get(method_name, seq_length)
+            if seq == cached_seq:
+                return cached_count
+
             node = self._get_node(seq)
             if node:
-                return len(node.get_children())
-        return 0
+                count = len(node.get_children())
+
+        self._calc_cache.insert(method_name, seq_length, seq, count)
+        return count
 
     def count_preceding(self, seq):
         count = 0
+        method_name = "count_preceding"
+        seq_length = len(seq)
+
         if seq:
+            # Use cached value if possible.
+            cached_seq, cached_count = self._calc_cache.get(method_name, seq_length)
+            if seq == cached_seq:
+                return cached_count
+
             for start_word in self._root.get_children():
                 if self.count([start_word] + seq) > 0:
                     count += 1
+
+        self._calc_cache.insert(method_name, seq_length, seq, count)
         return count
 
     def count_preceding_and_following(self, seq):
         count = 0
+        method_name = "count_preceding_and_following"
+        seq_length = len(seq)
+
         if seq:
+            # Use cached value if possible.
+            cached_seq, cached_count = self._calc_cache.get(method_name, seq_length)
+            if seq == cached_seq:
+                return cached_count
+
             for start_word in self._root.get_children():
                 count += self.count_following([start_word] + seq)
+
+        self._calc_cache.insert(method_name, seq_length, seq, count)
         return count
 
     def sum_following(self, seq):
         count = 0
+        method_name = "sum_following"
+        seq_length = len(seq)
+
         if seq:
+            # Use cached value if possible.
+            cached_seq, cached_count = self._calc_cache.get(method_name, seq_length)
+            if seq == cached_seq:
+                return cached_count
+
             node = self._get_node(seq)
             if node:
                 for child in node.get_children():
                     count += node.get_child(child).get_count()
+
+        self._calc_cache.insert(method_name, seq_length, seq, count)
         return count
 
     def words_following(self, seq):
@@ -71,7 +113,7 @@ class Trie:
 
             # Increment the vocabulary size count if new word added to root.
             if not self._root.has_child(ngram[0]):
-                self._vocab_size += 1
+                self._increment_vocab_size()
 
             for word in ngram[:-1]:
                 if not node.has_child(word):
@@ -100,6 +142,10 @@ class Trie:
         if not n in self._total_sums:
             self._total_sums[n] = 0
         self._total_sums[n] += 1
+
+    def _increment_vocab_size(self):
+        self._vocab_size += 1
+        self._calc_cache.invalidate()
 
     def __str__(self):
         to_visit = deque([(0, self._root)])
@@ -153,3 +199,22 @@ class Node:
 
     def get_count(self):
         return self._count
+
+
+class CountCache:
+    def __init__(self):
+        self._cache = {}
+
+    def insert(self, method_name, seq_length, seq, value):
+        if method_name in self._cache:
+            self._cache[method_name][seq_length] = (seq, value)
+        else:
+            self._cache[method_name] = {seq_length: (seq, value)}
+
+    def get(self, method_name, seq_length):
+        if method_name in self._cache and seq_length in self._cache[method_name]:
+            return self._cache[method_name][seq_length]
+        return None, None
+
+    def invalidate(self):
+        self._cache = {}

@@ -117,5 +117,15 @@ class NodeTest(unittest.TestCase):
         self.assertIsInstance(under_test.get_child("the"), trie.Node)
         self.assertIsInstance(under_test.get_children(), dict)
 
+
+class CountCacheTest(unittest.TestCase):
+
+    def test_cache(self):
+        under_test = trie.CountCache()
+        self.assertEqual(under_test.get("method_one", 3), (None, None))
+        under_test.insert("method_one", 3, ["the","cat","sat"], 10)
+        self.assertEqual(under_test.get("method_one", 3), (["the","cat","sat"], 10))
+
+
 if __name__ == '__main__':
     unittest.main()
