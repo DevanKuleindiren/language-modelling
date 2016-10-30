@@ -11,8 +11,15 @@ class NGramLM(lm.LM):
         self._trie = trie.Trie()
 
     def predict(self, word_seq):
-        top_prediction = self.predict_top_k(word_seq, 1)
-        return top_prediction[0]
+        prediction = ""
+        max_p = 0
+        for word in self._trie.vocab():
+            p = self.prob(word, word_seq)
+            if p > max_p:
+                max_p = p
+                prediction = word
+
+        return max_p, prediction
 
     def predict_top_k(self, word_seq, k):
         if k < 1:
@@ -36,7 +43,7 @@ class NGramLM(lm.LM):
 
     def prob(self, word, word_seq):
         trimmed_word_seq = word_seq[-self._n+1:]
-        return self._trie.count(trimmed_word_seq + [word]) / float(self._trie.count_following(trimmed_word_seq))
+        return self._trie.count(trimmed_word_seq + [word]) / self._trie.sum_following(trimmed_word_seq)
 
     def parse_file(self, file_name):
         window = deque([])
