@@ -13,7 +13,11 @@ class NGramLM(lm.LM):
     def predict(self, word_seq):
         prediction = ""
         max_p = 0
-        for word in self._trie.vocab():
+        words_following = self._trie.words_following(word_seq)
+        if not words_following:
+            words_following = self._trie.vocab()
+
+        for word in words_following:
             p = self.prob(word, word_seq)
             if p > max_p:
                 max_p = p
