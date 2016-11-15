@@ -1,5 +1,9 @@
 #include "lm/ngram/ngram.h"
 
+bool NGram::ContainsWord(std::string word) {
+    return vocab.count(word) > 0;
+}
+
 void NGram::Predict(std::list<std::string> seq, std::pair<std::string, double> &prediction) {
     if (!trained) {
         throw UntrainedException();
