@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "ngram-cc",
+    name = "ngram",
     srcs = [
         "ngram.h",
         "ngram.cc",
@@ -15,13 +15,13 @@ cc_library(
 )
 
 cc_test(
-    name = "ngram-cc_test",
+    name = "ngram_test",
     size = "small",
     srcs = ["ngram_test.cc"],
     copts = ["-Iexternal/gtest/googletest-release-1.8.0/googletest/include"],
     deps = [
         "@gtest//:main",
-        ":ngram-cc",
+        ":ngram",
     ],
 )
 
