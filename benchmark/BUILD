@@ -1,10 +1,3 @@
-py_library(
-    name = "benchmark",
-    srcs = ["benchmark.py"],
-    visibility = ["//visibility:public"],
-    deps = []
-)
-
 cc_library(
     name = "benchmark-cc",
     srcs = [
