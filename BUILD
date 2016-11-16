@@ -1,7 +1,9 @@
-py_binary(
+cc_binary(
     name = "main",
-    srcs = ["main.py"],
+    srcs = ["main.cc"],
     deps = [
-        "//lm/ngram:ngram",
+        "//lm/ngram/smoothing:kneser_ney",
+        "//lm/ngram/smoothing:add_one",
+        "//benchmark:benchmark",
     ],
 )
