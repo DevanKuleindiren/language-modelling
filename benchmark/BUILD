@@ -1,5 +1,5 @@
 cc_library(
-    name = "benchmark-cc",
+    name = "benchmark",
     srcs = [
         "benchmark.h",
         "benchmark.cc",

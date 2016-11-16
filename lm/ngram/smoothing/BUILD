@@ -6,7 +6,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//lm/ngram:ngram-cc",
+        "//lm/ngram:ngram",
     ],
 )
 
@@ -29,7 +29,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//lm/ngram:ngram-cc",
+        "//lm/ngram:ngram",
     ],
 )
 
