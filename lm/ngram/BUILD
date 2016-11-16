@@ -64,3 +64,23 @@ cc_test(
         ":count_trie",
     ],
 )
+
+cc_library(
+    name = "vocab",
+    srcs = [
+        "vocab.h",
+        "vocab.cc",
+    ],
+    deps = [],
+)
+
+cc_test(
+    name = "vocab_test",
+    size = "small",
+    srcs = ["vocab_test.cc"],
+    copts = ["-Iexternal/gtest/googletest-release-1.8.0/googletest/include"],
+    deps = [
+        "@gtest//:main",
+        ":vocab",
+    ],
+)
