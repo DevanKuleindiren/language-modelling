@@ -16,15 +16,14 @@ protected:
     struct Node {
         double pseudo_prob;
         double backoff;
-        std::unordered_map<std::string, Node*> children;
+        std::unordered_map<size_t, Node*> children;
         Node(double pseudo_prob, double backoff) : pseudo_prob(pseudo_prob), backoff(backoff), children() {}
     };
     int n;
     Node *root;
-    Node *GetNode(std::list<std::string>);
-    double GetProbRecurse(std::list<std::string>);
+    Node *GetNode(std::list<size_t>);
 public:
     ProbTrie(int n) : n(n), root(new Node(0, 0)) {}
-    void Insert(std::list<std::string>, double, double);
-    virtual double GetProb(std::list<std::string>);
+    void Insert(std::list<size_t>, double, double);
+    virtual double GetProb(std::list<size_t>);
 };

@@ -14,3 +14,15 @@ Optional<size_t> Vocab::Get(std::string word) {
     }
     return Optional<size_t>(word_to_index.find(word)->second);
 }
+
+size_t Vocab::OOVIndex() {
+    return index;
+}
+
+std::unordered_map<std::string, size_t>::const_iterator Vocab::begin() {
+    return word_to_index.begin();
+}
+
+std::unordered_map<std::string, size_t>::const_iterator Vocab::end() {
+    return word_to_index.end();
+}

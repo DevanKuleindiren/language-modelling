@@ -51,7 +51,7 @@ cc_library(
         "count_trie.h",
         "count_trie.cc",
     ],
-    deps = [],
+    deps = [":vocab"],
 )
 
 cc_test(

@@ -1,6 +1,6 @@
 #include "add_one.h"
 
-void AddOne::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, int depth, std::list<std::string> seq) {
+void AddOne::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, int depth, std::list<size_t> seq) {
     if (depth == 0) {
         prob_trie->Insert(seq, countTrie->VocabSize(), 0);
     }
@@ -10,7 +10,7 @@ void AddOne::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, int d
             prob_trie->Insert(seq, 0, countTrie->SumFollowing(seq));
         }
 
-        for (std::unordered_map<std::string, CountTrie::Node*>::iterator it = node->children.begin(); it != node->children.end(); ++it) {
+        for (std::unordered_map<size_t, CountTrie::Node*>::iterator it = node->children.begin(); it != node->children.end(); ++it) {
             seq.push_back(it->first);
             PopulateProbTrie(countTrie, it->second, depth + 1, seq);
             seq.pop_back();

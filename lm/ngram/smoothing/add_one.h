@@ -3,12 +3,12 @@
 class AddOneProbTrie : public ProbTrie {
 public:
     AddOneProbTrie(int n) : ProbTrie(n) {}
-    virtual double GetProb(std::list<std::string> seq) {
+    virtual double GetProb(std::list<size_t> seq) {
         if (seq.size() >= n) {
 
             // Ensure sequence contains at most N elements.
             if (seq.size() > n) {
-                std::list<std::string> tmp;
+                std::list<size_t> tmp;
                 for (int i = 0; i < n; i++) {
                     tmp.push_front(seq.back());
                     seq.pop_back();
@@ -38,7 +38,7 @@ public:
 
 class AddOne : public NGram {
 protected:
-    void PopulateProbTrie(CountTrie *, CountTrie::Node *, int, std::list<std::string>);
+    void PopulateProbTrie(CountTrie *, CountTrie::Node *, int, std::list<size_t>);
 public:
     AddOne(int n) : NGram(n, new AddOneProbTrie(n)) {}
 };

@@ -9,9 +9,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
-
-#endif /* count_trie_h */
-
+#include "vocab.h"
 
 class CountTrie {
 public:
@@ -21,24 +19,25 @@ public:
         int count_following;
         int count_preceding;
         int count_preceding_and_following;
-        std::unordered_map<std::string, Node*> children;
-        std::unordered_set<std::string> predecessors;
+        std::unordered_map<size_t, Node*> children;
+        std::unordered_set<size_t> predecessors;
     };
 private:
     Node *root;
     int n;
-    Node *GetNode(std::list<std::string>, bool);
+    Node *GetNode(std::list<size_t>, bool);
 public:
     CountTrie(int n) : root(new Node()), n(n) {}
-    void ProcessFile(std::string file_name);
-    int Count(std::list<std::string>);
-    int CountFollowing(std::list<std::string>);
-    int CountPreceding(std::list<std::string>);
-    int CountPrecedingAndFollowing(std::list<std::string>);
-    int SumFollowing(std::list<std::string>);
-    void PopulateVocab(std::unordered_set<std::string>*);
+    void ProcessFile(std::string, Vocab *);
+    int Count(std::list<size_t>);
+    int CountFollowing(std::list<size_t>);
+    int CountPreceding(std::list<size_t>);
+    int CountPrecedingAndFollowing(std::list<size_t>);
+    int SumFollowing(std::list<size_t>);
     int VocabSize();
-    void Insert(std::list<std::string>);
-    void ComputeCountsAndSums(Node *node, std::list<std::string>);
+    void Insert(std::list<size_t>);
+    void ComputeCountsAndSums(Node *, std::list<size_t>);
     Node *GetRoot();
 };
+
+#endif /* count_trie_h */

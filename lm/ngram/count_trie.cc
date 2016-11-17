@@ -1,20 +1,21 @@
 #include "count_trie.h"
 
 
-void CountTrie::ProcessFile(std::string file_name) {
+void CountTrie::ProcessFile(std::string file_name, Vocab *vocab) {
     std::ifstream f (file_name);
 
     if (f.is_open()) {
         std::string line;
         int line_number = 0;
+        size_t start_marker_index = vocab->Insert("<s>");
 
         while (std::getline(f, line)) {
             size_t pos = 0;
             std::string word;
-            std::list<std::string> ngram_window;
+            std::list<size_t> ngram_window;
 
             for (int i = 0; i < n - 1; i++) {
-                ngram_window.push_back("<s>");
+                ngram_window.push_back(start_marker_index);
             }
 
             while (!line.empty()) {
@@ -22,12 +23,12 @@ void CountTrie::ProcessFile(std::string file_name) {
                 if (pos == std::string::npos) {
                     pos = line.size();
                 }
-
                 word = line.substr(0, pos);
+                size_t word_index = vocab->Insert(word);
 
-                ngram_window.push_back(word);
-                std::list<std::string> ngram;
-                for (std::list<std::string>::reverse_iterator it = ngram_window.rbegin(); it != ngram_window.rend(); ++it) {
+                ngram_window.push_back(word_index);
+                std::list<size_t> ngram;
+                for (std::list<size_t>::reverse_iterator it = ngram_window.rbegin(); it != ngram_window.rend(); ++it) {
                     ngram.push_front(*it);
                     Insert(ngram);
                 }
@@ -44,12 +45,12 @@ void CountTrie::ProcessFile(std::string file_name) {
                 std::cout << "Read " << line_number << " lines." << std::endl;
             }
         }
-        std::list<std::string> seq;
+        std::list<size_t> seq;
         ComputeCountsAndSums(root, seq);
     }
 }
 
-int CountTrie::Count(std::list<std::string> seq) {
+int CountTrie::Count(std::list<size_t> seq) {
     CountTrie::Node *node = GetNode(seq, false);
     if (node) {
         return node->count;
@@ -57,7 +58,7 @@ int CountTrie::Count(std::list<std::string> seq) {
     return 0;
 }
 
-int CountTrie::CountFollowing(std::list<std::string> seq) {
+int CountTrie::CountFollowing(std::list<size_t> seq) {
     CountTrie::Node *node = GetNode(seq, false);
     if (node) {
         return node->count_following;
@@ -65,7 +66,7 @@ int CountTrie::CountFollowing(std::list<std::string> seq) {
     return 0;
 }
 
-int CountTrie::CountPreceding(std::list<std::string> seq) {
+int CountTrie::CountPreceding(std::list<size_t> seq) {
     CountTrie::Node *node = GetNode(seq, false);
     if (node) {
         return node->count_preceding;
@@ -73,7 +74,7 @@ int CountTrie::CountPreceding(std::list<std::string> seq) {
     return 0;
 }
 
-int CountTrie::CountPrecedingAndFollowing(std::list<std::string> seq) {
+int CountTrie::CountPrecedingAndFollowing(std::list<size_t> seq) {
     CountTrie::Node *node = GetNode(seq, false);
     if (node) {
         return node->count_preceding_and_following;
@@ -81,7 +82,7 @@ int CountTrie::CountPrecedingAndFollowing(std::list<std::string> seq) {
     return 0;
 }
 
-int CountTrie::SumFollowing(std::list<std::string> seq) {
+int CountTrie::SumFollowing(std::list<size_t> seq) {
     CountTrie::Node *node = GetNode(seq, false);
     if (node) {
         return node->sum_following;
@@ -89,25 +90,15 @@ int CountTrie::SumFollowing(std::list<std::string> seq) {
     return 0;
 }
 
-void CountTrie::PopulateVocab(std::unordered_set<std::string> *vocab) {
-    for (std::unordered_map<std::string, CountTrie::Node*>::iterator it = root->children.begin(); it != root->children.end(); ++it) {
-        if ((it->first).compare("<s>") != 0) {
-            vocab->insert(it->first);
-        }
-    }
-}
-
 int CountTrie::VocabSize() {
-    if (root->children.count("<s>") > 0) {
-        return root->count_following - 1;
-    }
-    return root->count_following;
+    // Minus 1 because of the <s> marker.
+    return root->count_following - 1;
 }
 
-CountTrie::Node *CountTrie::GetNode(std::list<std::string> seq, bool create_new) {
+CountTrie::Node *CountTrie::GetNode(std::list<size_t> seq, bool create_new) {
     CountTrie::Node *curr = root;
 
-    for (std::list<std::string>::iterator it = seq.begin(); it != seq.end(); ++it) {
+    for (std::list<size_t>::iterator it = seq.begin(); it != seq.end(); ++it) {
         if (curr->children.count(*it) < 1) {
             if (create_new) {
                 curr->children.insert(std::make_pair(*it, new CountTrie::Node()));
@@ -120,11 +111,11 @@ CountTrie::Node *CountTrie::GetNode(std::list<std::string> seq, bool create_new)
     return curr;
 }
 
-void CountTrie::Insert(std::list<std::string> seq) {
+void CountTrie::Insert(std::list<size_t> seq) {
     if (seq.size() <= n) {
         CountTrie::Node *curr = root;
 
-        for (std::list<std::string>::iterator it = seq.begin(); it != seq.end(); ++it) {
+        for (std::list<size_t>::iterator it = seq.begin(); it != seq.end(); ++it) {
             if (curr->children.empty() || curr->children.count(*it) < 1) {
                 curr->children.insert(std::make_pair(*it, new CountTrie::Node()));
             }
@@ -133,7 +124,7 @@ void CountTrie::Insert(std::list<std::string> seq) {
 
         curr->count++;
 
-        std::string predecessor = seq.front();
+        size_t predecessor = seq.front();
         seq.pop_front();
         if (seq.size() > 0) {
             CountTrie::Node *node = GetNode(seq, true);
@@ -145,7 +136,7 @@ void CountTrie::Insert(std::list<std::string> seq) {
     }
 }
 
-void CountTrie::ComputeCountsAndSums(CountTrie::Node *node, std::list<std::string> seq) {
+void CountTrie::ComputeCountsAndSums(CountTrie::Node *node, std::list<size_t> seq) {
     int sum_following = 0;
     int count_following = 0;
     int count_preceding_and_following = 0;

@@ -1,3 +1,6 @@
+#ifndef vocab_h
+#define vocab_h
+
 #include <experimental/optional>
 #include <string>
 #include <unordered_map>
@@ -17,4 +20,9 @@ public:
     Vocab() : index(0) {}
     size_t Insert(std::string word);
     Optional<size_t> Get(std::string word);
+    size_t OOVIndex();
+    std::unordered_map<std::string, size_t>::const_iterator begin();
+    std::unordered_map<std::string, size_t>::const_iterator end();
 };
+
+#endif // vocab.h
