@@ -2,25 +2,22 @@
 #define vocab_h
 
 #include <experimental/optional>
+#include <fstream>
 #include <string>
 #include <unordered_map>
 #include <utility>
 
-template <class T> struct Optional {
-    T value;
-    bool has_value;
-    Optional() : value(), has_value(false) {}
-    Optional(T value) : value(value), has_value(true) {}
-};
-
 class Vocab {
+    int min_frequency;
     size_t index;
     std::unordered_map<std::string, size_t> word_to_index;
-public:
-    Vocab() : index(0) {}
     size_t Insert(std::string word);
-    Optional<size_t> Get(std::string word);
-    size_t OOVIndex();
+public:
+    Vocab(int min_frequency) : min_frequency(min_frequency), index(1) {
+        word_to_index.insert(std::make_pair("<unk>", 0));
+    }
+    size_t Get(std::string word);
+    void ProcessFile(std::string file_name);
     std::unordered_map<std::string, size_t>::const_iterator begin();
     std::unordered_map<std::string, size_t>::const_iterator end();
 };

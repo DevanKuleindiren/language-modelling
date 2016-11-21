@@ -1,7 +1,7 @@
 #include "lm/ngram/ngram.h"
 
 bool NGram::ContainsWord(std::string word) {
-    return vocab->Get(word).has_value;
+    return vocab->Get(word);
 }
 
 void NGram::Predict(std::list<std::string> seq, std::pair<std::string, double> &prediction) {
@@ -40,6 +40,7 @@ double NGram::Prob(std::list<std::string> seq) {
 }
 
 void NGram::ProcessFile(std::string file_name) {
+    vocab->ProcessFile(file_name);
     CountTrie *countTrie = new CountTrie(n);
     countTrie->ProcessFile(file_name, vocab);
 
@@ -54,12 +55,7 @@ void NGram::ProcessFile(std::string file_name) {
 std::list<size_t> NGram::WordsToIndices(std::list<std::string> seq) {
     std::list<size_t> indices;
     for (std::list<std::string>::iterator it = seq.begin(); it != seq.end(); ++it) {
-        Optional<size_t> word_index = vocab->Get(*it);
-        if (word_index.has_value) {
-            indices.push_back(word_index.value);
-        } else {
-            indices.push_back(vocab->OOVIndex());
-        }
+        indices.push_back(vocab->Get(*it));
     }
     return indices;
 }

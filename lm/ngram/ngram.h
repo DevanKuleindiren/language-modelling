@@ -21,8 +21,10 @@ protected:
     virtual void PopulateProbTrie(CountTrie *, CountTrie::Node *, int, std::list<size_t>);
     virtual std::list<size_t> WordsToIndices(std::list<std::string> seq);
 public:
-    NGram(int n) : NGram(n, new ProbTrie(n)) {}
-    NGram(int n, ProbTrie *prob_trie) : n(n), prob_trie(prob_trie), vocab(new Vocab()) {}
+    NGram(int n) : NGram(n, new ProbTrie(n), 1) {}
+    NGram(int n, int min_frequency) : NGram(n, new ProbTrie(n), min_frequency) {}
+    NGram(int n, ProbTrie *prob_trie) : NGram(n, prob_trie, 1) {}
+    NGram(int n, ProbTrie *prob_trie, int min_frequency) : n(n), prob_trie(prob_trie), vocab(new Vocab(min_frequency)) {}
     virtual bool ContainsWord(std::string);
     virtual void Predict(std::list<std::string>, std::pair<std::string, double> &);
     virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &);

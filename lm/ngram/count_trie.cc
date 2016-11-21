@@ -7,7 +7,7 @@ void CountTrie::ProcessFile(std::string file_name, Vocab *vocab) {
     if (f.is_open()) {
         std::string line;
         int line_number = 0;
-        size_t start_marker_index = vocab->Insert("<s>");
+        size_t start_marker_index = vocab->Get("<s>");
 
         while (std::getline(f, line)) {
             size_t pos = 0;
@@ -23,8 +23,7 @@ void CountTrie::ProcessFile(std::string file_name, Vocab *vocab) {
                 if (pos == std::string::npos) {
                     pos = line.size();
                 }
-                word = line.substr(0, pos);
-                size_t word_index = vocab->Insert(word);
+                size_t word_index = vocab->Get(line.substr(0, pos));
 
                 ngram_window.push_back(word_index);
                 std::list<size_t> ngram;
