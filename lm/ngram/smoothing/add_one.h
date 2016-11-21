@@ -40,5 +40,6 @@ class AddOne : public NGram {
 protected:
     void PopulateProbTrie(CountTrie *, CountTrie::Node *, int, std::list<size_t>);
 public:
-    AddOne(int n) : NGram(n, new AddOneProbTrie(n)) {}
+    AddOne(int n) : AddOne(n, 1) {}
+    AddOne(int n, int min_frequency) : NGram(n, new AddOneProbTrie(n), min_frequency) {}
 };
