@@ -8,7 +8,9 @@
 #include <fstream>
 #include <list>
 #include <map>
+#include <queue>
 #include <string>
+#include <vector>
 #include <unordered_set>
 
 
@@ -27,9 +29,19 @@ public:
     NGram(int n, ProbTrie *prob_trie, int min_frequency) : n(n), prob_trie(prob_trie), vocab(new Vocab(min_frequency)) {}
     virtual bool ContainsWord(std::string);
     virtual void Predict(std::list<std::string>, std::pair<std::string, double> &);
-    virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &);
+    virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int);
     virtual double Prob(std::list<std::string>);
     virtual void ProcessFile(std::string file_name);
+};
+
+class PredictionCompare {
+public:
+    bool operator() (std::pair<std::string, double> const &a, std::pair<std::string, double> const &b) const {
+        if (a.second == b.second) {
+            return a.first > b.first;
+        }
+        return a.second > b.second;
+    }
 };
 
 #endif // ngram.h

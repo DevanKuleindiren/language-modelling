@@ -24,12 +24,34 @@ void NGram::Predict(std::list<std::string> seq, std::pair<std::string, double> &
     prediction = std::make_pair(max_prediction, max_prob);
 }
 
-void NGram::PredictTopK(std::list<std::string> seq, std::list<std::pair<std::string, double>> &predictions) {
+void NGram::PredictTopK(std::list<std::string> seq, std::list<std::pair<std::string, double>> &predictions, int k) {
     if (!trained) {
         throw UntrainedException();
     }
 
-    // TODO
+    std::priority_queue<std::pair<std::string, double>, std::vector<std::pair<std::string, double>>, PredictionCompare> min_heap_max_predictions;
+
+    std::list<size_t> seq_indices = WordsToIndices(seq);
+    for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
+        seq_indices.push_back(it->second);
+        double p = prob_trie->GetProb(seq_indices);
+        seq_indices.pop_back();
+
+        if (min_heap_max_predictions.size() < k) {
+            min_heap_max_predictions.push(std::make_pair(it->first, p));
+        } else {
+            double min_of_max_k = min_heap_max_predictions.top().second;
+            if (p > min_of_max_k) {
+                min_heap_max_predictions.pop();
+                min_heap_max_predictions.push(std::make_pair(it->first, p));
+            }
+        }
+    }
+
+    while (min_heap_max_predictions.size() > 0) {
+        predictions.push_front(min_heap_max_predictions.top());
+        min_heap_max_predictions.pop();
+    }
 }
 
 double NGram::Prob(std::list<std::string> seq) {
