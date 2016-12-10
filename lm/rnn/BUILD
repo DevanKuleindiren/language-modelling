@@ -1,6 +1,6 @@
 py_binary(
-    name = "rnn",
-    srcs = ["rnn.py"],
+    name = "lstm",
+    srcs = ["lstm.py"],
     deps = [":reader"],
 )
 

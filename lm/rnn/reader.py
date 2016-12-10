@@ -1,4 +1,5 @@
 import collections
+import numpy as np
 import tensorflow as tf
 
 
@@ -15,31 +16,28 @@ def _word_to_id(file_name, min_frequency):
     words = [w for w, c in counter.iteritems() if c >= min_frequency]
     return dict(zip(words, range(len(words))))
 
-
-def batch_producer(file_name, batch_size, num_steps, min_frequency, name=None):
+def raw_data(file_name, min_frequency):
     word_to_id = _word_to_id(file_name, min_frequency)
     raw_words = _get_data(file_name)
     raw_ids = [word_to_id[word] for word in raw_words if word in word_to_id]
 
-    epoch_size_scalar = ((len(raw_ids) // batch_size) - 1) // num_steps
+    return raw_ids, word_to_id
 
-    with tf.name_scope(name, "batch_producer", [raw_ids, batch_size, num_steps]):
-        raw_data = tf.convert_to_tensor(raw_ids, name="training_data", dtype=tf.int32)
+def batch_producer(raw_data, batch_size, num_steps, name=None):
+    epoch_size_scalar = ((len(raw_data) // batch_size) - 1) // num_steps
 
-        data_len = tf.size(raw_data)
-        batch_len = data_len // batch_size
-        epoch_size = (batch_len - 1) // num_steps
-        data = tf.reshape(raw_data[0 : batch_size * batch_len], [batch_size, batch_len])
+    data_len = len(raw_data)
+    batch_len = data_len // batch_size
+    epoch_size = (batch_len - 1) // num_steps
 
-        assertion = tf.assert_positive(
-            epoch_size,
-            message="epoch_size == 0, decrease batch_size or num_steps")
+    data = np.zeros([batch_size, batch_len], dtype=np.int32)
+    for i in xrange(batch_size):
+        data[i] = raw_data[batch_len * i:batch_len * (i + 1)]
 
-        with tf.control_dependencies([assertion]):
-            epoch_size = tf.identity(epoch_size, name="epoch_size")
+    if epoch_size == 0:
+        raise ValueError("epoch_size == 0, decrease batch_size or num_steps")
 
-        i = tf.train.range_input_producer(epoch_size, shuffle=False).dequeue()
-        x = tf.slice(data, [0, i * num_steps], [batch_size, num_steps])
-        y = tf.slice(data, [0, i * num_steps + 1], [batch_size, num_steps])
-
-        return x, y, epoch_size_scalar
+    for i in xrange(epoch_size):
+        x = data[:, i * num_steps:(i + 1) * num_steps]
+        y = data[:, i * num_steps + 1:(i + 1) * num_steps + 1]
+        yield (x, y)
