@@ -4,6 +4,9 @@ import numpy as np
 import tensorflow as tf
 import time
 
+from google.protobuf import text_format
+from lm import vocab_pb2
+
 tf.flags.DEFINE_bool("infer", False, "Run inference on a previously saved model.")
 tf.flags.DEFINE_string("training_data_path", None,"The path to the training data.")
 tf.flags.DEFINE_string("save_path", None, "The path to save the model.")
@@ -207,17 +210,30 @@ def main(_):
 
     with tf.Graph().as_default():
         config = Config()
-        input_data, word_to_id = reader.raw_data(FLAGS.training_data_path, config.min_frequency)
-        vocab_size = len(word_to_id)
-        id_to_word = dict(zip(word_to_id.values(), word_to_id.keys()))
-        epoch_size_scalar = ((len(input_data) // config.batch_size) - 1) // config.num_steps
+        word_to_id = {}
+        id_to_word = {}
 
-        initialiser = tf.random_uniform_initializer(-config.init_scale, config.init_scale)
+        if FLAGS.infer:
+            vocab = vocab_pb2.Vocab()
+            with open(FLAGS.save_path + "/vocab.pbtxt", "rb") as f:
+                text_format.Merge(f.read(), vocab)
+                for i in vocab.item:
+                    word_to_id[i.word] = i.id
+                    id_to_word[i.id] = i.word
 
-        with tf.variable_scope("Model", reuse=None, initializer=initialiser):
-            training_model = LSTM(config, vocab_size, epoch_size_scalar, is_training=True)
-        with tf.variable_scope("Model", reuse=True, initializer=initialiser):
-            inference_model = LSTM(config, vocab_size, epoch_size_scalar, is_training=False)
+            vocab_size = len(word_to_id)
+            print "VOCAB SIZE = %d" % vocab_size
+            with tf.variable_scope("Model"):
+                inference_model = LSTM(config, vocab_size, 1, is_training=False)
+        else:
+            input_data, word_to_id = reader.raw_data(FLAGS.training_data_path, config.min_frequency)
+            id_to_word = dict(zip(word_to_id.values(), word_to_id.keys()))
+            epoch_size_scalar = ((len(input_data) // config.batch_size) - 1) // config.num_steps
+
+            initialiser = tf.random_uniform_initializer(-config.init_scale, config.init_scale)
+            vocab_size = len(word_to_id)
+            with tf.variable_scope("Model", initializer=initialiser):
+                training_model = LSTM(config, vocab_size, epoch_size_scalar, is_training=True)
 
         with tf.Session() as sess:
             saver = tf.train.Saver()
@@ -231,18 +247,18 @@ def main(_):
                 else:
                     print ("No checkpoint file found")
 
-                print "Sequence:"
-                seq_words = raw_input().split()
-                seq_ids = []
-                for w in seq_words:
-                    if w in word_to_id:
-                        seq_ids.append(word_to_id[w])
-                    else:
-                        print "'%s' was not seen in the training data." % w
-                        seq_ids.append(word_to_id["<unk>"])
-                padded_input = np.pad(np.array([seq_ids]), ((0, config.batch_size - 1), (0, config.num_steps - len(seq_words))), 'constant', constant_values=0)
-                print padded_input
-                print predict(sess, inference_model, padded_input, id_to_word, len(seq_words))
+                while True:
+                    print "Sequence:"
+                    seq_words = raw_input().split()
+                    seq_ids = []
+                    for w in seq_words:
+                        if w in word_to_id:
+                            seq_ids.append(word_to_id[w])
+                        else:
+                            print "'%s' was not seen in the training data." % w
+                            seq_ids.append(word_to_id["<unk>"])
+                    padded_input = np.pad(np.array([seq_ids]), ((0, config.batch_size - 1), (0, config.num_steps - len(seq_words))), 'constant', constant_values=0)
+                    print predict(sess, inference_model, padded_input, id_to_word, len(seq_words))
 
             else:
                 for i in xrange(config.max_max_epoch):
@@ -254,8 +270,14 @@ def main(_):
 
                     if FLAGS.save_path:
                         print "Saving model to %s" % FLAGS.save_path
-                        saver.save(sess, FLAGS.save_path+'/model.ckpt', global_step=i+1)
-
+                        saver.save(sess, FLAGS.save_path + "/model.ckpt", global_step=i+1)
+                        vocab = vocab_pb2.Vocab()
+                        for i in id_to_word:
+                            item = vocab.item.add()
+                            item.id = i
+                            item.word = id_to_word[i]
+                        with open(FLAGS.save_path + "/vocab.pbtxt", "wb") as f:
+                            f.write(text_format.MessageToString(vocab))
 
 if __name__ == "__main__":
     tf.app.run()
