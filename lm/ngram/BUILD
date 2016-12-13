@@ -10,7 +10,7 @@ cc_library(
     deps = [
         ":count_trie",
         ":prob_trie",
-        "//lm:lm",
+        "//tensorflow/Source/lm:lm",
     ],
 )
 
@@ -18,10 +18,10 @@ cc_test(
     name = "ngram_test",
     size = "small",
     srcs = ["ngram_test.cc"],
-    copts = ["-Iexternal/gtest/googletest-release-1.8.0/googletest/include"],
     deps = [
-        "@gtest//:main",
         ":ngram",
+        "//tensorflow/core:test",
+        "//tensorflow/core:test_main",
     ],
 )
 
@@ -38,10 +38,10 @@ cc_test(
     name = "prob_trie_test",
     size = "small",
     srcs = ["prob_trie_test.cc"],
-    copts = ["-Iexternal/gtest/googletest-release-1.8.0/googletest/include"],
     deps = [
-        "@gtest//:main",
         ":prob_trie",
+        "//tensorflow/core:test",
+        "//tensorflow/core:test_main",
     ],
 )
 
@@ -58,10 +58,10 @@ cc_test(
     name = "count_trie_test",
     size = "small",
     srcs = ["count_trie_test.cc"],
-    copts = ["-Iexternal/gtest/googletest-release-1.8.0/googletest/include"],
     deps = [
-        "@gtest//:main",
         ":count_trie",
+        "//tensorflow/core:test",
+        "//tensorflow/core:test_main",
     ],
 )
 
@@ -78,9 +78,9 @@ cc_test(
     name = "vocab_test",
     size = "small",
     srcs = ["vocab_test.cc"],
-    copts = ["-Iexternal/gtest/googletest-release-1.8.0/googletest/include"],
     deps = [
-        "@gtest//:main",
         ":vocab",
+        "//tensorflow/core:test",
+        "//tensorflow/core:test_main",
     ],
 )

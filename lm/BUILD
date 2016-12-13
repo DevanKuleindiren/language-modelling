@@ -2,8 +2,8 @@ cc_library(
     name = "lm",
     srcs = ["lm.h"],
     visibility = [
-        "//lm/ngram:__subpackages__",
-        "//benchmark:__subpackages__"],
+        "//tensorflow/Source/lm/ngram:__subpackages__",
+        "//tensorflow/Source/benchmark:__subpackages__"],
     deps = [],
 )
 

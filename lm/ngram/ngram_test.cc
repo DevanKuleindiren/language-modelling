@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
 #include "ngram.h"
+#include "tensorflow/core/platform/test.h"
 #include <fstream>
 
 void SetUp(NGram *under_test) {

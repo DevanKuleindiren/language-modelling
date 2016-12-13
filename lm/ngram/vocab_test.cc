@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+#include "tensorflow/core/platform/test.h"
 #include "vocab.h"
 
 

@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
 #include "count_trie.h"
+#include "tensorflow/core/platform/test.h"
 
 
 class CountTrieTest : public ::testing::Test {

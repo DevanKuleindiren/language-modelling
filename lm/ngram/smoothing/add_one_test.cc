@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
 #include "add_one.h"
+#include "tensorflow/core/platform/test.h"
 #include <fstream>
 
 

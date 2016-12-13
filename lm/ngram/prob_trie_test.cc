@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
 #include "prob_trie.h"
+#include "tensorflow/core/platform/test.h"
 
 
 class ProbTrieTest : public ::testing::Test {

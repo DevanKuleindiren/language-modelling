@@ -1,4 +1,4 @@
-#include "lm/ngram/ngram.h"
+#include "tensorflow/Source/lm/ngram/ngram.h"
 #include <algorithm>
 
 class KneserNey : public NGram {

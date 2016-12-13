@@ -1,7 +1,7 @@
 #ifndef ngram_h
 #define ngram_h
 
-#include "lm/lm.h"
+#include "tensorflow/Source/lm/lm.h"
 #include "prob_trie.h"
 #include "count_trie.h"
 #include "vocab.h"

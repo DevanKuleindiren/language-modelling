@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
 #include "kneser_ney.h"
+#include "tensorflow/core/platform/test.h"
 #include <fstream>
 
 

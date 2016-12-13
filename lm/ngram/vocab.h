@@ -1,7 +1,6 @@
 #ifndef vocab_h
 #define vocab_h
 
-#include <experimental/optional>
 #include <fstream>
 #include <string>
 #include <unordered_map>

@@ -5,5 +5,5 @@ cc_library(
         "benchmark.cc",
     ],
     visibility = ["//visibility:public"],
-    deps = ["//lm:lm"],
+    deps = ["//tensorflow/Source/lm:lm"],
 )

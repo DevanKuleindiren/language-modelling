@@ -2,7 +2,7 @@ cc_binary(
     name = "main",
     srcs = ["main.cc"],
     deps = [
-        "//lm/ngram/smoothing:add_one",
-        "//benchmark:benchmark",
+        "//tensorflow/Source/lm/ngram/smoothing:add_one",
+        "//tensorflow/Source/benchmark:benchmark",
     ],
 )

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include "lm/ngram/smoothing/add_one.h"
-#include "benchmark/benchmark.h"
+#include "tensorflow/Source/lm/ngram/smoothing/add_one.h"
+#include "tensorflow/Source/benchmark/benchmark.h"
 
 int main() {
     int n = 3;

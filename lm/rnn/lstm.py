@@ -5,7 +5,7 @@ import tensorflow as tf
 import time
 
 from google.protobuf import text_format
-from lm import vocab_pb2
+from tensorflow.Source.lm import vocab_pb2
 
 tf.flags.DEFINE_bool("infer", False, "Run inference on a previously saved model.")
 tf.flags.DEFINE_string("training_data_path", None,"The path to the training data.")

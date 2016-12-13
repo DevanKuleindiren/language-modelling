@@ -1,4 +1,4 @@
-#include "lm/ngram/ngram.h"
+#include "tensorflow/Source/lm/ngram/ngram.h"
 
 class AddOneProbTrie : public ProbTrie {
 public:

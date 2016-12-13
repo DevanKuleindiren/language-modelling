@@ -3,7 +3,8 @@ py_binary(
     srcs = ["lstm.py"],
     deps = [
         ":reader",
-        "//lm:vocab_pb2"
+        "//tensorflow/Source/lm:vocab_pb2",
+        "//tensorflow:tensorflow_py",
     ],
 )
 

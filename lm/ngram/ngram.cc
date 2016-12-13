@@ -1,4 +1,4 @@
-#include "lm/ngram/ngram.h"
+#include "ngram.h"
 
 bool NGram::ContainsWord(std::string word) {
     return vocab->Get(word);
