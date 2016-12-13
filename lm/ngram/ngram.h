@@ -32,6 +32,8 @@ public:
     virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int);
     virtual double Prob(std::list<std::string>);
     virtual void ProcessFile(std::string file_name);
+    virtual void Save(std::string file_name);
+    virtual void Load(std::string file_name);
 };
 
 class PredictionCompare {

@@ -1,12 +1,14 @@
 #ifndef prob_trie_h
 #define prob_trie_h
 
+#include <fstream>
 #include <iostream>
 #include <list>
 #include <stdio.h>
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include "lm/ngram/prob_trie.pb.h"
 
 #endif /* prob_trie_h */
 
@@ -26,4 +28,6 @@ public:
     ProbTrie(int n) : n(n), root(new Node(0, 0)) {}
     void Insert(std::list<size_t>, double, double);
     virtual double GetProb(std::list<size_t>);
+    virtual void Save(std::string file_name);
+    virtual void Load(std::string file_name);
 };

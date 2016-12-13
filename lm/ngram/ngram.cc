@@ -74,6 +74,14 @@ void NGram::ProcessFile(std::string file_name) {
     trained = true;
 }
 
+void NGram::Save(std::string file_name) {
+    prob_trie->Save(file_name);
+}
+
+void NGram::Load(std::string file_name) {
+    prob_trie->Load(file_name);
+}
+
 std::list<size_t> NGram::WordsToIndices(std::list<std::string> seq) {
     std::list<size_t> indices;
     for (std::list<std::string>::iterator it = seq.begin(); it != seq.end(); ++it) {
