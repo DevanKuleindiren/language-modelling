@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package lm.ngram;
+
+message ProbTrieProto {
+    int32 n = 1;
+    Node root = 2;
+}
+
+message Node {
+    double pseudo_prob = 1;
+    double backoff = 2;
+
+    message Child {
+        int32 id = 1;
+        Node node = 2;
+    }
+    repeated Child child = 3;
+}

@@ -31,7 +31,7 @@ cc_library(
         "prob_trie.h",
         "prob_trie.cc",
     ],
-    deps = [],
+    deps = [":prob_trie_pb"],
 )
 
 cc_test(
@@ -43,6 +43,17 @@ cc_test(
         "//tensorflow/core:test",
         "//tensorflow/core:test_main",
     ],
+)
+
+# TODO: Change this to cc_proto_library.
+cc_library(
+    name = "prob_trie_pb",
+    srcs = [
+        "prob_trie.pb.h",
+        "prob_trie.pb.cc",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [],
 )
 
 cc_library(

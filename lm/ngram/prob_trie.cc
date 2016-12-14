@@ -67,3 +67,18 @@ ProbTrie::Node *ProbTrie::GetNode(std::list<size_t> seq) {
     }
     return NULL;
 }
+
+void ProbTrie::Save(std::string file_name) {
+    lm::ngram::ProbTrieProto prob_trie_proto;
+    prob_trie_proto.set_n(n);
+    std::fstream f (file_name);
+    if (!f.is_open() || !prob_trie_proto.SerializeToOstream(&f)) {
+        std::cerr << "Failed to write prob trie." << std::endl;
+    } else {
+        std::cout << "Saved prob_trie_proto." << std::endl;
+    }
+}
+
+void ProbTrie::Load(std::string file_name) {
+    
+}
