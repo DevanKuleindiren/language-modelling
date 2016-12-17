@@ -6,6 +6,7 @@ import tensorflow as tf
 import time
 
 from google.protobuf import text_format
+from tensorflow.python.framework import graph_util
 from tensorflow.Source.lm import vocab_pb2
 
 tf.flags.DEFINE_bool("infer", False, "Run inference on a previously saved model.")
@@ -50,8 +51,8 @@ class LSTM:
         self._config = config
         self._epoch_size = epoch_size
         self._vocab_size = vocab_size
-        self._input_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
-        self._target_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
+        self._input_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps], name="inputs")
+        self._target_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps], name="targets")
 
         # A 'cell' in TensorFlow actually refers to an array of the LSTMs cells described in literature, so this is an
         # array of config.hidden_size LSTM cells.
@@ -124,7 +125,7 @@ class LSTM:
         # Multiply the LSTM activations and add bias to give logits of shape
         # (config.batch_size * config.num_steps) x vocab_size. Note that tf.add() doesn't require the Tensor shapes to
         # match due to broadcasting.
-        logits = tf.matmul(output, softmax_w) + softmax_b
+        logits = tf.add(tf.matmul(output, softmax_w), softmax_b, name="logits")
         self._logits = logits
 
         # The cross-entropy loss is calculated between the logits and the targets (which are flattened into a Tensor
@@ -199,7 +200,6 @@ class LSTM:
         return self._epoch_size
 
 
-
 def run_epoch(sess, model, input_data):
     start_time = time.time()
     costs = 0.0
@@ -235,26 +235,15 @@ def run_epoch(sess, model, input_data):
 
     return np.exp(costs / iters)
 
-def predict(sess, model, inputs, id_to_word, seq_len):
-    state = sess.run(model.initial_state)
-    fetches = {
-        "final_state": model.final_state,
-        "logits": model.logits,
-    }
+def predict(sess, inputs, id_to_word, seq_len):
+    fetches = {"logits": "Model/logits:0"}
+    feed_dict = {"Model/inputs:0": inputs}
+    vocab_size = len(id_to_word)
 
-    feed_dict = {}
-    feed_dict[model.input_data] = inputs
-    feed_dict[model.target_data] = np.zeros((model.config.batch_size, model.config.num_steps), dtype=np.int32)
-
-    for i, (c, h) in enumerate(model.initial_state):
-        feed_dict[c] = state[i].c
-        feed_dict[h] = state[i].h
     vals = sess.run(fetches, feed_dict)
-    state = vals["final_state"]
     logits = vals["logits"]
 
-    return sorted(heapq.nlargest(10, [(id_to_word[i], p) for (i, p) in zip(xrange(model.vocab_size), logits[seq_len])], key=lambda x: x[1]), key=lambda x: -x[1])
-
+    return sorted(heapq.nlargest(10, [(id_to_word[i], p) for (i, p) in zip(xrange(vocab_size), logits[seq_len])], key=lambda x: x[1]), key=lambda x: -x[1])
 
 def main(_):
     if not FLAGS.training_data_path:
@@ -274,31 +263,14 @@ def main(_):
                     id_to_word[i.id] = i.word
 
             vocab_size = len(word_to_id)
-            print "VOCAB SIZE = %d" % vocab_size
-            with tf.variable_scope("Model"):
-                inference_model = LSTM(config, vocab_size, 1, is_training=False)
-        else:
-            input_data, word_to_id = reader.raw_data(FLAGS.training_data_path, config.min_frequency)
-            id_to_word = dict(zip(word_to_id.values(), word_to_id.keys()))
-            epoch_size_scalar = ((len(input_data) // config.batch_size) - 1) // config.num_steps
 
-            initialiser = tf.random_uniform_initializer(-config.init_scale, config.init_scale)
-            vocab_size = len(word_to_id)
-            with tf.variable_scope("Model", initializer=initialiser):
-                training_model = LSTM(config, vocab_size, epoch_size_scalar, is_training=True)
+            graph_def = tf.GraphDef()
+            with open(FLAGS.save_path + "/graph.pb", "rb") as f:
+                graph_def.ParseFromString(f.read())
+            tf.import_graph_def(graph_def, name="")
 
-        with tf.Session() as sess:
-            saver = tf.train.Saver()
-            tf.initialize_all_variables().run()
-
-            if FLAGS.infer:
-                ckpt = tf.train.get_checkpoint_state(FLAGS.save_path)
-                print (ckpt)
-                if ckpt and ckpt.model_checkpoint_path:
-                    saver.restore(sess, ckpt.model_checkpoint_path)
-                else:
-                    print ("No checkpoint file found")
-
+            with tf.Session() as sess:
+                sess.run(tf.initialize_all_variables())
                 while True:
                     print "Sequence:"
                     seq_words = raw_input().split()
@@ -310,9 +282,23 @@ def main(_):
                             print "'%s' was not seen in the training data." % w
                             seq_ids.append(word_to_id["<unk>"])
                     padded_input = np.pad(np.array([seq_ids]), ((0, config.batch_size - 1), (0, config.num_steps - len(seq_words))), 'constant', constant_values=0)
-                    print predict(sess, inference_model, padded_input, id_to_word, len(seq_words))
+                    print predict(sess, padded_input, id_to_word, len(seq_words))
 
-            else:
+
+        else:
+            input_data, word_to_id = reader.raw_data(FLAGS.training_data_path, config.min_frequency)
+            id_to_word = dict(zip(word_to_id.values(), word_to_id.keys()))
+            epoch_size_scalar = ((len(input_data) // config.batch_size) - 1) // config.num_steps
+
+            initialiser = tf.random_uniform_initializer(-config.init_scale, config.init_scale)
+            vocab_size = len(word_to_id)
+            with tf.variable_scope("Model", initializer=initialiser):
+                training_model = LSTM(config, vocab_size, epoch_size_scalar, is_training=True)
+
+            with tf.Session() as sess:
+                saver = tf.train.Saver()
+                tf.initialize_all_variables().run()
+
                 for i in xrange(config.max_max_epoch):
                     lr_decay = config.lr_decay ** max(i + 1 - config.max_epoch, 0.0)
                     training_model.assign_lr(sess, config.lr * lr_decay)
@@ -322,7 +308,7 @@ def main(_):
 
                     if FLAGS.save_path:
                         print "Saving model to %s" % FLAGS.save_path
-                        saver.save(sess, FLAGS.save_path + "/checkpoint", global_step=i+1)
+
                         vocab = vocab_pb2.VocabProto()
                         for i in id_to_word:
                             item = vocab.item.add()
@@ -331,8 +317,12 @@ def main(_):
                         with open(FLAGS.save_path + "/vocab.pbtxt", "wb") as f:
                             f.write(text_format.MessageToString(vocab))
 
-
-
+                        # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
+                        # is why it isn't included in 'Model/logits'.
+                        graph_def = graph_util.convert_variables_to_constants(
+                            sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["Model/logits"])
+                        with open(FLAGS.save_path + "/graph.pb", "wb") as f:
+                            f.write(graph_def.SerializeToString())
 
 if __name__ == "__main__":
     tf.app.run()
