@@ -7,10 +7,15 @@ cc_library(
     deps = [],
 )
 
-# TODO: Change this to py_proto_library.
-py_library(
-    name = "vocab_pb2",
-    srcs = ["vocab_pb2.py"],
+load(
+    "//tensorflow/core:platform/default/build_config.bzl",
+    "tf_proto_library",
+)
+
+tf_proto_library(
+    name = "vocab_pb",
+    srcs = ["vocab.proto"],
+    cc_api_version = 2,
+    py_api_version = 2,
     visibility = ["//visibility:public"],
-    deps = [],
 )

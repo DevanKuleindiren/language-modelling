@@ -214,7 +214,7 @@ def main(_):
         id_to_word = {}
 
         if FLAGS.infer:
-            vocab = vocab_pb2.Vocab()
+            vocab = vocab_pb2.VocabProto()
             with open(FLAGS.save_path + "/vocab.pbtxt", "rb") as f:
                 text_format.Merge(f.read(), vocab)
                 for i in vocab.item:
@@ -271,7 +271,7 @@ def main(_):
                     if FLAGS.save_path:
                         print "Saving model to %s" % FLAGS.save_path
                         saver.save(sess, FLAGS.save_path + "/model.ckpt", global_step=i+1)
-                        vocab = vocab_pb2.Vocab()
+                        vocab = vocab_pb2.VocabProto()
                         for i in id_to_word:
                             item = vocab.item.add()
                             item.id = i

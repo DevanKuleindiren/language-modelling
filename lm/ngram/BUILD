@@ -83,7 +83,7 @@ cc_library(
         "vocab.h",
         "vocab.cc",
     ],
-    deps = [],
+    deps = ["//tensorflow/Source/lm:vocab_pb_cc"],
 )
 
 cc_test(

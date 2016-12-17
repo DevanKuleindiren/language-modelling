@@ -21,7 +21,7 @@ protected:
     Vocab *under_test;
 };
 
-TEST_F(VocabTest, T) {
+TEST_F(VocabTest, IdsCorrect) {
     EXPECT_EQ(under_test->Get("<unk>"), 0);
     EXPECT_EQ(under_test->Get("blah"), 0);
     EXPECT_EQ(under_test->Get("<s>"), 1);
@@ -53,4 +53,25 @@ TEST_F(VocabTest, Iterator) {
     }
 
     EXPECT_EQ(actual_output, expected_output);
+}
+
+TEST_F(VocabTest, SaveAndLoadEqual) {
+    std::string file_name = "/tmp/vocab_test_file.pbtxt";
+    under_test->Save(file_name);
+
+    Vocab *under_test_loaded = new Vocab(2);
+    under_test_loaded->Load(file_name);
+
+    EXPECT_EQ(under_test_loaded->Get("<unk>"), 0);
+    EXPECT_EQ(under_test_loaded->Get("blah"), 0);
+    EXPECT_EQ(under_test_loaded->Get("<s>"), 1);
+    EXPECT_EQ(under_test_loaded->Get("the"), 2);
+    EXPECT_EQ(under_test_loaded->Get("cat"), 3);
+    EXPECT_EQ(under_test_loaded->Get("sat"), 5);
+    EXPECT_EQ(under_test_loaded->Get("on"), 6);
+    EXPECT_EQ(under_test_loaded->Get("mat"), 0);
+    EXPECT_EQ(under_test_loaded->Get("."), 4);
+    EXPECT_EQ(under_test_loaded->Get("ate"), 0);
+    EXPECT_EQ(under_test_loaded->Get("mouse"), 0);
+    EXPECT_EQ(under_test_loaded->Get("dog"), 0);
 }

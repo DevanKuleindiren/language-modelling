@@ -1,9 +1,15 @@
 syntax = "proto3";
 
-message Vocab {
+package tensorflow.Source.lm;
+
+message VocabProto {
+    // The minimum number of times a word needed to occur for it not to be treated as <unk>.
+    int32 min_frequency = 1;
+
+    // The id -> word mappings.
     message Item {
         int32 id = 1;
         string word = 2;
     }
-    repeated Item item = 1;
+    repeated Item item = 2;
 }
