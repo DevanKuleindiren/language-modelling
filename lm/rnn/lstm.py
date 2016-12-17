@@ -1,6 +1,7 @@
 import heapq
 import reader
 import numpy as np
+import os
 import tensorflow as tf
 import time
 
@@ -52,38 +53,89 @@ class LSTM:
         self._input_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
         self._target_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
 
+        # A 'cell' in TensorFlow actually refers to an array of the LSTMs cells described in literature, so this is an
+        # array of config.hidden_size LSTM cells.
         rnn_cell = tf.nn.rnn_cell.BasicLSTMCell(config.hidden_size, forget_bias=0.0, state_is_tuple=True)
+
+        # This adds dropout to the LSTM cells by applying the probability of keeping a weight.
         if config.keep_prob < 1:
             rnn_cell = tf.nn.rnn_cell.DropoutWrapper(rnn_cell, output_keep_prob=config.keep_prob)
+
+        # This adds layers to the RNN to give config.num_layers layers overall.
         cell = tf.nn.rnn_cell.MultiRNNCell([rnn_cell] * config.num_layers, state_is_tuple=True)
 
+        # Initialise the LSTM cell weights.
         self._initial_state = cell.zero_state(config.batch_size, dtype=tf.float32)
 
         with tf.device("/cpu:0"):
+            # Create a (vocab_size x config.hidden_size) size embedding matrix.
             embedding = tf.get_variable("embedding", [vocab_size, config.hidden_size], dtype=tf.float32)
+
+            # This converts the (config.batch_size x config.num_steps) input Tensor to a
+            # (config.batch_size x config.num_steps x config.hidden_size) Tensor by replacing each word id, X, with the
+            # Xth row of the embedding matrix.
             inputs = tf.nn.embedding_lookup(embedding, self._input_data)
 
+        # Apply dropout.
         if config.keep_prob < 1:
             inputs = tf.nn.dropout(inputs, keep_prob=config.keep_prob)
+
 
         outputs = []
         state = self._initial_state
         with tf.variable_scope("LSTM"):
-          for time_step in range(config.num_steps):
-            if time_step > 0: tf.get_variable_scope().reuse_variables()
-            (cell_output, state) = cell(inputs[:, time_step, :], state)
-            outputs.append(cell_output)
+            for time_step in range(config.num_steps):
+                # We want to use the same set of weights in each time step. This is due to the recurrent structure of
+                # RNNs.
+                if time_step > 0: tf.get_variable_scope().reuse_variables()
 
+                # Each LSTM cell has a __call__ function which takes a batch of words at a particular time step
+                # (represented as embedding vectors) and returns the tuple (h, c) where h is the new
+                # LSTM activation and c is the new cell state as shown in Figure 1 of http://arxiv.org/abs/1409.2329.
+                #
+                # For example, if we denote {cat} as the embedding vector for the word "cat", then we might have
+                # something like:
+                #
+                # inputs = [[{the}, {cat}, {sat}, {on}],
+                #           [{walk}, {in}, {the}, {park}],
+                #           ...
+                #           [{grab}, {a}, {spot}, {by}]]
+                #
+                # and then at time step 2, we have:
+                #
+                # inputs[:, 2, :] = [{cat},
+                #                    {in},
+                #                    ...
+                #                    {a}]
+                #
+                # The shape of cell_output is (config.batch_size x config.hidden_size).
+                (cell_output, state) = cell(inputs[:, time_step, :], state)
+
+                # Each LSTM cell activation is stored in a list of outputs.
+                outputs.append(cell_output)
+
+        # Concatenate the outputs from each time step along dimension 1 (which should give a matrix of shape
+        # ((config.batch_size * config.num_steps) x config.hidden_size).
         output = tf.reshape(tf.concat(1, outputs), [-1, config.hidden_size])
+
         softmax_w = tf.get_variable(
             "softmax_w", [config.hidden_size, vocab_size], dtype=tf.float32)
         softmax_b = tf.get_variable("softmax_b", [vocab_size], dtype=tf.float32)
+        # Multiply the LSTM activations and add bias to give logits of shape
+        # (config.batch_size * config.num_steps) x vocab_size. Note that tf.add() doesn't require the Tensor shapes to
+        # match due to broadcasting.
         logits = tf.matmul(output, softmax_w) + softmax_b
         self._logits = logits
+
+        # The cross-entropy loss is calculated between the logits and the targets (which are flattened into a Tensor
+        # of shape (config.batch_size * config.num_steps). The tf.ones() are just weights in the weighted cross-entropy
+        # loss.
         loss = tf.nn.seq2seq.sequence_loss_by_example(
             [logits],
             [tf.reshape(self._target_data, [-1])],
             [tf.ones([config.batch_size * config.num_steps], dtype=tf.float32)])
+
+        # The total loss is divided by batch_size which gives an average cost per example.
         self._cost = cost = tf.reduce_sum(loss) / config.batch_size
         self._final_state = state
 
@@ -270,7 +322,7 @@ def main(_):
 
                     if FLAGS.save_path:
                         print "Saving model to %s" % FLAGS.save_path
-                        saver.save(sess, FLAGS.save_path + "/model.ckpt", global_step=i+1)
+                        saver.save(sess, FLAGS.save_path + "/checkpoint", global_step=i+1)
                         vocab = vocab_pb2.VocabProto()
                         for i in id_to_word:
                             item = vocab.item.add()
@@ -278,6 +330,9 @@ def main(_):
                             item.word = id_to_word[i]
                         with open(FLAGS.save_path + "/vocab.pbtxt", "wb") as f:
                             f.write(text_format.MessageToString(vocab))
+
+
+
 
 if __name__ == "__main__":
     tf.app.run()
