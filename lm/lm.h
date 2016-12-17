@@ -15,7 +15,7 @@ public:
 
 struct UntrainedException : public std::exception {
     const char* what() const noexcept {
-        return "The language model must first be trained before making any predictions.\n";
+        return "The language model must first be trained or loaded from file before making any predictions.\n";
     }
 };
 
