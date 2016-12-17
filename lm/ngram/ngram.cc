@@ -74,12 +74,21 @@ void NGram::ProcessFile(std::string file_name) {
     trained = true;
 }
 
-void NGram::Save(std::string file_name) {
-    prob_trie->Save(file_name);
+void NGram::Save(std::string directory_path) {
+    if (directory_path.back() != '/') {
+        directory_path += '/';
+    }
+    vocab->Save(directory_path + "vocab.pbtxt");
+    prob_trie->Save(directory_path + "prob_trie.pbtxt");
 }
 
-void NGram::Load(std::string file_name) {
-    prob_trie->Load(file_name);
+void NGram::Load(std::string directory_path) {
+    if (directory_path.back() != '/') {
+        directory_path += '/';
+    }
+    vocab->Load(directory_path + "vocab.pbtxt");
+    prob_trie->Load(directory_path + "prob_trie.pbtxt");
+    trained = true;
 }
 
 std::list<size_t> NGram::WordsToIndices(std::list<std::string> seq) {

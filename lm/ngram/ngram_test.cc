@@ -76,3 +76,20 @@ TEST(NGramTest, PredictTopKTrigram) {
 
     EXPECT_EQ(predictions, expected_predictions);
 }
+
+TEST(NGramTest, SaveAndLoadEqual) {
+    NGram *under_test = new NGram(3, 1);
+    ::SetUp(under_test);
+    std::string file_name = "/tmp";
+    under_test->Save(file_name);
+
+    NGram *under_test_loaded = new NGram(3, 1);
+    under_test_loaded->Load(file_name);
+
+    ASSERT_DOUBLE_EQ(under_test_loaded->Prob(std::list<std::string>({"<s>", "the", "cat"})), 2/3.0);
+    ASSERT_DOUBLE_EQ(under_test_loaded->Prob(std::list<std::string>({"the", "cat", "sat"})), 1/3.0);
+    ASSERT_DOUBLE_EQ(under_test_loaded->Prob(std::list<std::string>({"on", "the", "mat"})), 0.5);
+    ASSERT_DOUBLE_EQ(under_test_loaded->Prob(std::list<std::string>({"the", "mouse", "sat"})), 0.0);
+    ASSERT_DOUBLE_EQ(under_test_loaded->Prob(std::list<std::string>({"the", "mouse", "."})), 1.0);
+    ASSERT_DOUBLE_EQ(under_test_loaded->Prob(std::list<std::string>({"blah", "blah", "blah"})), 0.0);
+}
