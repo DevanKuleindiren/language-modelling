@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package lm.ngram;
+package tensorflow.Source.lm.ngram;
 
 message ProbTrieProto {
     int32 n = 1;

@@ -31,7 +31,7 @@ cc_library(
         "prob_trie.h",
         "prob_trie.cc",
     ],
-    deps = [":prob_trie_pb"],
+    deps = [":prob_trie_pb_cc"],
 )
 
 cc_test(
@@ -45,15 +45,16 @@ cc_test(
     ],
 )
 
-# TODO: Change this to cc_proto_library.
-cc_library(
+load(
+    "//tensorflow/core:platform/default/build_config.bzl",
+    "tf_proto_library",
+)
+
+tf_proto_library(
     name = "prob_trie_pb",
-    srcs = [
-        "prob_trie.pb.h",
-        "prob_trie.pb.cc",
-    ],
+    srcs = ["prob_trie.proto"],
+    cc_api_version = 2,
     visibility = ["//visibility:public"],
-    deps = [],
 )
 
 cc_library(
