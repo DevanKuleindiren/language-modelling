@@ -3,8 +3,6 @@
 
 bool ProbTrie::Node::operator==(const ProbTrie::Node &to_compare) {
 
-    std::cerr << "EQUALS OP CALLED FOR NODE." << std::endl;
-
     if (pseudo_prob != to_compare.pseudo_prob ||
         backoff != to_compare.backoff ||
         children.size() != to_compare.children.size()) {
@@ -74,7 +72,6 @@ double ProbTrie::GetProb(std::list<size_t> seq) {
 }
 
 bool ProbTrie::operator==(const ProbTrie &to_compare) {
-    std::cout << "EQUALS OP CALLED." << std::endl;
     return (n == to_compare.n && *root == *to_compare.root);
 }
 

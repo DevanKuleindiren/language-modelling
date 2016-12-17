@@ -78,7 +78,6 @@ TEST_F(ProbTrieTest, ThreeWords) {
     ASSERT_DOUBLE_EQ(under_test->GetProb(std::list<size_t>({6, 1, 2})), 0.77);
 }
 
-// FAILS
 TEST_F(ProbTrieTest, EqualsOpsTrue) {
     under_test->Insert(std::list<size_t>({2}), 0.2, 0.6);
     under_test->Insert(std::list<size_t>({1}), 0.7, 0.1);
@@ -138,7 +137,6 @@ TEST_F(ProbTrieTest, EqualsOpFalseN) {
     ASSERT_FALSE(*under_test == *under_test_false_clone);
 }
 
-// FAILS
 TEST_F(ProbTrieTest, SaveAndLoadEqual) {
     under_test->Insert(std::list<size_t>({2}), 0.2, 0.6);
     under_test->Insert(std::list<size_t>({1}), 0.7, 0.1);
