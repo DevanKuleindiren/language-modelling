@@ -11,10 +11,20 @@ def _word_to_id(file_name, min_frequency):
     data = _get_data(file_name)
     word_to_id = {}
     word_to_id["<unk>"] = 0
+    word_to_id["<s>"] = 1
+    id_ = 2
 
-    counter = collections.Counter(data)
-    words = [w for w, c in counter.iteritems() if c >= min_frequency]
-    return dict(zip(words, range(len(words))))
+    word_counts = {}
+    for word in data:
+        if word not in word_counts:
+            word_counts[word] = 0
+        word_counts[word] += 1
+
+        if word_counts[word] == min_frequency and word not in word_to_id:
+            word_to_id[word] = id_
+            id_ += 1
+
+    return word_to_id
 
 def raw_data(file_name, min_frequency):
     word_to_id = _word_to_id(file_name, min_frequency)
