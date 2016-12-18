@@ -25,6 +25,7 @@ public:
     std::unordered_map<std::string, size_t>::const_iterator end();
     void Save(std::string file_name);
     void Load(std::string file_name);
+    int Size();
 };
 
 #endif // vocab.h

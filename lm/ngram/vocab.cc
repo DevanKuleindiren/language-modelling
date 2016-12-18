@@ -91,3 +91,7 @@ void Vocab::Load(std::string file_name) {
 
     ifs.close();
 }
+
+int Vocab::Size() {
+    return word_to_id.size();
+}
