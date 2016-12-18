@@ -128,6 +128,10 @@ class LSTM:
         logits = tf.add(tf.matmul(output, softmax_w), softmax_b, name="logits")
         self._logits = logits
 
+        # When running inference it is useful to normalise the outputs so that they represent probabilities using the
+        # softmax function.
+        self._predictions = tf.nn.softmax(logits, name="predictions")
+
         # The cross-entropy loss is calculated between the logits and the targets (which are flattened into a Tensor
         # of shape (config.batch_size * config.num_steps). The tf.ones() are just weights in the weighted cross-entropy
         # loss.
@@ -199,6 +203,10 @@ class LSTM:
     def epoch_size(self):
         return self._epoch_size
 
+    @property
+    def predictions(self):
+        return self._predictions
+
 
 def run_epoch(sess, model, input_data):
     start_time = time.time()
@@ -236,14 +244,14 @@ def run_epoch(sess, model, input_data):
     return np.exp(costs / iters)
 
 def predict(sess, inputs, id_to_word, seq_len):
-    fetches = {"logits": "Model/logits:0"}
+    fetches = {"predictions": "Model/predictions:0"}
     feed_dict = {"Model/inputs:0": inputs}
     vocab_size = len(id_to_word)
 
     vals = sess.run(fetches, feed_dict)
-    logits = vals["logits"]
+    predictions = vals["predictions"]
 
-    return sorted(heapq.nlargest(10, [(id_to_word[i], p) for (i, p) in zip(xrange(vocab_size), logits[seq_len])], key=lambda x: x[1]), key=lambda x: -x[1])
+    return sorted(heapq.nlargest(10, [(id_to_word[i], p) for (i, p) in zip(xrange(vocab_size), predictions[seq_len - 1])], key=lambda x: x[1]), key=lambda x: -x[1])
 
 def main(_):
     if not FLAGS.training_data_path:
@@ -318,11 +326,12 @@ def main(_):
                             f.write(text_format.MessageToString(vocab))
 
                         # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
-                        # is why it isn't included in 'Model/logits'.
+                        # is why it isn't included in 'Model/predictions'.
                         graph_def = graph_util.convert_variables_to_constants(
-                            sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["Model/logits"])
-                        with open(FLAGS.save_path + "/graph.pb", "wb") as f:
-                            f.write(graph_def.SerializeToString())
+                            sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["Model/predictions"])
+
+                        tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pb", as_text=False)
+                        tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pbtxt")
 
 if __name__ == "__main__":
     tf.app.run()
