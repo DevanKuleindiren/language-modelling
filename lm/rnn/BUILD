@@ -13,3 +13,17 @@ py_library(
     srcs = ["reader.py"],
     deps = [],
 )
+
+cc_library(
+    name = "lstm_inference",
+    srcs = [
+        "lstm.h",
+        "lstm.cc"
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//tensorflow/Source/lm:lm",
+        "//tensorflow/Source/lm/ngram:vocab",
+        "//tensorflow/core:tensorflow",
+    ]
+)

@@ -83,6 +83,7 @@ cc_library(
         "vocab.h",
         "vocab.cc",
     ],
+    visibility = ["//visibility:public"],
     deps = ["//tensorflow/Source/lm:vocab_pb_cc"],
 )
 
