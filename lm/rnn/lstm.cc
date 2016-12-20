@@ -43,7 +43,7 @@ void LSTM::Predict(std::list<std::string> seq, std::pair<std::string, double> &p
 
     double max_prob = 0;
     std::string max_prediction;
-    int last_word_position = std::max(seq.size(), NUM_STEPS) - 1;
+    int last_word_position = std::min(seq.size(), NUM_STEPS) - 1;
     for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
         if (predictions(last_word_position, it->second) > max_prob) {
             max_prob = predictions(last_word_position, it->second);
@@ -106,11 +106,11 @@ void LSTM::RunInference(std::list<size_t> seq_ids, std::vector<tensorflow::Tenso
     }
 
     std::vector<std::pair<tensorflow::string, tensorflow::Tensor>> inputs = {
-        {"Model/inputs", seq_tensor},
+        {"inference/lstm/inputs", seq_tensor},
     };
 
-    // Run the inference to the node named 'Model/predictions'.
-    session->Run(inputs, {"Model/predictions"}, {}, &outputs);
+    // Run the inference to the node named 'inference/lstm/predictions'.
+    session->Run(inputs, {"inference/lstm/predictions"}, {}, &outputs);
     if (!status.ok()) {
         std::cout << status.ToString() << std::endl;
     }

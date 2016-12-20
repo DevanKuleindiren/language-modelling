@@ -59,7 +59,7 @@ class LSTM:
         rnn_cell = tf.nn.rnn_cell.BasicLSTMCell(config.hidden_size, forget_bias=0.0, state_is_tuple=True)
 
         # This adds dropout to the LSTM cells by applying the probability of keeping a weight.
-        if config.keep_prob < 1:
+        if is_training and config.keep_prob < 1:
             rnn_cell = tf.nn.rnn_cell.DropoutWrapper(rnn_cell, output_keep_prob=config.keep_prob)
 
         # This adds layers to the RNN to give config.num_layers layers overall.
@@ -78,7 +78,7 @@ class LSTM:
             inputs = tf.nn.embedding_lookup(embedding, self._input_data)
 
         # Apply dropout.
-        if config.keep_prob < 1:
+        if is_training and config.keep_prob < 1:
             inputs = tf.nn.dropout(inputs, keep_prob=config.keep_prob)
 
 
@@ -244,8 +244,8 @@ def run_epoch(sess, model, input_data):
     return np.exp(costs / iters)
 
 def predict(sess, inputs, id_to_word, seq_len):
-    fetches = {"predictions": "Model/predictions:0"}
-    feed_dict = {"Model/inputs:0": inputs}
+    fetches = {"predictions": "inference/lstm/predictions:0"}
+    feed_dict = {"inference/lstm/inputs:0": inputs}
     vocab_size = len(id_to_word)
 
     vals = sess.run(fetches, feed_dict)
@@ -300,8 +300,12 @@ def main(_):
 
             initialiser = tf.random_uniform_initializer(-config.init_scale, config.init_scale)
             vocab_size = len(word_to_id)
-            with tf.variable_scope("Model", initializer=initialiser):
-                training_model = LSTM(config, vocab_size, epoch_size_scalar, is_training=True)
+            with tf.name_scope("training"):
+                with tf.variable_scope("lstm", reuse=None, initializer=initialiser):
+                    training_model = LSTM(config, vocab_size, epoch_size_scalar, is_training=True)
+            with tf.name_scope("inference"):
+                with tf.variable_scope("lstm", reuse=True, initializer=initialiser):
+                    inference_model = LSTM(config, vocab_size, epoch_size_scalar, is_training=False)
 
             with tf.Session() as sess:
                 saver = tf.train.Saver()
@@ -326,9 +330,9 @@ def main(_):
                             f.write(text_format.MessageToString(vocab))
 
                         # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
-                        # is why it isn't included in 'Model/predictions'.
+                        # is why it isn't included in 'inference/lstm/predictions'.
                         graph_def = graph_util.convert_variables_to_constants(
-                            sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["Model/predictions"])
+                            sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["inference/lstm/predictions"])
 
                         tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pb", as_text=False)
                         tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pbtxt")
