@@ -28,18 +28,19 @@ class Config:
     - max_grad_norm - the maximum permissible norm of the gradient
     - max_epoch - the number of epochs trained with the initial learning rate
     - max_max_epoch - the total number of epochs for training
+    - min_frequency - the minimum number of times a word needs to be seen to be considered part of the vocabulary
     - num_layers - the number of LSTM layers
     - num_steps - the number of unrolled steps of LSTM
     """
-    batch_size = 10
-    hidden_size = 10
+    batch_size = 20
+    hidden_size = 200
     init_scale = 0.1
-    keep_prob = 0.5
+    keep_prob = 1.0
     lr = 1.0
-    lr_decay = 0.8
-    max_epoch = 1
+    lr_decay = 0.5
+    max_epoch = 4
     max_grad_norm = 5
-    max_max_epoch = 1
+    max_max_epoch = 13
     min_frequency = 1
     num_layers = 2
     num_steps = 10
