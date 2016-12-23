@@ -95,7 +95,7 @@ void LSTM::RunInference(std::list<size_t> seq_ids, std::vector<tensorflow::Tenso
     tensorflow::Tensor seq_tensor(tensorflow::DT_INT32, tensorflow::TensorShape({BATCH_SIZE, NUM_STEPS}));
     auto seq_tensor_raw = seq_tensor.tensor<int, 2>();
     for (int i = 0; i < BATCH_SIZE; ++i) {
-        for (int j = 0; j < BATCH_SIZE; ++j) {
+        for (int j = 0; j < NUM_STEPS; ++j) {
             seq_tensor_raw(i, j) = 0;
         }
     }
