@@ -3,6 +3,7 @@ cc_binary(
     srcs = ["main.cc"],
     deps = [
         "//tensorflow/Source/lm/ngram/smoothing:add_one",
+        "//tensorflow/Source/lm/rnn:lstm_inference",
         "//tensorflow/Source/benchmark:benchmark",
     ],
 )
