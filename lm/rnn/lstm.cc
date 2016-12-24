@@ -19,6 +19,13 @@ LSTM::LSTM(std::string directory_path, int min_frequency) {
         std::cout << status.ToString() << std::endl;
     }
 
+    for (int i = 0; i < graph_def.node_size(); i++) {
+        if (graph_def.node(i).name().compare("inference/lstm/inputs") == 0) {
+            batch_size = graph_def.node(i).attr().at("shape").shape().dim(0).size();
+            num_steps = graph_def.node(i).attr().at("shape").shape().dim(1).size();
+        }
+    }
+
     status = session->Create(graph_def);
     if (!status.ok()) {
         std::cout << status.ToString() << std::endl;
@@ -43,7 +50,7 @@ void LSTM::Predict(std::list<std::string> seq, std::pair<std::string, double> &p
 
     double max_prob = 0;
     std::string max_prediction;
-    int last_word_position = std::min(seq.size(), NUM_STEPS) - 1;
+    int last_word_position = std::min(seq.size(), num_steps) - 1;
     for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
         if (predictions(last_word_position, it->second) > max_prob) {
             max_prob = predictions(last_word_position, it->second);
@@ -71,7 +78,7 @@ double LSTM::Prob(std::list<std::string> seq) {
     RunInference(seq_ids, outputs);
     auto predictions = outputs[0].tensor<float, 2>();
 
-    return predictions(std::max(seq.size(), NUM_STEPS) - 2, seq_ids.back());
+    return predictions(std::max(seq.size(), num_steps) - 2, seq_ids.back());
 }
 
 std::list<size_t> LSTM::WordsToIndices(std::list<std::string> seq) {
@@ -83,19 +90,19 @@ std::list<size_t> LSTM::WordsToIndices(std::list<std::string> seq) {
 }
 
 void LSTM::RunInference(std::list<size_t> seq_ids, std::vector<tensorflow::Tensor> &outputs) {
-    // Ensure there are at most NUM_STEPS words in the sequence.
-    if (seq_ids.size() > NUM_STEPS) {
-        int diff = seq_ids.size() - NUM_STEPS;
+    // Ensure there are at most num_steps words in the sequence.
+    if (seq_ids.size() > num_steps) {
+        int diff = seq_ids.size() - num_steps;
         for (int i = 0; i < diff; ++i) {
             seq_ids.pop_front();
         }
     }
 
     // Create and populate the LSTM input tensor.
-    tensorflow::Tensor seq_tensor(tensorflow::DT_INT32, tensorflow::TensorShape({BATCH_SIZE, NUM_STEPS}));
+    tensorflow::Tensor seq_tensor(tensorflow::DT_INT32, tensorflow::TensorShape({static_cast<long long>(batch_size), static_cast<long long>(num_steps)}));
     auto seq_tensor_raw = seq_tensor.tensor<int, 2>();
-    for (int i = 0; i < BATCH_SIZE; ++i) {
-        for (int j = 0; j < NUM_STEPS; ++j) {
+    for (int i = 0; i < batch_size; ++i) {
+        for (int j = 0; j < num_steps; ++j) {
             seq_tensor_raw(i, j) = 0;
         }
     }

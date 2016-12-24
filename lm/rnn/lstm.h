@@ -10,9 +10,6 @@
 #include "tensorflow/Source/lm/lm.h"
 #include "tensorflow/Source/lm/ngram/vocab.h"
 
-// TODO: Encode this data into the LSTM protobufs rather than hard-coding it.
-#define BATCH_SIZE 10ul
-#define NUM_STEPS 10ul
 
 class LSTM : public LM {
 protected:
@@ -20,6 +17,8 @@ protected:
     bool trained = false;
     tensorflow::Session *session;
     tensorflow::Status status;
+    unsigned long batch_size;
+    unsigned long num_steps;
     std::list<size_t> WordsToIndices(std::list<std::string>);
     virtual void RunInference(std::list<size_t>, std::vector<tensorflow::Tensor> &);
 public:
