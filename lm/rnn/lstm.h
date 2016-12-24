@@ -14,7 +14,6 @@
 class LSTM : public LM {
 protected:
     Vocab *vocab;
-    bool trained = false;
     tensorflow::Session *session;
     tensorflow::Status status;
     unsigned long batch_size;

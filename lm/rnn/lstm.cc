@@ -30,8 +30,6 @@ LSTM::LSTM(std::string directory_path, int min_frequency) {
     if (!status.ok()) {
         std::cout << status.ToString() << std::endl;
     }
-
-    trained = true;
 }
 
 bool LSTM::ContainsWord(std::string word) {
@@ -39,9 +37,6 @@ bool LSTM::ContainsWord(std::string word) {
 }
 
 void LSTM::Predict(std::list<std::string> seq, std::pair<std::string, double> &prediction) {
-    if (!trained) {
-        throw UntrainedException();
-    }
     std::list<size_t> seq_ids = WordsToIndices(seq);
 
     std::vector<tensorflow::Tensor> outputs;
@@ -62,16 +57,10 @@ void LSTM::Predict(std::list<std::string> seq, std::pair<std::string, double> &p
 }
 
 void LSTM::PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int) {
-    if (!trained) {
-        throw UntrainedException();
-    }
     // TODO: Implement this.
 }
 
 double LSTM::Prob(std::list<std::string> seq) {
-    if (!trained) {
-        throw UntrainedException();
-    }
     std::list<size_t> seq_ids = WordsToIndices(seq);
 
     std::vector<tensorflow::Tensor> outputs;
