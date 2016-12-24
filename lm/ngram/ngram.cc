@@ -4,6 +4,10 @@ bool NGram::ContainsWord(std::string word) {
     return vocab->Get(word);
 }
 
+int NGram::ContextSize() {
+    return n;
+}
+
 void NGram::Predict(std::list<std::string> seq, std::pair<std::string, double> &prediction) {
     if (!trained) {
         throw UntrainedException();

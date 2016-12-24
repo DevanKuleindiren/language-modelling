@@ -23,6 +23,7 @@ protected:
 public:
     LSTM(std::string, int min_frequency);
     virtual bool ContainsWord(std::string);
+    virtual int ContextSize();
     virtual void Predict(std::list<std::string>, std::pair<std::string, double> &);
     virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int);
     virtual double Prob(std::list<std::string>);

@@ -28,6 +28,7 @@ public:
     NGram(int n, ProbTrie *prob_trie) : NGram(n, prob_trie, 1) {}
     NGram(int n, ProbTrie *prob_trie, int min_frequency) : n(n), prob_trie(prob_trie), vocab(new Vocab(min_frequency)) {}
     virtual bool ContainsWord(std::string);
+    virtual int ContextSize();
     virtual void Predict(std::list<std::string>, std::pair<std::string, double> &);
     virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int);
     virtual double Prob(std::list<std::string>);

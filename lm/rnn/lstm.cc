@@ -36,6 +36,10 @@ bool LSTM::ContainsWord(std::string word) {
     return vocab->Get(word);
 }
 
+int LSTM::ContextSize() {
+    return num_steps;
+}
+
 void LSTM::Predict(std::list<std::string> seq, std::pair<std::string, double> &prediction) {
     std::list<size_t> seq_ids = WordsToIndices(seq);
 
