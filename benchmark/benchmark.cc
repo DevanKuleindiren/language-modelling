@@ -13,10 +13,7 @@ double Benchmark::Perplexity(std::string file_name) {
             size_t pos = 0;
             std::string word;
             std::list<std::string> seq;
-
-            for (int i = 0; i < 5; i++) {
-                seq.push_back("<s>");
-            }
+            seq.push_back("<s>");
 
             while (!line.empty()) {
                 pos = line.find(" ");
@@ -65,10 +62,7 @@ double Benchmark::PerplexityExp(std::string file_name) {
             size_t pos = 0;
             std::string word;
             std::list<std::string> seq;
-
-            for (int i = 0; i < 5; i++) {
-                seq.push_back("<s>");
-            }
+            seq.push_back("<s>");
 
             while (!line.empty()) {
                 pos = line.find(" ");
