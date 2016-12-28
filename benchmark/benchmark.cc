@@ -12,10 +12,10 @@ double Benchmark::Perplexity(std::string file_name) {
         while (std::getline(f, line)) {
             size_t pos = 0;
             std::string word;
-            std::list<std::string> ngram;
+            std::list<std::string> seq;
 
             for (int i = 0; i < 5; i++) {
-                ngram.push_back("<s>");
+                seq.push_back("<s>");
             }
 
             while (!line.empty()) {
@@ -25,11 +25,11 @@ double Benchmark::Perplexity(std::string file_name) {
                 }
 
                 std::string word = line.substr(0, pos);
-                ngram.push_back(word);
+                seq.push_back(word);
                 num_words++;
 
                 if (language_model->ContainsWord(word)) {
-                    double fraction = 1 / language_model->Prob(ngram);
+                    double fraction = 1 / language_model->Prob(seq);
                     double new_product = product * fraction;
                     if (isinf(new_product)) {
                         products.push_back(product);
@@ -64,10 +64,10 @@ double Benchmark::PerplexityExp(std::string file_name) {
         while (std::getline(f, line)) {
             size_t pos = 0;
             std::string word;
-            std::list<std::string> ngram;
+            std::list<std::string> seq;
 
             for (int i = 0; i < 5; i++) {
-                ngram.push_back("<s>");
+                seq.push_back("<s>");
             }
 
             while (!line.empty()) {
@@ -77,11 +77,11 @@ double Benchmark::PerplexityExp(std::string file_name) {
                 }
 
                 std::string word = line.substr(0, pos);
-                ngram.push_back(word);
+                seq.push_back(word);
                 num_words++;
 
                 if (language_model->ContainsWord(word)) {
-                    double logp = log(language_model->Prob(ngram));
+                    double logp = log(language_model->Prob(seq));
                     double new_sum = sum + logp;
                     if (isinf(new_sum)) {
                         sums.push_back(sum);
