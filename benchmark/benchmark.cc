@@ -51,3 +51,55 @@ double Benchmark::Perplexity(std::string file_name) {
     }
     return 0;
 }
+
+double Benchmark::PerplexityExp(std::string file_name) {
+    std::ifstream f (file_name);
+
+    if (f.is_open()) {
+        std::string line;
+        double sum = 0;
+        double num_words = 0;
+        std::list<double> sums;
+
+        while (std::getline(f, line)) {
+            size_t pos = 0;
+            std::string word;
+            std::list<std::string> ngram;
+
+            for (int i = 0; i < 5; i++) {
+                ngram.push_back("<s>");
+            }
+
+            while (!line.empty()) {
+                pos = line.find(" ");
+                if (pos == std::string::npos) {
+                    pos = line.size();
+                }
+
+                std::string word = line.substr(0, pos);
+                ngram.push_back(word);
+                num_words++;
+
+                if (language_model->ContainsWord(word)) {
+                    double logp = log(language_model->Prob(ngram));
+                    double new_sum = sum + logp;
+                    if (isinf(new_sum)) {
+                        sums.push_back(sum);
+                        sum = logp;
+                    } else {
+                        sum = new_sum;
+                    }
+                }
+                line.erase(0, pos + 1);
+            }
+        }
+
+        sums.push_back(sum);
+        double perplexity = 1.0;
+        for (std::list<double>::iterator it = sums.begin(); it != sums.end(); ++it) {
+            perplexity *= exp((-1.0 / num_words) * *it);
+        }
+        return perplexity;
+    }
+    return 0;
+}

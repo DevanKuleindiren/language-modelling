@@ -8,4 +8,5 @@ class Benchmark {
 public:
     Benchmark(LM *language_model) : language_model(language_model) {}
     double Perplexity(std::string file_name);
+    double PerplexityExp(std::string file_name);
 };
