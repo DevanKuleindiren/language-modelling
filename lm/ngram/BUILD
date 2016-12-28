@@ -97,3 +97,17 @@ cc_test(
         "//tensorflow/core:test_main",
     ],
 )
+
+cc_binary(
+    name = "train",
+    srcs = ["train.cc"],
+    deps = [
+        ":ngram",
+        "//tensorflow/core:core_cpu",
+        "//tensorflow/core:lib",
+        "//tensorflow/core:framework_internal",
+        "//tensorflow/core:framework_headers_lib",
+        "//tensorflow/Source/lm/ngram/smoothing:add_one",
+        "//tensorflow/Source/lm/ngram/smoothing:kneser_ney",
+    ],
+)
