@@ -4,6 +4,7 @@ This is the source code for my part II project on language modelling.
 
 # Set Up
 In your desired directory:
+
 1. `git clone -b v0.11.0 https://github.com/tensorflow/tensorflow.git`
 2. `cd tensorflow`
 3. `./configure` and follow the instructions.
