@@ -323,24 +323,24 @@ def main(_):
                     train_perplexity = run_epoch(sess, training_model, input_data)
                     print "Epoch: %d, Train perplexity: %.3f" % (i + 1, train_perplexity)
 
-                    if FLAGS.save_path:
-                        print "Saving model to %s" % FLAGS.save_path
+                if FLAGS.save_path:
+                    print "Saving model to %s" % FLAGS.save_path
 
-                        vocab = vocab_pb2.VocabProto()
-                        for i in id_to_word:
-                            item = vocab.item.add()
-                            item.id = i
-                            item.word = id_to_word[i]
-                        with open(FLAGS.save_path + "/vocab.pbtxt", "wb") as f:
-                            f.write(text_format.MessageToString(vocab))
+                    vocab = vocab_pb2.VocabProto()
+                    for i in id_to_word:
+                        item = vocab.item.add()
+                        item.id = i
+                        item.word = id_to_word[i]
+                    with open(FLAGS.save_path + "/vocab.pbtxt", "wb") as f:
+                        f.write(text_format.MessageToString(vocab))
 
-                        # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
-                        # is why it isn't included in 'inference/lstm/predictions'.
-                        graph_def = graph_util.convert_variables_to_constants(
-                            sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["inference/lstm/predictions"])
+                    # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
+                    # is why it isn't included in 'inference/lstm/predictions'.
+                    graph_def = graph_util.convert_variables_to_constants(
+                        sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["inference/lstm/predictions"])
 
-                        tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pb", as_text=False)
-                        tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pbtxt")
+                    tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pb", as_text=False)
+                    tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pbtxt")
 
 if __name__ == "__main__":
     tf.app.run()
