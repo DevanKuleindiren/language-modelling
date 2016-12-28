@@ -16,7 +16,6 @@ protected:
     Vocab *vocab;
     tensorflow::Session *session;
     tensorflow::Status status;
-    unsigned long batch_size;
     unsigned long num_steps;
     std::list<size_t> WordsToIndices(std::list<std::string>);
     virtual void RunInference(std::list<size_t>, std::vector<tensorflow::Tensor> &);

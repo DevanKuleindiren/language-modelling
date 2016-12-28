@@ -21,7 +21,6 @@ LSTM::LSTM(std::string directory_path, int min_frequency) {
 
     for (int i = 0; i < graph_def.node_size(); i++) {
         if (graph_def.node(i).name().compare("inference/lstm/inputs") == 0) {
-            batch_size = graph_def.node(i).attr().at("shape").shape().dim(0).size();
             num_steps = graph_def.node(i).attr().at("shape").shape().dim(1).size();
         }
     }
@@ -92,12 +91,10 @@ void LSTM::RunInference(std::list<size_t> seq_ids, std::vector<tensorflow::Tenso
     }
 
     // Create and populate the LSTM input tensor.
-    tensorflow::Tensor seq_tensor(tensorflow::DT_INT32, tensorflow::TensorShape({static_cast<long long>(batch_size), static_cast<long long>(num_steps)}));
+    tensorflow::Tensor seq_tensor(tensorflow::DT_INT32, tensorflow::TensorShape({1, static_cast<long long>(num_steps)}));
     auto seq_tensor_raw = seq_tensor.tensor<int, 2>();
-    for (int i = 0; i < batch_size; ++i) {
-        for (int j = 0; j < num_steps; ++j) {
-            seq_tensor_raw(i, j) = 0;
-        }
+    for (int step = 0; step < num_steps; ++step) {
+        seq_tensor_raw(0, step) = 0;
     }
     int i = 0;
     for (std::list<size_t>::iterator it = seq_ids.begin(); it != seq_ids.end(); ++it) {
