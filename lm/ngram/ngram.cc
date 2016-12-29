@@ -62,6 +62,15 @@ double NGram::Prob(std::list<std::string> seq) {
     if (!trained) {
         throw UntrainedException();
     }
+
+    // Trim off and words in the sequence beyond the value of n.
+    if (seq.size() > n) {
+        std::list<std::string> tmp;
+        for (int i = 0; i < n; i++) {
+            tmp.push_front(seq.back());
+            seq.pop_back();
+        }
+    }
     return prob_trie->GetProb(WordsToIndices(seq));
 }
 

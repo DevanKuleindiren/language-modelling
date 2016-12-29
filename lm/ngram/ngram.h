@@ -16,7 +16,7 @@
 
 class NGram : public LM {
 protected:
-    int n;
+    const int n;
     ProbTrie *prob_trie;
     Vocab *vocab;
     bool trained = false;
