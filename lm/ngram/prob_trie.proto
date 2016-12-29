@@ -3,8 +3,7 @@ syntax = "proto3";
 package tensorflow.Source.lm.ngram;
 
 message ProbTrieProto {
-    int32 n = 1;
-    Node root = 2;
+    Node root = 1;
 }
 
 message Node {

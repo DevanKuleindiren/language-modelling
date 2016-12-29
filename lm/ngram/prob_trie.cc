@@ -35,17 +35,6 @@ void ProbTrie::Insert(std::list<size_t> seq, double pseudo_prob, double backoff)
 double ProbTrie::GetProb(std::list<size_t> seq) {
     int seq_size = seq.size();
     if (seq_size > 0) {
-
-        // Ensure sequence contains at most N elements.
-        if (seq_size > n) {
-            std::list<size_t> tmp;
-            for (int i = 0; i < n; i++) {
-                tmp.push_front(seq.back());
-                seq.pop_back();
-            }
-            seq = tmp;
-        }
-
         ProbTrie::Node *node = GetNode(seq);
         double pseudo_prob = 0;
         double backoff = 1;
@@ -72,12 +61,11 @@ double ProbTrie::GetProb(std::list<size_t> seq) {
 }
 
 bool ProbTrie::operator==(const ProbTrie &to_compare) {
-    return (n == to_compare.n && *root == *to_compare.root);
+    return *root == *to_compare.root;
 }
 
 void ProbTrie::Save(std::string file_name) {
     tensorflow::Source::lm::ngram::ProbTrieProto prob_trie_proto;
-    prob_trie_proto.set_n(n);
     PopulateProto(prob_trie_proto.mutable_root(), root);
 
     std::ofstream ofs (file_name, std::ios::out | std::ios::trunc);
@@ -101,7 +89,6 @@ void ProbTrie::Load(std::string file_name) {
         std::cout << "Read prob_trie_proto." << std::endl;
     }
 
-    n = prob_trie_proto.n();
     PopulateProbTrie(root, &prob_trie_proto.root());
     ifs.close();
 }

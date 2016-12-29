@@ -26,13 +26,12 @@ protected:
         Node(double pseudo_prob, double backoff) : pseudo_prob(pseudo_prob), backoff(backoff), children() {}
         bool operator==(const Node &);
     };
-    int n;
     Node *root;
     Node *GetNode(std::list<size_t>);
     void PopulateProto(tensorflow::Source::lm::ngram::Node *, const ProbTrie::Node *);
     void PopulateProbTrie(ProbTrie::Node *, const tensorflow::Source::lm::ngram::Node *);
 public:
-    ProbTrie(int n) : n(n), root(new Node(0, 0)) {}
+    ProbTrie() : root(new Node(0, 0)) {}
     void Insert(std::list<size_t>, double, double);
     virtual double GetProb(std::list<size_t>);
     virtual bool operator==(const ProbTrie &);
