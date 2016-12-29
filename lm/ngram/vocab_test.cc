@@ -55,12 +55,9 @@ TEST_F(VocabTest, Iterator) {
     EXPECT_EQ(actual_output, expected_output);
 }
 
-TEST_F(VocabTest, SaveAndLoadEqual) {
-    std::string file_name = "/tmp/vocab_test_file.pbtxt";
-    under_test->Save(file_name);
-
-    Vocab *under_test_loaded = new Vocab(2);
-    under_test_loaded->Load(file_name);
+TEST_F(VocabTest, ToAndFromEqual) {
+    tensorflow::Source::lm::VocabProto *vocab_proto = under_test->ToProto();
+    Vocab *under_test_loaded = Vocab::FromProto(vocab_proto);
 
     EXPECT_EQ(under_test_loaded->Get("<unk>"), 0);
     EXPECT_EQ(under_test_loaded->Get("blah"), 0);

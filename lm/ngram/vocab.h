@@ -23,8 +23,8 @@ public:
     void ProcessFile(std::string file_name);
     std::unordered_map<std::string, size_t>::const_iterator begin();
     std::unordered_map<std::string, size_t>::const_iterator end();
-    void Save(std::string file_name);
-    void Load(std::string file_name);
+    tensorflow::Source::lm::VocabProto *ToProto();
+    static Vocab *FromProto(tensorflow::Source::lm::VocabProto *vocab_proto);
     int Size();
 };
 
