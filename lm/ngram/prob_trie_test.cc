@@ -135,7 +135,7 @@ TEST_F(ProbTrieTest, EqualsOpFalse) {
     ASSERT_FALSE(*under_test == *under_test_false_clone);
 }
 
-TEST_F(ProbTrieTest, SaveAndLoadEqual) {
+TEST_F(ProbTrieTest, ToAndFromEqual) {
     under_test->Insert(std::list<size_t>({2}), 0.2, 0.6);
     under_test->Insert(std::list<size_t>({1}), 0.7, 0.1);
     under_test->Insert(std::list<size_t>({1, 2}), 0.3, 0.2);
@@ -148,11 +148,7 @@ TEST_F(ProbTrieTest, SaveAndLoadEqual) {
     ASSERT_DOUBLE_EQ(under_test->GetProb(std::list<size_t>({7, 1, 2})), 0.32);
     ASSERT_DOUBLE_EQ(under_test->GetProb(std::list<size_t>({6, 1, 2})), 0.77);
 
-    std::string test_file_name = "/tmp/prob_trie_test_file.pbtxt";
-
-    under_test->Save(test_file_name);
-    ProbTrie *under_test_loaded = new ProbTrie();
-    under_test_loaded->Load(test_file_name);
+    ProbTrie *under_test_loaded = ProbTrie::FromProto(under_test->ToProto());
 
     ASSERT_TRUE(*under_test == *under_test_loaded);
 }

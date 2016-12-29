@@ -28,13 +28,13 @@ protected:
     };
     Node *root;
     Node *GetNode(std::list<size_t>);
-    void PopulateProto(tensorflow::Source::lm::ngram::Node *, const ProbTrie::Node *);
-    void PopulateProbTrie(ProbTrie::Node *, const tensorflow::Source::lm::ngram::Node *);
+    static void PopulateProto(tensorflow::Source::lm::ngram::Node *, const ProbTrie::Node *);
+    static void PopulateProbTrie(ProbTrie::Node *, const tensorflow::Source::lm::ngram::Node *);
 public:
     ProbTrie() : root(new Node(0, 0)) {}
     void Insert(std::list<size_t>, double, double);
     virtual double GetProb(std::list<size_t>);
     virtual bool operator==(const ProbTrie &);
-    virtual void Save(std::string file_name);
-    virtual void Load(std::string file_name);
+    tensorflow::Source::lm::ngram::ProbTrieProto *ToProto();
+    static ProbTrie *FromProto(tensorflow::Source::lm::ngram::ProbTrieProto *);
 };

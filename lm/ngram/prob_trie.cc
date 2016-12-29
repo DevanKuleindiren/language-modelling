@@ -64,33 +64,16 @@ bool ProbTrie::operator==(const ProbTrie &to_compare) {
     return *root == *to_compare.root;
 }
 
-void ProbTrie::Save(std::string file_name) {
-    tensorflow::Source::lm::ngram::ProbTrieProto prob_trie_proto;
-    PopulateProto(prob_trie_proto.mutable_root(), root);
-
-    std::ofstream ofs (file_name, std::ios::out | std::ios::trunc);
-    google::protobuf::io::OstreamOutputStream osos(&ofs);
-    if (!google::protobuf::TextFormat::Print(prob_trie_proto, &osos)) {
-        std::cerr << "Failed to write prob trie." << std::endl;
-    } else {
-        std::cout << "Saved prob_trie_proto." << std::endl;
-    }
-    // TODO: Deallocate heap-allocated proto instance.
+tensorflow::Source::lm::ngram::ProbTrieProto *ProbTrie::ToProto() {
+    tensorflow::Source::lm::ngram::ProbTrieProto *prob_trie_proto = new tensorflow::Source::lm::ngram::ProbTrieProto();
+    PopulateProto(prob_trie_proto->mutable_root(), root);
+    return prob_trie_proto;
 }
 
-void ProbTrie::Load(std::string file_name) {
-    std::ifstream ifs (file_name, std::ios::in);
-    tensorflow::Source::lm::ngram::ProbTrieProto prob_trie_proto;
-
-    google::protobuf::io::IstreamInputStream isis(&ifs);
-    if (!google::protobuf::TextFormat::Parse(&isis, &prob_trie_proto)) {
-        std::cerr << "Failed to read prob trie." << std::endl;
-    } else {
-        std::cout << "Read prob_trie_proto." << std::endl;
-    }
-
-    PopulateProbTrie(root, &prob_trie_proto.root());
-    ifs.close();
+ProbTrie *ProbTrie::FromProto(tensorflow::Source::lm::ngram::ProbTrieProto *prob_trie_proto) {
+    ProbTrie *prob_trie = new ProbTrie();
+    PopulateProbTrie(prob_trie->root, &(prob_trie_proto->root()));
+    return prob_trie;
 }
 
 ProbTrie::Node *ProbTrie::GetNode(std::list<size_t> seq) {
