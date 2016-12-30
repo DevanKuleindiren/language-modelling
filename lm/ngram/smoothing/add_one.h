@@ -1,3 +1,6 @@
+#ifndef add_one_h
+#define add_one_h
+
 #include "tensorflow/Source/lm/ngram/ngram.h"
 
 
@@ -11,3 +14,5 @@ public:
     double Prob(std::list<std::string>);
     tensorflow::Source::lm::ngram::NGramProto *ToProto();
 };
+
+#endif // add_one.h

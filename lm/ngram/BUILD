@@ -124,7 +124,8 @@ cc_library(
         ":vocab",
         "//tensorflow/Source/lm/ngram/smoothing:add_one",
         "//tensorflow/Source/lm/ngram/smoothing:kneser_ney",
-    ]
+    ],
+    visibility = ["//visibility:public"],
 )
 
 cc_test(

@@ -1,3 +1,6 @@
+#ifndef kneser_ney_h
+#define kneser_ney_h
+
 #include "tensorflow/Source/lm/ngram/ngram.h"
 #include <algorithm>
 
@@ -12,3 +15,5 @@ public:
     virtual bool operator==(const NGram &);
     tensorflow::Source::lm::ngram::NGramProto *ToProto();
 };
+
+#endif // kneser_ney.h
