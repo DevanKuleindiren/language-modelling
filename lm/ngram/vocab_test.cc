@@ -21,6 +21,13 @@ protected:
     Vocab *under_test;
 };
 
+void SetUpTestFileWithString(std::string test_file_name, std::string content) {
+    std::ofstream test_file;
+    test_file.open (test_file_name);
+    test_file << content;
+    test_file.close();
+}
+
 TEST_F(VocabTest, IdsCorrect) {
     EXPECT_EQ(under_test->Get("<unk>"), 0);
     EXPECT_EQ(under_test->Get("blah"), 0);
@@ -55,20 +62,49 @@ TEST_F(VocabTest, Iterator) {
     EXPECT_EQ(actual_output, expected_output);
 }
 
-TEST_F(VocabTest, ToAndFromEqual) {
-    tensorflow::Source::lm::VocabProto *vocab_proto = under_test->ToProto();
-    Vocab *under_test_loaded = Vocab::FromProto(vocab_proto);
+TEST(VocabTestOps, EqualsOpTrue) {
+    Vocab *vocab_a = new Vocab(2);
+    Vocab *vocab_b = new Vocab(2);
 
-    EXPECT_EQ(under_test_loaded->Get("<unk>"), 0);
-    EXPECT_EQ(under_test_loaded->Get("blah"), 0);
-    EXPECT_EQ(under_test_loaded->Get("<s>"), 1);
-    EXPECT_EQ(under_test_loaded->Get("the"), 2);
-    EXPECT_EQ(under_test_loaded->Get("cat"), 3);
-    EXPECT_EQ(under_test_loaded->Get("sat"), 5);
-    EXPECT_EQ(under_test_loaded->Get("on"), 6);
-    EXPECT_EQ(under_test_loaded->Get("mat"), 0);
-    EXPECT_EQ(under_test_loaded->Get("."), 4);
-    EXPECT_EQ(under_test_loaded->Get("ate"), 0);
-    EXPECT_EQ(under_test_loaded->Get("mouse"), 0);
-    EXPECT_EQ(under_test_loaded->Get("dog"), 0);
+    std::string test_file_name = "/tmp/vocab_test_file";
+    ::SetUpTestFileWithString(test_file_name, "the cat sat on the mat .\nthe cat ate the mouse .\n");
+
+    vocab_a->ProcessFile(test_file_name);
+    vocab_b->ProcessFile(test_file_name);
+
+    ASSERT_TRUE(*vocab_a == *vocab_b);
+}
+
+TEST(VocabTestOps, EqualsOpFalseMinFreq) {
+    Vocab *vocab_a = new Vocab(1);
+    Vocab *vocab_b = new Vocab(2);
+
+    std::string test_file_name = "/tmp/vocab_test_file";
+    ::SetUpTestFileWithString(test_file_name, "the cat sat on the mat .\nthe cat ate the mouse .\n");
+
+    vocab_a->ProcessFile(test_file_name);
+    vocab_b->ProcessFile(test_file_name);
+
+    ASSERT_FALSE(*vocab_a == *vocab_b);
+}
+
+TEST(VocabTestOps, EqualsOpFalseWords) {
+    Vocab *vocab_a = new Vocab(1);
+    Vocab *vocab_b = new Vocab(2);
+
+    std::string test_file_name_a = "/tmp/vocab_test_file_a";
+    ::SetUpTestFileWithString(test_file_name_a, "the cat sat on the mat .\nthe cat ate the mouse .\n");
+    std::string test_file_name_b = "/tmp/vocab_test_file_b";
+    ::SetUpTestFileWithString(test_file_name_b, "the cat ate the mouse .\nthe cat sat on the mat .\n");
+
+    vocab_a->ProcessFile(test_file_name_a);
+    vocab_b->ProcessFile(test_file_name_b);
+
+    ASSERT_FALSE(*vocab_a == *vocab_b);
+}
+
+TEST_F(VocabTest, SaveAndLoadEqual) {
+    std::string file_name = "/tmp/vocab_test_file.pbtxt";
+    under_test->Save(file_name);
+    ASSERT_TRUE(*under_test == *Vocab::Load(file_name));
 }

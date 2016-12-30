@@ -60,6 +60,16 @@ double ProbTrie::GetProb(std::list<size_t> seq) {
     return 0;
 }
 
+std::pair<double, double> ProbTrie::GetValues(std::list<size_t> seq) {
+    ProbTrie::Node *node = GetNode(seq);
+
+    if (node == NULL) {
+        return std::make_pair(0, 0);
+    } else {
+        return std::make_pair(node->pseudo_prob, node->backoff);
+    }
+}
+
 bool ProbTrie::operator==(const ProbTrie &to_compare) {
     return *root == *to_compare.root;
 }
@@ -70,7 +80,7 @@ tensorflow::Source::lm::ngram::ProbTrieProto *ProbTrie::ToProto() {
     return prob_trie_proto;
 }
 
-ProbTrie *ProbTrie::FromProto(tensorflow::Source::lm::ngram::ProbTrieProto *prob_trie_proto) {
+ProbTrie *ProbTrie::FromProto(const tensorflow::Source::lm::ngram::ProbTrieProto *prob_trie_proto) {
     ProbTrie *prob_trie = new ProbTrie();
     PopulateProbTrie(prob_trie->root, &(prob_trie_proto->root()));
     return prob_trie;

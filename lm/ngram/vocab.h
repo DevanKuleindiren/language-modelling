@@ -23,8 +23,9 @@ public:
     void ProcessFile(std::string file_name);
     std::unordered_map<std::string, size_t>::const_iterator begin();
     std::unordered_map<std::string, size_t>::const_iterator end();
-    tensorflow::Source::lm::VocabProto *ToProto();
-    static Vocab *FromProto(tensorflow::Source::lm::VocabProto *vocab_proto);
+    virtual bool operator==(const Vocab &);
+    void Save(std::string);
+    static Vocab *Load(std::string);
     int Size();
 };
 

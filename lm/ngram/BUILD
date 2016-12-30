@@ -1,14 +1,18 @@
 package(default_visibility = ["//visibility:public"])
 
+load(
+    "//tensorflow/core:platform/default/build_config.bzl",
+    "tf_proto_library",
+)
+
 cc_library(
     name = "ngram",
-    srcs = [
-        "ngram.h",
-        "ngram.cc",
-    ],
+    srcs = ["ngram.cc"],
+    hdrs = ["ngram.h"],
     visibility = ["//visibility:public"],
     deps = [
         ":count_trie",
+        ":ngram_pb_cc",
         ":prob_trie",
         "//tensorflow/Source/lm:lm",
     ],
@@ -25,13 +29,23 @@ cc_test(
     ],
 )
 
+tf_proto_library(
+    name = "ngram_pb",
+    srcs = [
+        "ngram.proto",
+        "prob_trie.proto",
+    ],
+    cc_api_version = 2,
+    visibility = ["//visibility:public"],
+)
+
 cc_library(
     name = "prob_trie",
     srcs = [
         "prob_trie.h",
         "prob_trie.cc",
     ],
-    deps = [":prob_trie_pb_cc"],
+    deps = [":ngram_pb_cc"],
 )
 
 cc_test(
@@ -43,18 +57,6 @@ cc_test(
         "//tensorflow/core:test",
         "//tensorflow/core:test_main",
     ],
-)
-
-load(
-    "//tensorflow/core:platform/default/build_config.bzl",
-    "tf_proto_library",
-)
-
-tf_proto_library(
-    name = "prob_trie_pb",
-    srcs = ["prob_trie.proto"],
-    cc_api_version = 2,
-    visibility = ["//visibility:public"],
 )
 
 cc_library(

@@ -87,21 +87,35 @@ void NGram::ProcessFile(std::string file_name) {
     trained = true;
 }
 
+bool NGram::operator==(const NGram &to_compare) {
+    return (n == to_compare.n)
+        && (*prob_trie == *to_compare.prob_trie)
+        && (*vocab == *to_compare.vocab)
+        && (trained == to_compare.trained);
+}
+
+tensorflow::Source::lm::ngram::NGramProto *NGram::ToProto() {
+    tensorflow::Source::lm::ngram::NGramProto *ngram_proto = new tensorflow::Source::lm::ngram::NGramProto();
+    ngram_proto->set_n(n);
+    ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::NONE);
+    ngram_proto->set_allocated_prob_trie(prob_trie->ToProto());
+    return ngram_proto;
+}
+
 void NGram::Save(std::string directory_path) {
     if (directory_path.back() != '/') {
         directory_path += '/';
     }
     vocab->Save(directory_path + "vocab.pbtxt");
-    prob_trie->Save(directory_path + "prob_trie.pbtxt");
-}
 
-void NGram::Load(std::string directory_path) {
-    if (directory_path.back() != '/') {
-        directory_path += '/';
+    tensorflow::Source::lm::ngram::NGramProto *ngram_proto = ToProto();
+    std::ofstream ofs (directory_path + "ngram.pbtxt", std::ios::out | std::ios::trunc);
+    google::protobuf::io::OstreamOutputStream osos(&ofs);
+    if (!google::protobuf::TextFormat::Print(*ngram_proto, &osos)) {
+        std::cerr << "Failed to write ngram proto." << std::endl;
+    } else {
+        std::cout << "Saved ngram proto." << std::endl;
     }
-    vocab->Load(directory_path + "vocab.pbtxt");
-    prob_trie->Load(directory_path + "prob_trie.pbtxt");
-    trained = true;
 }
 
 std::list<size_t> NGram::WordsToIndices(std::list<std::string> seq) {
@@ -120,7 +134,6 @@ void NGram::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, int de
             seq.pop_back();
         }
     } else if (depth == n) {
-
         double count = countTrie->Count(seq);
         size_t last_word_index = seq.back();
         seq.pop_back();

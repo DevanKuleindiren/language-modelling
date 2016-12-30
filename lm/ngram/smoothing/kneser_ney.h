@@ -8,4 +8,6 @@ protected:
 public:
     KneserNey(int n, double discount) : KneserNey(n, discount, 1) {}
     KneserNey(int n, double discount, int min_frequency) : NGram(n, min_frequency), discount(discount) {}
+    KneserNey(int n, double discount, ProbTrie *prob_trie, Vocab *vocab) : NGram(n, prob_trie, vocab), discount(discount) {}
+    tensorflow::Source::lm::ngram::NGramProto *ToProto();
 };

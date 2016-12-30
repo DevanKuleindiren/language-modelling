@@ -47,3 +47,10 @@ void KneserNey::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, in
         seq.pop_back();
     }
 }
+
+tensorflow::Source::lm::ngram::NGramProto *KneserNey::ToProto() {
+    tensorflow::Source::lm::ngram::NGramProto *ngram_proto = NGram::ToProto();
+    ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::KNESER_NEY);
+    ngram_proto->set_discount(discount);
+    return ngram_proto;
+}

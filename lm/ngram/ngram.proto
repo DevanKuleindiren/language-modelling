@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package tensorflow.Source.lm.ngram;
+
+import "tensorflow/Source/lm/ngram/prob_trie.proto";
+
+message NGramProto {
+    int32 n = 1;
+    Smoothing smoothing = 2;
+    ProbTrieProto prob_trie = 3;
+    double discount = 4;
+}
+
+enum Smoothing {
+    NONE = 0;
+    ADD_ONE = 1;
+    KATZ = 2;
+    ABSOLUTE_DISCOUNTING = 3;
+    KNESER_NEY = 4;
+    MODIFIED_KNESER_NEY = 5;
+}
