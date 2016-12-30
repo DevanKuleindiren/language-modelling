@@ -1,12 +1,11 @@
 #include "lstm.h"
 
-LSTM::LSTM(std::string directory_path, int min_frequency) {
+LSTM::LSTM(std::string directory_path) {
     if (directory_path.back() != '/') {
         directory_path += '/';
     }
 
-    vocab = new Vocab(min_frequency);
-    vocab->Load(directory_path + "/vocab.pbtxt");
+    vocab = Vocab::Load(directory_path + "/vocab.pbtxt");
 
     status = NewSession(tensorflow::SessionOptions(), &session);
     if (!status.ok()) {

@@ -16,7 +16,6 @@ tf.flags.DEFINE_string("save_path", None, "The path to save the model.")
 FLAGS = tf.flags.FLAGS
 
 class Config:
-
     """
     The hyperparameters used in the model:
     - batch_size - the batch size
@@ -327,6 +326,7 @@ def main(_):
                     print "Saving model to %s" % FLAGS.save_path
 
                     vocab = vocab_pb2.VocabProto()
+                    vocab.min_frequency = config.min_frequency
                     for i in id_to_word:
                         item = vocab.item.add()
                         item.id = i

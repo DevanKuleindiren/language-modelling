@@ -20,7 +20,7 @@ protected:
     std::list<size_t> WordsToIndices(std::list<std::string>);
     virtual void RunInference(std::list<size_t>, std::vector<tensorflow::Tensor> &);
 public:
-    LSTM(std::string, int min_frequency);
+    LSTM(std::string);
     virtual bool ContainsWord(std::string);
     virtual int ContextSize();
     virtual void Predict(std::list<std::string>, std::pair<std::string, double> &);
