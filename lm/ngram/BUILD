@@ -113,3 +113,26 @@ cc_binary(
         "//tensorflow/Source/lm/ngram/smoothing:kneser_ney",
     ],
 )
+
+cc_library(
+    name = "load",
+    srcs = ["load.cc"],
+    hdrs = ["load.h"],
+    deps = [
+        ":ngram",
+        ":prob_trie",
+        ":vocab",
+        "//tensorflow/Source/lm/ngram/smoothing:add_one",
+        "//tensorflow/Source/lm/ngram/smoothing:kneser_ney",
+    ]
+)
+
+cc_test(
+    name = "load_test",
+    srcs = ["load_test.cc"],
+    deps = [
+        ":load",
+        "//tensorflow/core:test",
+        "//tensorflow/core:test_main",
+    ]
+)

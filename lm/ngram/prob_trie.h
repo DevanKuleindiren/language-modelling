@@ -11,9 +11,6 @@
 #include <utility>
 #include "tensorflow/Source/lm/ngram/prob_trie.pb.h"
 
-#endif /* prob_trie_h */
-
-
 class ProbTrie {
 protected:
     struct Node {
@@ -36,3 +33,5 @@ public:
     virtual tensorflow::Source::lm::ngram::ProbTrieProto *ToProto();
     static ProbTrie *FromProto(const tensorflow::Source::lm::ngram::ProbTrieProto *);
 };
+
+#endif // prob_trie.h
