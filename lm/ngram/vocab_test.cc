@@ -9,7 +9,7 @@ protected:
 
         std::ofstream test_file;
         std::string test_file_name = "/tmp/vocab_test_file";
-        test_file.open (test_file_name);
+        test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
         test_file << "the cat sat on the mat .\n";
         test_file << "the cat ate the mouse .\n";
         test_file << "the dog sat on the cat .\n";
@@ -23,7 +23,7 @@ protected:
 
 void SetUpTestFileWithString(std::string test_file_name, std::string content) {
     std::ofstream test_file;
-    test_file.open (test_file_name);
+    test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
     test_file << content;
     test_file.close();
 }

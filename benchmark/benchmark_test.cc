@@ -20,7 +20,7 @@ public:
 TEST(BenchmarkTest, Perplexity) {
     std::ofstream test_file;
     std::string test_file_name = "/tmp/benchmark_test_file";
-    test_file.open (test_file_name);
+    test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
     test_file << "the cat sat on the mat .\n";
     test_file << "the cat ate the mouse .\n";
     test_file << "the dog sat on the cat .\n";
@@ -35,7 +35,7 @@ TEST(BenchmarkTest, Perplexity) {
 TEST(BenchmarkTest, PerplexityExp) {
     std::ofstream test_file;
     std::string test_file_name = "/tmp/benchmark_test_file";
-    test_file.open (test_file_name);
+    test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
     test_file << "the cat sat on the mat .\n";
     test_file << "the cat ate the mouse .\n";
     test_file << "the dog sat on the cat .\n";
