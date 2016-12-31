@@ -70,7 +70,9 @@ double NGram::Prob(std::list<std::string> seq) {
             tmp.push_front(seq.back());
             seq.pop_back();
         }
+        seq = tmp;
     }
+    
     return prob_trie->GetProb(WordsToIndices(seq));
 }
 
