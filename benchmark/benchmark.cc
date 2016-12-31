@@ -21,18 +21,20 @@ double Benchmark::Perplexity(std::string file_name) {
                     pos = line.size();
                 }
 
-                std::string word = line.substr(0, pos);
-                seq.push_back(word);
-                num_words++;
+                if (pos > 0) {
+                    std::string word = line.substr(0, pos);
+                    seq.push_back(word);
+                    num_words++;
 
-                if (language_model->ContainsWord(word)) {
-                    double fraction = 1 / language_model->Prob(seq);
-                    double new_product = product * fraction;
-                    if (isinf(new_product)) {
-                        products.push_back(product);
-                        product = fraction;
-                    } else {
-                        product = new_product;
+                    if (language_model->ContainsWord(word)) {
+                        double fraction = 1 / language_model->Prob(seq);
+                        double new_product = product * fraction;
+                        if (isinf(new_product)) {
+                            products.push_back(product);
+                            product = fraction;
+                        } else {
+                            product = new_product;
+                        }
                     }
                 }
                 line.erase(0, pos + 1);
@@ -70,18 +72,20 @@ double Benchmark::PerplexityExp(std::string file_name) {
                     pos = line.size();
                 }
 
-                std::string word = line.substr(0, pos);
-                seq.push_back(word);
-                num_words++;
+                if (pos > 0) {
+                    std::string word = line.substr(0, pos);
+                    seq.push_back(word);
+                    num_words++;
 
-                if (language_model->ContainsWord(word)) {
-                    double logp = log(language_model->Prob(seq));
-                    double new_sum = sum + logp;
-                    if (isinf(new_sum)) {
-                        sums.push_back(sum);
-                        sum = logp;
-                    } else {
-                        sum = new_sum;
+                    if (language_model->ContainsWord(word)) {
+                        double logp = log(language_model->Prob(seq));
+                        double new_sum = sum + logp;
+                        if (isinf(new_sum)) {
+                            sums.push_back(sum);
+                            sum = logp;
+                        } else {
+                            sum = new_sum;
+                        }
                     }
                 }
                 line.erase(0, pos + 1);
