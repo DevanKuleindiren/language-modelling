@@ -1,15 +1,15 @@
-#include "kneser_ney.h"
+#include "absolute_discounting.h"
 #include "tensorflow/core/platform/test.h"
 #include <fstream>
 
 
-class KneserNeyTest : public ::testing::Test {
+class AbsoluteDiscountingTest : public ::testing::Test {
 protected:
     virtual void SetUp() {
-        under_test = new KneserNey(3, 0.5);
+        under_test = new AbsoluteDiscounting(3, 0.5);
 
         std::ofstream test_file;
-        std::string test_file_name = "/tmp/kneser_ney_test_file";
+        std::string test_file_name = "/tmp/absolute_discounting_test_file";
         test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
         test_file << "the cat sat on the mat .\n";
         test_file << "the cat ate the mouse .\n";
@@ -18,7 +18,7 @@ protected:
 
         under_test->ProcessFile(test_file_name);
     }
-    KneserNey *under_test;
+    AbsoluteDiscounting *under_test;
 };
 
 void SetChildProperties(tensorflow::Source::lm::ngram::Node::Child *child, int id, tensorflow::Source::lm::ngram::Node *node) {
@@ -33,20 +33,20 @@ tensorflow::Source::lm::ngram::Node *BuildNode(double pseudo_prob, double backof
     return node;
 }
 
-TEST_F(KneserNeyTest, Prob) {
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), 64/105.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 2/7.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 11/35.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 1/28.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 45/56.0);
+TEST_F(AbsoluteDiscountingTest, Prob) {
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), 59/90.0);
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 0.275);
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 0.3);
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 0.025);
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 0.7875);
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"blah", "blah", "blah"})), 0.0);
 }
 
-TEST(KneserNeyTestToProto, ToProto) {
-    KneserNey *under_test = new KneserNey(2, 0.5, 1);
+TEST(AbsoluteDiscountingTestToProto, ToProto) {
+    AbsoluteDiscounting *under_test = new AbsoluteDiscounting(2, 0.5, 1);
 
     std::ofstream test_file;
-    std::string test_file_name = "/tmp/kneser_ney_test_file";
+    std::string test_file_name = "/tmp/absolute_discounting_test_file";
     test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
     test_file << "the the cat\n";
     test_file.close();
@@ -68,7 +68,7 @@ TEST(KneserNeyTestToProto, ToProto) {
     */
 
     expected_ngram_proto->set_n(2);
-    expected_ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::KNESER_NEY);
+    expected_ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::ABSOLUTE_DISCOUNTING);
     expected_ngram_proto->set_discount(0.5);
 
     tensorflow::Source::lm::ngram::ProbTrieProto *prob_trie_proto = new tensorflow::Source::lm::ngram::ProbTrieProto();

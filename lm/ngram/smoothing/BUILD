@@ -1,4 +1,27 @@
 cc_library(
+    name = "absolute_discounting",
+    srcs = [
+        "absolute_discounting.h",
+        "absolute_discounting.cc",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//tensorflow/Source/lm/ngram:ngram",
+    ],
+)
+
+cc_test(
+    name = "absolute_discounting_test",
+    size = "small",
+    srcs = ["absolute_discounting_test.cc"],
+    deps = [
+        ":absolute_discounting",
+        "//tensorflow/core:test",
+        "//tensorflow/core:test_main",
+    ],
+)
+
+cc_library(
     name = "add_one",
     srcs = [
         "add_one.h",

@@ -9,7 +9,7 @@ protected:
         under_test = new AddOne(3);
 
         std::ofstream test_file;
-        std::string test_file_name = "/tmp/ngram_test_file";
+        std::string test_file_name = "/tmp/add_one_test_file";
         test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
         test_file << "the cat sat on the mat .\n";
         test_file << "the cat ate the mouse .\n";
@@ -46,7 +46,7 @@ TEST(AddOneTestToProto, ToProto) {
     AddOne *under_test = new AddOne(2, 1);
 
     std::ofstream test_file;
-    std::string test_file_name = "/tmp/ngram_test_file";
+    std::string test_file_name = "/tmp/add_one_test_file";
     test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
     test_file << "the the cat\n";
     test_file.close();
