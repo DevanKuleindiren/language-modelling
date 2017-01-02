@@ -25,8 +25,28 @@ TEST(LoadTest, NGram) {
     ASSERT_TRUE(*under_test == *under_test_loaded);
 }
 
+TEST(LoadTest, AbsoluteDiscounting) {
+    NGram *under_test = new AbsoluteDiscounting(3, 0.5, 1);
+    ::SetUp(under_test);
+    under_test->Save("/tmp");
+
+    NGram *under_test_loaded = Load("/tmp");
+
+    ASSERT_TRUE(*under_test == *under_test_loaded);
+}
+
 TEST(LoadTest, AddOne) {
     NGram *under_test = new AddOne(3, 1);
+    ::SetUp(under_test);
+    under_test->Save("/tmp");
+
+    NGram *under_test_loaded = Load("/tmp");
+
+    ASSERT_TRUE(*under_test == *under_test_loaded);
+}
+
+TEST(LoadTest, Katz) {
+    NGram *under_test = new Katz(3, 1);
     ::SetUp(under_test);
     under_test->Save("/tmp");
 

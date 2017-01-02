@@ -22,8 +22,16 @@ NGram *Load(std::string directory_path) {
     ProbTrie *prob_trie = ProbTrie::FromProto(&(ngram_proto->prob_trie()));
 
     switch (ngram_proto->smoothing()) {
+        case tensorflow::Source::lm::ngram::Smoothing::ABSOLUTE_DISCOUNTING: {
+            ngram = new AbsoluteDiscounting(n, ngram_proto->discount(), prob_trie, vocab);
+            break;
+        }
         case tensorflow::Source::lm::ngram::Smoothing::ADD_ONE: {
             ngram = new AddOne(n, prob_trie, vocab);
+            break;
+        }
+        case tensorflow::Source::lm::ngram::Smoothing::KATZ: {
+            ngram = new Katz(n, prob_trie, vocab);
             break;
         }
         case tensorflow::Source::lm::ngram::Smoothing::KNESER_NEY: {

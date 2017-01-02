@@ -9,7 +9,9 @@
 #include "ngram.h"
 #include "prob_trie.h"
 #include "tensorflow/Source/lm/ngram/ngram.pb.h"
+#include "tensorflow/Source/lm/ngram/smoothing/absolute_discounting.h"
 #include "tensorflow/Source/lm/ngram/smoothing/add_one.h"
+#include "tensorflow/Source/lm/ngram/smoothing/katz.h"
 #include "tensorflow/Source/lm/ngram/smoothing/kneser_ney.h"
 #include "vocab.h"
 
