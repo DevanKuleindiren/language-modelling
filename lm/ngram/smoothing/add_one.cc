@@ -1,6 +1,10 @@
 #include "add_one.h"
 
 double AddOne::Prob(std::list<std::string> seq) {
+    return Prob(WordsToIndices(seq));
+}
+
+double AddOne::Prob(std::list<size_t> seq) {
     if (!trained) {
         throw UntrainedException();
     }
@@ -10,20 +14,13 @@ double AddOne::Prob(std::list<std::string> seq) {
         return 0;
     }
 
-    // Trim off and words in the sequence beyond the value of n.
-    if (seq.size() > n) {
-        std::list<std::string> tmp;
-        for (int i = 0; i < n; i++) {
-            tmp.push_front(seq.back());
-            seq.pop_back();
-        }
-    }
+    // Trim off any words in the sequence beyond the value of n.
+    seq = Trim(seq, n);
 
-    std::list<size_t> seq_ids = WordsToIndices(seq);
-    std::pair<double, double> values = prob_trie->GetValues(seq_ids);
+    std::pair<double, double> values = prob_trie->GetValues(seq);
     double count = values.first;
-    seq_ids.pop_back();
-    values = prob_trie->GetValues(seq_ids);
+    seq.pop_back();
+    values = prob_trie->GetValues(seq);
     double sum_following = values.second;
 
     return (count + 1) / (sum_following + vocab->Size());

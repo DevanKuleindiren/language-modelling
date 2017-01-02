@@ -11,7 +11,8 @@ public:
     AddOne(int n) : AddOne(n, 1) {}
     AddOne(int n, int min_frequency) : NGram(n, min_frequency) {}
     AddOne(int n, ProbTrie *prob_trie, Vocab *vocab) : NGram(n, prob_trie, vocab) {}
-    double Prob(std::list<std::string>);
+    virtual double Prob(std::list<std::string>);
+    virtual double Prob(std::list<size_t>);
     tensorflow::Source::lm::ngram::NGramProto *ToProto();
 };
 
