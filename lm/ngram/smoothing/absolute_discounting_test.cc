@@ -1,6 +1,7 @@
 #include "absolute_discounting.h"
 #include "tensorflow/core/platform/test.h"
 #include <fstream>
+#include <google/protobuf/util/message_differencer.h>
 
 
 class AbsoluteDiscountingTest : public ::testing::Test {
@@ -94,10 +95,5 @@ TEST(AbsoluteDiscountingTestToProto, ToProto) {
     prob_trie_proto->set_allocated_root(node_a);
     expected_ngram_proto->set_allocated_prob_trie(prob_trie_proto);
 
-    std::string actual_string;
-    std::string expected_string;
-    actual_ngram_proto->SerializeToString(&actual_string);
-    expected_ngram_proto->SerializeToString(&expected_string);
-
-    ASSERT_STREQ(actual_string.c_str(), expected_string.c_str());
+    ASSERT_TRUE(google::protobuf::util::MessageDifferencer::ApproximatelyEquals(*actual_ngram_proto, *expected_ngram_proto));
 }
