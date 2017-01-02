@@ -25,6 +25,7 @@ protected:
     bool trained = false;
     virtual void PopulateProbTrie(CountTrie *, CountTrie::Node *, int, std::list<size_t>);
     virtual std::list<size_t> WordsToIndices(std::list<std::string> seq);
+    virtual std::list<size_t> Trim(std::list<size_t>, int);
 public:
     NGram(int n) : NGram(n, new ProbTrie(), 1) {}
     NGram(int n, int min_frequency) : NGram(n, new ProbTrie(), min_frequency) {}
@@ -36,6 +37,7 @@ public:
     virtual void Predict(std::list<std::string>, std::pair<std::string, double> &);
     virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int);
     virtual double Prob(std::list<std::string>);
+    virtual double Prob(std::list<size_t>);
     virtual void ProcessFile(std::string);
     virtual bool operator==(const NGram &);
     virtual tensorflow::Source::lm::ngram::NGramProto *ToProto();

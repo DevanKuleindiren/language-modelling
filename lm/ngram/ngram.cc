@@ -16,9 +16,10 @@ void NGram::Predict(std::list<std::string> seq, std::pair<std::string, double> &
     double max_prob = 0;
     std::string max_prediction;
     std::list<size_t> seq_indices = WordsToIndices(seq);
+    seq_indices = Trim(seq_indices, n - 1);
     for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
         seq_indices.push_back(it->second);
-        double p = prob_trie->GetProb(seq_indices);
+        double p = Prob(seq_indices);
         seq_indices.pop_back();
         if (p > max_prob) {
             max_prob = p;
@@ -36,9 +37,10 @@ void NGram::PredictTopK(std::list<std::string> seq, std::list<std::pair<std::str
     std::priority_queue<std::pair<std::string, double>, std::vector<std::pair<std::string, double>>, PredictionCompare> min_heap_max_predictions;
 
     std::list<size_t> seq_indices = WordsToIndices(seq);
+    seq_indices = Trim(seq_indices, n - 1);
     for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
         seq_indices.push_back(it->second);
-        double p = prob_trie->GetProb(seq_indices);
+        double p = Prob(seq_indices);
         seq_indices.pop_back();
 
         if (min_heap_max_predictions.size() < k) {
@@ -59,21 +61,18 @@ void NGram::PredictTopK(std::list<std::string> seq, std::list<std::pair<std::str
 }
 
 double NGram::Prob(std::list<std::string> seq) {
+    return Prob(WordsToIndices(seq));
+}
+
+double NGram::Prob(std::list<size_t> seq) {
     if (!trained) {
         throw UntrainedException();
     }
 
-    // Trim off and words in the sequence beyond the value of n.
-    if (seq.size() > n) {
-        std::list<std::string> tmp;
-        for (int i = 0; i < n; i++) {
-            tmp.push_front(seq.back());
-            seq.pop_back();
-        }
-        seq = tmp;
-    }
-    
-    return prob_trie->GetProb(WordsToIndices(seq));
+    // Trim off any words in the sequence beyond the value of n.
+    seq = Trim(seq, n);
+
+    return prob_trie->GetProb(seq);
 }
 
 void NGram::ProcessFile(std::string file_name) {
@@ -126,6 +125,18 @@ std::list<size_t> NGram::WordsToIndices(std::list<std::string> seq) {
         indices.push_back(vocab->Get(*it));
     }
     return indices;
+}
+
+std::list<size_t> NGram::Trim(std::list<size_t> seq, int max) {
+    if (seq.size() > max) {
+        std::list<size_t> trimmed;
+        for (int i = 0; i < max; i++) {
+            trimmed.push_front(seq.back());
+            seq.pop_back();
+        }
+        return trimmed;
+    }
+    return seq;
 }
 
 void NGram::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, int depth, std::list<size_t> seq) {
