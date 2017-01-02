@@ -12,7 +12,7 @@
 #include "tensorflow/Source/lm/ngram/prob_trie.pb.h"
 
 class ProbTrie {
-protected:
+public:
     struct Node {
         double pseudo_prob;
         double backoff;
@@ -20,6 +20,7 @@ protected:
         Node(double pseudo_prob, double backoff) : pseudo_prob(pseudo_prob), backoff(backoff), children() {}
         bool operator==(const Node &);
     };
+protected:
     Node *root;
     Node *GetNode(std::list<size_t>);
     static void PopulateProto(tensorflow::Source::lm::ngram::Node *, const ProbTrie::Node *);
@@ -32,6 +33,7 @@ public:
     virtual bool operator==(const ProbTrie &);
     virtual tensorflow::Source::lm::ngram::ProbTrieProto *ToProto();
     static ProbTrie *FromProto(const tensorflow::Source::lm::ngram::ProbTrieProto *);
+    Node *GetRoot();
 };
 
 #endif // prob_trie.h

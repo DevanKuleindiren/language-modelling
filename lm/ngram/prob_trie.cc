@@ -86,6 +86,10 @@ ProbTrie *ProbTrie::FromProto(const tensorflow::Source::lm::ngram::ProbTrieProto
     return prob_trie;
 }
 
+ProbTrie::Node *ProbTrie::GetRoot() {
+    return root;
+}
+
 ProbTrie::Node *ProbTrie::GetNode(std::list<size_t> seq) {
     if (seq.size() > 0) {
         ProbTrie::Node *curr = root;

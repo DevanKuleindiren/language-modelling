@@ -13,10 +13,7 @@ void CountTrie::ProcessFile(std::string file_name, Vocab *vocab) {
             size_t pos = 0;
             std::string word;
             std::list<size_t> ngram_window;
-
-            for (int i = 0; i < n - 1; i++) {
-                ngram_window.push_back(start_marker_index);
-            }
+            ngram_window.push_back(start_marker_index);
 
             while (!line.empty()) {
                 pos = line.find(" ");

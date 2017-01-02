@@ -45,6 +45,29 @@ cc_test(
 )
 
 cc_library(
+    name = "katz",
+    srcs = [
+        "katz.h",
+        "katz.cc",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//tensorflow/Source/lm/ngram:ngram",
+    ],
+)
+
+cc_test(
+    name = "katz_test",
+    size = "small",
+    srcs = ["katz_test.cc"],
+    deps = [
+        ":katz",
+        "//tensorflow/core:test",
+        "//tensorflow/core:test_main",
+    ],
+)
+
+cc_library(
     name = "kneser_ney",
     srcs = [
         "kneser_ney.h",
