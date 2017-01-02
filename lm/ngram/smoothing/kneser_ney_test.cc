@@ -95,5 +95,5 @@ TEST(KneserNeyTestToProto, ToProto) {
     prob_trie_proto->set_allocated_root(node_a);
     expected_ngram_proto->set_allocated_prob_trie(prob_trie_proto);
 
-    ASSERT_TRUE(google::protobuf::util::MessageDifferencer::Equals(*actual_ngram_proto, *expected_ngram_proto));
+    ASSERT_TRUE(google::protobuf::util::MessageDifferencer::ApproximatelyEquals(*actual_ngram_proto, *expected_ngram_proto));
 }
