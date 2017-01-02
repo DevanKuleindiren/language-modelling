@@ -1,13 +1,17 @@
 #include <stdlib.h>
 #include <vector>
 #include "ngram.h"
+#include "smoothing/absolute_discounting.h"
 #include "smoothing/add_one.h"
+#include "smoothing/katz.h"
 #include "smoothing/kneser_ney.h"
 #include "tensorflow/core/platform/init_main.h"
 #include "tensorflow/core/util/command_line_flags.h"
 
-#define ADD1 std::string("add1")
-#define KN std::string("kneser_ney")
+#define ABSD std::string("absolute_discounting")
+#define ADD1 std::string("add_one")
+#define KATZ std::string("katz")
+#define KNES std::string("kneser_ney")
 
 void usage(char* const argv_0) {
     std::cerr << "Usage: " << argv_0
@@ -16,8 +20,9 @@ void usage(char* const argv_0) {
     std::cerr << "Where:" << std::endl;
     std::cerr << "    N        is the N (a positive integer) in N-gram." << std::endl;
     std::cerr << "    MIN_FREQ is the minimum number of times a word must be seen to not be OOV." << std::endl;
-    std::cerr << "    SMOOTH   is the smoothing method applied (one of: " << ADD1 << " or " << KN << ")." << std::endl;
-    std::cerr << "    D        is the discount, 0 <= D <= 1, used in any of: " << KN << "." << std::endl;
+    std::cerr << "    SMOOTH   is the smoothing method applied (one of: ";
+    std::cerr << ABSD << ", " << ADD1 << ", " << KATZ << " or " << KNES << ")." << std::endl;
+    std::cerr << "    D        is the discount, 0 <= D <= 1, used in any of: " << KNES << "." << std::endl;
     std::cerr << "    T_PATH   is the file path to the training data." << std::endl;
     std::cerr << "    S_PATH   is the directory in which the trained model should be saved." << std::endl;
 }
@@ -62,9 +67,13 @@ int main(int argc, char* argv[]) {
     }
 
     NGram *lm;
-    if (smoothing.compare(ADD1) == 0) {
+    if (smoothing.compare(ABSD) == 0) {
+        lm = new AbsoluteDiscounting(n, std::atof(discount.c_str()), min_frequency);
+    } else if (smoothing.compare(ADD1) == 0) {
         lm = new AddOne(n, min_frequency);
-    } else if (smoothing.compare(KN) == 0) {
+    } else if (smoothing.compare(KATZ) == 0) {
+        lm = new Katz(n, min_frequency);
+    } else if (smoothing.compare(KNES) == 0) {
         lm = new KneserNey(n, std::atof(discount.c_str()), min_frequency);
     } else {
         lm = new NGram(n, min_frequency);
