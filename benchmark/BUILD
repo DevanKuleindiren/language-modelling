@@ -1,3 +1,8 @@
+load(
+    "//tensorflow/core:platform/default/build_config.bzl",
+    "tf_proto_library",
+)
+
 cc_library(
     name = "benchmark",
     srcs = [
@@ -17,4 +22,11 @@ cc_test(
         "//tensorflow/core:test",
         "//tensorflow/core:test_main",
     ],
+)
+
+tf_proto_library(
+    name = "benchmark_pb",
+    srcs = ["benchmark.proto"],
+    cc_api_version = 2,
+    visibility = ["//visibility:public"],
 )
