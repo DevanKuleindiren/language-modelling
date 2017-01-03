@@ -12,10 +12,11 @@ from tensorflow.Source.lm import vocab_pb2
 tf.flags.DEFINE_bool("infer", False, "Run inference on a previously saved model.")
 tf.flags.DEFINE_string("training_data_path", None,"The path to the training data.")
 tf.flags.DEFINE_string("save_path", None, "The path to save the model.")
+tf.flags.DEFINE_string("size", None, "The size of the lstm model (one of: small, large).")
 
 FLAGS = tf.flags.FLAGS
 
-class Config:
+class SmallConfig:
     """
     The hyperparameters used in the model:
     - batch_size - the batch size
@@ -42,7 +43,24 @@ class Config:
     max_max_epoch = 13
     min_frequency = 1
     num_layers = 2
-    num_steps = 10
+    num_steps = 20
+
+class LargeConfig:
+    """
+    The hyperparameters used in the model are as specified above.
+    """
+    batch_size = 20
+    hidden_size = 1500
+    init_scale = 0.04
+    keep_prob = 0.35
+    lr = 1.0
+    lr_decay = 1 / 1.15
+    max_epoch = 14
+    max_grad_norm = 10
+    max_max_epoch = 55
+    min_frequency = 1
+    num_layers = 2
+    num_steps = 35
 
 class LSTM:
 
@@ -260,9 +278,19 @@ def predict(sess, inputs, id_to_word, seq_len):
 def main(_):
     if not FLAGS.training_data_path:
         raise ValueError("Must set --training_data_path.")
+    if not FLAGS.save_path:
+        raise ValueError("Must set --save_path.")
+    if not FLAGS.size:
+        raise ValueError("Must set --size.")
 
     with tf.Graph().as_default():
-        config = Config()
+        if FLAGS.size == "small":
+            config = SmallConfig()
+        elif FLAGS.size == "large":
+            config = LargeConfig()
+        else:
+            raise ValueError("%s is not a valid --size." % FLAGS.size)
+
         word_to_id = {}
         id_to_word = {}
 
