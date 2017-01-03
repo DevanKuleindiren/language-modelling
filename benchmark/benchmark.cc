@@ -44,6 +44,10 @@ double Benchmark::Perplexity(std::string file_name) {
                     }
                 }
                 line.erase(0, pos + 1);
+
+                if (((int) num_words) % 1000 == 0) {
+                    std::cout << "Processed " << num_words << " words." << std::endl;
+                }
             }
         }
 
@@ -106,6 +110,10 @@ double Benchmark::PerplexityExp(std::string file_name) {
                     }
                 }
                 line.erase(0, pos + 1);
+
+                if (((int) num_words) % 1000 == 0) {
+                    std::cout << "Processed " << num_words << " words." << std::endl;
+                }
             }
         }
 
