@@ -14,6 +14,7 @@ public:
     Katz(int n) : Katz(n, 1) {}
     Katz(int n, int min_frequency) : NGram(n, min_frequency) {}
     Katz(int n, ProbTrie *prob_trie, Vocab *vocab) : NGram(n, prob_trie, vocab) {}
+    virtual std::pair<int, int> ContextSize();
     virtual double Prob(std::list<std::string>);
     virtual double Prob(std::list<size_t>);
     virtual void ProcessFile(std::string);

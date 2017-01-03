@@ -4,11 +4,12 @@
 #include <exception>
 #include <list>
 #include <string>
+#include <utility>
 
 class LM {
 public:
     virtual bool ContainsWord(std::string) = 0;
-    virtual int ContextSize() = 0;
+    virtual std::pair<int, int> ContextSize() = 0;
     virtual void Predict(std::list<std::string>, std::pair<std::string, double> &) = 0;
     virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int) = 0;
     virtual double Prob (std::list<std::string>) = 0;

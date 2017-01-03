@@ -1,5 +1,9 @@
 #include "absolute_discounting.h"
 
+std::pair<int, int> AbsoluteDiscounting::ContextSize() {
+    return std::make_pair(1, n);
+}
+
 void AbsoluteDiscounting::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, int depth, std::list<size_t> seq) {
     if (depth > 0) {
 

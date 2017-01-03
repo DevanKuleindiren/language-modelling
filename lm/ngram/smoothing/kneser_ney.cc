@@ -1,5 +1,23 @@
 #include "kneser_ney.h"
 
+std::pair<int, int> KneserNey::ContextSize() {
+    return std::make_pair(1, n);
+}
+
+bool KneserNey::operator==(const NGram &to_compare) {
+    if (const KneserNey *to_compare_kn = dynamic_cast<const KneserNey*>(&to_compare)) {
+        return NGram::operator==(to_compare) && (discount == to_compare_kn->discount);
+    }
+    return false;
+}
+
+tensorflow::Source::lm::ngram::NGramProto *KneserNey::ToProto() {
+    tensorflow::Source::lm::ngram::NGramProto *ngram_proto = NGram::ToProto();
+    ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::KNESER_NEY);
+    ngram_proto->set_discount(discount);
+    return ngram_proto;
+}
+
 void KneserNey::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, int depth, std::list<size_t> seq) {
     if (depth > 0) {
 
@@ -46,18 +64,4 @@ void KneserNey::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, in
         PopulateProbTrie(countTrie, it->second, depth + 1, seq);
         seq.pop_back();
     }
-}
-
-bool KneserNey::operator==(const NGram &to_compare) {
-    if (const KneserNey *to_compare_kn = dynamic_cast<const KneserNey*>(&to_compare)) {
-        return NGram::operator==(to_compare) && (discount == to_compare_kn->discount);
-    }
-    return false;
-}
-
-tensorflow::Source::lm::ngram::NGramProto *KneserNey::ToProto() {
-    tensorflow::Source::lm::ngram::NGramProto *ngram_proto = NGram::ToProto();
-    ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::KNESER_NEY);
-    ngram_proto->set_discount(discount);
-    return ngram_proto;
 }

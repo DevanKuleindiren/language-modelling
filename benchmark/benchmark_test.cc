@@ -7,8 +7,8 @@ public:
     bool ContainsWord(std::string) {
         return true;
     }
-    int ContextSize() {
-        return 3;
+    std::pair<int, int> ContextSize() {
+        return std::make_pair(1, 2);
     }
     void Predict(std::list<std::string>, std::pair<std::string, double> &) {}
     void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int) {}

@@ -1,5 +1,9 @@
 #include "katz.h"
 
+std::pair<int, int> Katz::ContextSize() {
+    return std::make_pair(1, n);
+}
+
 double Katz::Prob(std::list<std::string> seq) {
     return Prob(WordsToIndices(seq));
 }
