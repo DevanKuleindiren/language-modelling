@@ -40,6 +40,7 @@ std::pair<int, int> LSTM::ContextSize() {
 
 void LSTM::Predict(std::list<std::string> seq, std::pair<std::string, double> &prediction) {
     std::list<size_t> seq_ids = WordsToIndices(seq);
+    seq_ids = Trim(seq_ids, ContextSize().second);
 
     std::vector<tensorflow::Tensor> outputs;
     RunInference(seq_ids, outputs);
@@ -47,7 +48,7 @@ void LSTM::Predict(std::list<std::string> seq, std::pair<std::string, double> &p
 
     double max_prob = 0;
     std::string max_prediction;
-    int last_word_position = std::min(seq.size(), num_steps) - 1;
+    int last_word_position = seq_ids.size() - 1;
     for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
         if (predictions(last_word_position, it->second) > max_prob) {
             max_prob = predictions(last_word_position, it->second);
@@ -64,12 +65,13 @@ void LSTM::PredictTopK(std::list<std::string>, std::list<std::pair<std::string, 
 
 double LSTM::Prob(std::list<std::string> seq) {
     std::list<size_t> seq_ids = WordsToIndices(seq);
+    seq_ids = Trim(seq_ids, ContextSize().second);
 
     std::vector<tensorflow::Tensor> outputs;
     RunInference(seq_ids, outputs);
     auto predictions = outputs[0].tensor<float, 2>();
 
-    return predictions(std::max(seq.size(), num_steps) - 2, seq_ids.back());
+    return predictions(seq_ids.size() - 2, seq_ids.back());
 }
 
 std::list<size_t> LSTM::WordsToIndices(std::list<std::string> seq) {
@@ -78,6 +80,18 @@ std::list<size_t> LSTM::WordsToIndices(std::list<std::string> seq) {
         indices.push_back(vocab->Get(*it));
     }
     return indices;
+}
+
+std::list<size_t> LSTM::Trim(std::list<size_t> seq, int max) {
+    if (seq.size() > max) {
+        std::list<size_t> trimmed;
+        for (int i = 0; i < max; i++) {
+            trimmed.push_front(seq.back());
+            seq.pop_back();
+        }
+        return trimmed;
+    }
+    return seq;
 }
 
 void LSTM::RunInference(std::list<size_t> seq_ids, std::vector<tensorflow::Tensor> &outputs) {

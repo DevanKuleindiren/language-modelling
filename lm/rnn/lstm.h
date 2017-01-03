@@ -18,6 +18,7 @@ protected:
     tensorflow::Status status;
     unsigned long num_steps;
     std::list<size_t> WordsToIndices(std::list<std::string>);
+    std::list<size_t> Trim(std::list<size_t> seq, int max);
     virtual void RunInference(std::list<size_t>, std::vector<tensorflow::Tensor> &);
 public:
     LSTM(std::string);
