@@ -29,7 +29,7 @@ TEST(BenchmarkTest, Perplexity) {
     LanguageModelMock *lm = new LanguageModelMock();
     Benchmark *under_test = new Benchmark(lm);
 
-    ASSERT_DOUBLE_EQ(under_test->Perplexity(test_file_name), 4.0);
+    ASSERT_DOUBLE_EQ(under_test->Perplexity(test_file_name, false), 4.0);
 }
 
 TEST(BenchmarkTest, PerplexityExp) {
@@ -44,5 +44,5 @@ TEST(BenchmarkTest, PerplexityExp) {
     LanguageModelMock *lm = new LanguageModelMock();
     Benchmark *under_test = new Benchmark(lm);
 
-    ASSERT_DOUBLE_EQ(under_test->PerplexityExp(test_file_name), 4.0);
+    ASSERT_DOUBLE_EQ(under_test->Perplexity(test_file_name, true), 4.0);
 }

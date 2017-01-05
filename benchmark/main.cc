@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
     }
 
     Benchmark *benchmark = new Benchmark(lm);
-    double perplexity = benchmark->Perplexity(test_data_path);
+    double perplexity = benchmark->Perplexity(test_data_path, false);
     std::cout << "Perplexity = " << perplexity << std::endl;
 
     tensorflow::Source::benchmark::BenchmarkProto benchmark_proto;
