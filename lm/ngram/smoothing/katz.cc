@@ -16,39 +16,50 @@ double Katz::Prob(std::list<size_t> seq) {
     // Trim off any words in the sequence beyond the value of n.
     seq = Trim(seq, n);
 
-    std::pair<double, double> values = prob_trie->GetValues(seq);
-    if (values.first > 0 || seq.size() <= 1) {
-        return values.first;
+    if (prob_trie->Contains(seq) || seq.size() <= 1) {
+        std::cout << "(" << (prob_trie->GetValues(seq)).first << ")" << std::endl;
+        return (prob_trie->GetValues(seq)).first;
     } else {
         size_t last_word_index = seq.back();
         seq.pop_back();
-        double alpha = (prob_trie->GetValues(seq)).second;
+        while (!prob_trie->Contains(seq) && !seq.empty()) {
+            seq.pop_front();
+        }
+        double alpha = 1;
+        if (!seq.empty()) {
+            alpha = (prob_trie->GetValues(seq)).second;
+            seq.pop_front();
+        }
         seq.push_back(last_word_index);
-        seq.pop_front();
+
+        std::cout << alpha << " * ";
         return alpha * Prob(seq);
     }
 }
 
 void Katz::ProcessFile(std::string file_name) {
     vocab->ProcessFile(file_name);
-    CountTrie *count_trie = new CountTrie(Katz::k + 1);
+    CountTrie *count_trie = new CountTrie(n);
     count_trie->ProcessFile(file_name, vocab);
 
     std::cout << "Processing probability trie..." << std::endl;
 
-    // Count the number of n-grams for n in the range [1, k + 1].
-    std::array<int, (Katz::k + 2)> num_ngrams;
-    num_ngrams.fill(0);
-    CountNGrams(count_trie->GetRoot(), 0, &num_ngrams);
+    // Compute n_r for n in [1, n] and r in [0, k + 1], where n_r is the number of n-grams that occur r times.
+    std::vector<std::vector<int>> n_r (n + 1, std::vector<int>(Katz::k + 2));
+    CountNGrams(count_trie->GetRoot(), 0, &n_r);
 
-    // Use these counts to calculate d_i (from the Katz smoothing equation) for i in the range [1, k].
-    // (x = ((k + 1)n_{k + 1})/n_1).
-    std::array<double, (Katz::k + 1)> adjusted_counts;
-    adjusted_counts.fill(0);
-    double x = ((Katz::k + 1) * num_ngrams[Katz::k + 1]) / ((double) num_ngrams[1]);
-    for (int r = 1; r < num_ngrams.size(); ++r) {
-        double r_star = (r + 1) * (num_ngrams[r + 1] / (double) num_ngrams[r]);
-        adjusted_counts[r] = (r_star - (r * x)) / (1 - x);
+    // Use these counts to calculate d_r (from the Katz smoothing equation) for i in the range [1, k].
+    std::vector<std::vector<double>> adjusted_counts (n + 1, std::vector<double>(Katz::k + 1));
+    for (int i = 1; i <= n; ++i) {
+        if (n_r[i][1] > 0) {
+            double x = ((Katz::k + 1) * n_r[i][Katz::k + 1]) / ((double) n_r[i][1]);
+            for (int r = 0; r <= Katz::k; ++r) {
+                if (n_r[i][r] > 0) {
+                    double r_star = (r + 1) * (n_r[i][r + 1] / (double) n_r[i][r]);
+                    adjusted_counts[i][r] = (r_star - (r * x)) / (1 - x);
+                }
+            }
+        }
     }
 
     // Compute P_{katz}(w_i | w_{i - n + 1}^{i - 1}) for all w_{i - n + 1}^i and store them in pseudo_probs.
@@ -65,18 +76,28 @@ tensorflow::Source::lm::ngram::NGramProto *Katz::ToProto() {
     return ngram_proto;
 }
 
-void Katz::CountNGrams(CountTrie::Node *node, int depth, std::array<int, (Katz::k + 2)> *num_ngrams) {
-    if (depth < (*num_ngrams).size()) {
-        (*num_ngrams)[depth]++;
-        for (std::unordered_map<size_t, CountTrie::Node*>::iterator it = node->children.begin(); it != node->children.end(); ++it) {
-            CountNGrams(it->second, depth + 1, num_ngrams);
+void Katz::CountNGrams(CountTrie::Node *node, int depth, std::vector<std::vector<int>> *n_r) {
+    if (depth > 0) {
+        (*n_r)[depth][0]++;
+        if (node->count <= (Katz::k + 1)) {
+            (*n_r)[depth][node->count]++;
+        }
+    }
+
+    for (std::unordered_map<size_t, CountTrie::Node*>::iterator it = node->children.begin(); it != node->children.end(); ++it) {
+        CountNGrams(it->second, depth + 1, n_r);
+    }
+
+    if (depth == 0) {
+        for (int i = 1; i <= n; ++i) {
+            (*n_r)[i][0] = (int) (pow(vocab->Size(), i) - (*n_r)[i][0]);
         }
     }
 }
 
 void Katz::PopulateProbTriePseudoProb(CountTrie *countTrie,
                                       CountTrie::Node *node,
-                                      std::array<double, (Katz::k + 1)> *adjusted_count,
+                                      std::vector<std::vector<double>> *adjusted_count,
                                       int depth,
                                       std::list<size_t> seq) {
     if (depth > 0) {
@@ -87,7 +108,7 @@ void Katz::PopulateProbTriePseudoProb(CountTrie *countTrie,
 
         int count = countTrie->Count(seq);
         if (count <= Katz::k) {
-            pseudo_prob_numerator = (*adjusted_count)[count];
+            pseudo_prob_numerator = (*adjusted_count)[depth][count];
         } else {
             pseudo_prob_numerator = count;
         }
@@ -101,7 +122,7 @@ void Katz::PopulateProbTriePseudoProb(CountTrie *countTrie,
             pseudo_prob = pseudo_prob_numerator / pseudo_prob_denominator;
         }
 
-        prob_trie->Insert(seq, pseudo_prob, 0);
+        prob_trie->Insert(seq, pseudo_prob, 1);
     }
 
     if (depth < n) {

@@ -70,6 +70,10 @@ std::pair<double, double> ProbTrie::GetValues(std::list<size_t> seq) {
     }
 }
 
+bool ProbTrie::Contains(std::list<size_t> seq) {
+    return GetNode(seq) != NULL;
+}
+
 bool ProbTrie::operator==(const ProbTrie &to_compare) {
     return *root == *to_compare.root;
 }

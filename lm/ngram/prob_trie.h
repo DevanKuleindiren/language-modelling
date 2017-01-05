@@ -30,6 +30,7 @@ public:
     void Insert(std::list<size_t>, double, double);
     virtual double GetProb(std::list<size_t>);
     virtual std::pair<double, double> GetValues(std::list<size_t>);
+    virtual bool Contains(std::list<size_t>);
     virtual bool operator==(const ProbTrie &);
     virtual tensorflow::Source::lm::ngram::ProbTrieProto *ToProto();
     static ProbTrie *FromProto(const tensorflow::Source::lm::ngram::ProbTrieProto *);
