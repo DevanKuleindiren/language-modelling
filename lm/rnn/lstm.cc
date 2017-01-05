@@ -30,10 +30,6 @@ LSTM::LSTM(std::string directory_path) {
     }
 }
 
-bool LSTM::ContainsWord(std::string word) {
-    return vocab->Get(word);
-}
-
 std::pair<int, int> LSTM::ContextSize() {
     return std::make_pair(1, num_steps);
 }
@@ -72,26 +68,6 @@ double LSTM::Prob(std::list<std::string> seq) {
     auto predictions = outputs[0].tensor<float, 2>();
 
     return predictions(seq_ids.size() - 2, seq_ids.back());
-}
-
-std::list<size_t> LSTM::WordsToIndices(std::list<std::string> seq) {
-    std::list<size_t> indices;
-    for (std::list<std::string>::iterator it = seq.begin(); it != seq.end(); ++it) {
-        indices.push_back(vocab->Get(*it));
-    }
-    return indices;
-}
-
-std::list<size_t> LSTM::Trim(std::list<size_t> seq, int max) {
-    if (seq.size() > max) {
-        std::list<size_t> trimmed;
-        for (int i = 0; i < max; i++) {
-            trimmed.push_front(seq.back());
-            seq.pop_back();
-        }
-        return trimmed;
-    }
-    return seq;
 }
 
 void LSTM::RunInference(std::list<size_t> seq_ids, std::vector<tensorflow::Tensor> &outputs) {

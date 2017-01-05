@@ -22,8 +22,8 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//tensorflow/Source/lm:lm",
-        "//tensorflow/Source/lm/ngram:vocab",
         "//tensorflow/core:tensorflow",
+        "//tensorflow/Source/lm:lm",
+        "//tensorflow/Source/lm:vocab",
     ]
 )

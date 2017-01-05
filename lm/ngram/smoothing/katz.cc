@@ -17,7 +17,6 @@ double Katz::Prob(std::list<size_t> seq) {
     seq = Trim(seq, n);
 
     if (prob_trie->Contains(seq) || seq.size() <= 1) {
-        std::cout << "(" << (prob_trie->GetValues(seq)).first << ")" << std::endl;
         return (prob_trie->GetValues(seq)).first;
     } else {
         size_t last_word_index = seq.back();
@@ -31,8 +30,6 @@ double Katz::Prob(std::list<size_t> seq) {
             seq.pop_front();
         }
         seq.push_back(last_word_index);
-
-        std::cout << alpha << " * ";
         return alpha * Prob(seq);
     }
 }

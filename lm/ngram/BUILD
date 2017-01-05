@@ -65,7 +65,7 @@ cc_library(
         "count_trie.h",
         "count_trie.cc",
     ],
-    deps = [":vocab"],
+    deps = ["//tensorflow/Source/lm:vocab"],
 )
 
 cc_test(
@@ -74,27 +74,6 @@ cc_test(
     srcs = ["count_trie_test.cc"],
     deps = [
         ":count_trie",
-        "//tensorflow/core:test",
-        "//tensorflow/core:test_main",
-    ],
-)
-
-cc_library(
-    name = "vocab",
-    srcs = [
-        "vocab.h",
-        "vocab.cc",
-    ],
-    visibility = ["//visibility:public"],
-    deps = ["//tensorflow/Source/lm:vocab_pb_cc"],
-)
-
-cc_test(
-    name = "vocab_test",
-    size = "small",
-    srcs = ["vocab_test.cc"],
-    deps = [
-        ":vocab",
         "//tensorflow/core:test",
         "//tensorflow/core:test_main",
     ],
@@ -123,11 +102,11 @@ cc_library(
     deps = [
         ":ngram",
         ":prob_trie",
-        ":vocab",
         "//tensorflow/Source/lm/ngram/smoothing:absolute_discounting",
         "//tensorflow/Source/lm/ngram/smoothing:add_one",
         "//tensorflow/Source/lm/ngram/smoothing:katz",
         "//tensorflow/Source/lm/ngram/smoothing:kneser_ney",
+        "//tensorflow/Source/lm:vocab",
     ],
     visibility = ["//visibility:public"],
 )

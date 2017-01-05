@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
-#include "vocab.h"
+#include "tensorflow/Source/lm/vocab.h"
 
 class CountTrie {
 public:

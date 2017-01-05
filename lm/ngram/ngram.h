@@ -12,27 +12,23 @@
 #include <unordered_set>
 #include "count_trie.h"
 #include "prob_trie.h"
-#include "vocab.h"
 #include "tensorflow/Source/lm/lm.h"
 #include "tensorflow/Source/lm/ngram/ngram.pb.h"
+#include "tensorflow/Source/lm/vocab.h"
 
 
 class NGram : public LM {
 protected:
     const int n;
     ProbTrie *prob_trie;
-    Vocab *vocab;
     bool trained = false;
     virtual void PopulateProbTrie(CountTrie *, CountTrie::Node *, int, std::list<size_t>);
-    virtual std::list<size_t> WordsToIndices(std::list<std::string> seq);
-    virtual std::list<size_t> Trim(std::list<size_t>, int);
 public:
     NGram(int n) : NGram(n, new ProbTrie(), 1) {}
     NGram(int n, int min_frequency) : NGram(n, new ProbTrie(), min_frequency) {}
     NGram(int n, ProbTrie *prob_trie) : NGram(n, prob_trie, 1) {}
     NGram(int n, ProbTrie *prob_trie, int min_frequency) : NGram(n, prob_trie, new Vocab(min_frequency)) {}
-    NGram(int n, ProbTrie *prob_trie, Vocab *vocab) : n(n), prob_trie(prob_trie), vocab(vocab), trained(true) {}
-    virtual bool ContainsWord(std::string);
+    NGram(int n, ProbTrie *prob_trie, Vocab *vocab) : LM(vocab), n(n), prob_trie(prob_trie), trained(true) {}
     virtual std::pair<int, int> ContextSize();
     virtual void Predict(std::list<std::string>, std::pair<std::string, double> &);
     virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int);

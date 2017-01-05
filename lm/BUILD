@@ -1,13 +1,34 @@
-cc_library(
-    name = "lm",
-    srcs = ["lm.h"],
-    visibility = ["//visibility:public"],
-    deps = [],
-)
-
 load(
     "//tensorflow/core:platform/default/build_config.bzl",
     "tf_proto_library",
+)
+cc_library(
+    name = "lm",
+    srcs = ["lm.cc"],
+    hdrs = ["lm.h"],
+    visibility = ["//visibility:public"],
+    deps = [":vocab"],
+)
+
+cc_library(
+    name = "vocab",
+    srcs = [
+        "vocab.h",
+        "vocab.cc",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [":vocab_pb_cc"],
+)
+
+cc_test(
+    name = "vocab_test",
+    size = "small",
+    srcs = ["vocab_test.cc"],
+    deps = [
+        ":vocab",
+        "//tensorflow/core:test",
+        "//tensorflow/core:test_main",
+    ],
 )
 
 tf_proto_library(
