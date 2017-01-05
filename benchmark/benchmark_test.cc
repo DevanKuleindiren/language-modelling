@@ -15,6 +15,7 @@ public:
     double Prob (std::list<std::string>) {
         return 0.25;
     }
+    void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &) {}
 };
 
 TEST(BenchmarkTest, Perplexity) {

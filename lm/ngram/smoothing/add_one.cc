@@ -1,7 +1,7 @@
 #include "add_one.h"
 
 double AddOne::Prob(std::list<std::string> seq) {
-    return Prob(WordsToIndices(seq));
+    return Prob(WordsToIds(seq));
 }
 
 double AddOne::Prob(std::list<size_t> seq) {

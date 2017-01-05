@@ -20,9 +20,8 @@ protected:
 public:
     LSTM(std::string);
     virtual std::pair<int, int> ContextSize();
-    virtual void Predict(std::list<std::string>, std::pair<std::string, double> &);
-    virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int);
     virtual double Prob(std::list<std::string>);
+    virtual void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &);
 };
 
 #endif // lstm.h

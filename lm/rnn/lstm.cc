@@ -28,39 +28,16 @@ LSTM::LSTM(std::string directory_path) {
     if (!status.ok()) {
         std::cout << status.ToString() << std::endl;
     }
+
+    trained = true;
 }
 
 std::pair<int, int> LSTM::ContextSize() {
     return std::make_pair(1, num_steps);
 }
 
-void LSTM::Predict(std::list<std::string> seq, std::pair<std::string, double> &prediction) {
-    std::list<size_t> seq_ids = WordsToIndices(seq);
-    seq_ids = Trim(seq_ids, ContextSize().second);
-
-    std::vector<tensorflow::Tensor> outputs;
-    RunInference(seq_ids, outputs);
-    auto predictions = outputs[0].tensor<float, 2>();
-
-    double max_prob = 0;
-    std::string max_prediction;
-    int last_word_position = seq_ids.size() - 1;
-    for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
-        if (predictions(last_word_position, it->second) > max_prob) {
-            max_prob = predictions(last_word_position, it->second);
-            max_prediction = it->first;
-        }
-    }
-
-    prediction = std::make_pair(max_prediction, max_prob);
-}
-
-void LSTM::PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int) {
-    // TODO: Implement this.
-}
-
 double LSTM::Prob(std::list<std::string> seq) {
-    std::list<size_t> seq_ids = WordsToIndices(seq);
+    std::list<size_t> seq_ids = WordsToIds(seq);
     seq_ids = Trim(seq_ids, ContextSize().second);
 
     std::vector<tensorflow::Tensor> outputs;
@@ -68,6 +45,24 @@ double LSTM::Prob(std::list<std::string> seq) {
     auto predictions = outputs[0].tensor<float, 2>();
 
     return predictions(seq_ids.size() - 2, seq_ids.back());
+}
+
+void LSTM::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &probs) {
+    if (!trained) {
+        throw UntrainedException();
+    }
+
+    std::list<size_t> seq_ids = WordsToIds(seq);
+    seq_ids = Trim(seq_ids, ContextSize().second);
+
+    std::vector<tensorflow::Tensor> outputs;
+    RunInference(seq_ids, outputs);
+    auto predictions = outputs[0].tensor<float, 2>();
+
+    int last_word_position = seq_ids.size() - 1;
+    for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
+        probs.push_back(std::make_pair(it->first, predictions(last_word_position, it->second)));
+    }
 }
 
 void LSTM::RunInference(std::list<size_t> seq_ids, std::vector<tensorflow::Tensor> &outputs) {

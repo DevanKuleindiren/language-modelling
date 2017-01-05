@@ -4,60 +4,8 @@ std::pair<int, int> NGram::ContextSize() {
     return std::make_pair(n - 1, n);
 }
 
-void NGram::Predict(std::list<std::string> seq, std::pair<std::string, double> &prediction) {
-    if (!trained) {
-        throw UntrainedException();
-    }
-
-    double max_prob = 0;
-    std::string max_prediction;
-    std::list<size_t> seq_indices = WordsToIndices(seq);
-    seq_indices = Trim(seq_indices, n - 1);
-    for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
-        seq_indices.push_back(it->second);
-        double p = Prob(seq_indices);
-        seq_indices.pop_back();
-        if (p > max_prob) {
-            max_prob = p;
-            max_prediction = (it->first);
-        }
-    }
-    prediction = std::make_pair(max_prediction, max_prob);
-}
-
-void NGram::PredictTopK(std::list<std::string> seq, std::list<std::pair<std::string, double>> &predictions, int k) {
-    if (!trained) {
-        throw UntrainedException();
-    }
-
-    std::priority_queue<std::pair<std::string, double>, std::vector<std::pair<std::string, double>>, PredictionCompare> min_heap_max_predictions;
-
-    std::list<size_t> seq_indices = WordsToIndices(seq);
-    seq_indices = Trim(seq_indices, n - 1);
-    for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
-        seq_indices.push_back(it->second);
-        double p = Prob(seq_indices);
-        seq_indices.pop_back();
-
-        if (min_heap_max_predictions.size() < k) {
-            min_heap_max_predictions.push(std::make_pair(it->first, p));
-        } else {
-            double min_of_max_k = min_heap_max_predictions.top().second;
-            if (p > min_of_max_k) {
-                min_heap_max_predictions.pop();
-                min_heap_max_predictions.push(std::make_pair(it->first, p));
-            }
-        }
-    }
-
-    while (min_heap_max_predictions.size() > 0) {
-        predictions.push_front(min_heap_max_predictions.top());
-        min_heap_max_predictions.pop();
-    }
-}
-
 double NGram::Prob(std::list<std::string> seq) {
-    return Prob(WordsToIndices(seq));
+    return Prob(WordsToIds(seq));
 }
 
 double NGram::Prob(std::list<size_t> seq) {
@@ -69,6 +17,20 @@ double NGram::Prob(std::list<size_t> seq) {
     seq = Trim(seq, n);
 
     return prob_trie->GetProb(seq);
+}
+
+void NGram::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &probs) {
+    if (!trained) {
+        throw UntrainedException();
+    }
+
+    std::list<size_t> seq_ids = WordsToIds(seq);
+    seq_ids = Trim(seq_ids, n - 1);
+    for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
+        seq_ids.push_back(it->second);
+        probs.push_back(std::make_pair(it->first, Prob(seq_ids)));
+        seq_ids.pop_back();
+    }
 }
 
 void NGram::ProcessFile(std::string file_name) {

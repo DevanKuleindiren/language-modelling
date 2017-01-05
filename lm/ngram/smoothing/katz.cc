@@ -5,7 +5,7 @@ std::pair<int, int> Katz::ContextSize() {
 }
 
 double Katz::Prob(std::list<std::string> seq) {
-    return Prob(WordsToIndices(seq));
+    return Prob(WordsToIds(seq));
 }
 
 double Katz::Prob(std::list<size_t> seq) {
