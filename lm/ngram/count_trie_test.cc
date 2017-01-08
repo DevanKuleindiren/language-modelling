@@ -111,3 +111,23 @@ TEST_F(CountTrieTest, SumFollowing) {
 TEST_F(CountTrieTest, VocabSize) {
     EXPECT_EQ(under_test->VocabSize(), 9);
 }
+
+TEST_F(CountTrieTest, CountNGrams) {
+    std::vector<std::vector<int>> expected_n_r (4, std::vector<int>(5));
+    expected_n_r[1][0] = -2;
+    expected_n_r[1][1] = 4;
+    expected_n_r[1][2] = 2;
+    expected_n_r[1][3] = 2;
+    expected_n_r[2][0] = 67;
+    expected_n_r[2][1] = 10;
+    expected_n_r[2][2] = 2;
+    expected_n_r[2][3] = 2;
+    expected_n_r[3][0] = 714;
+    expected_n_r[3][1] = 13;
+    expected_n_r[3][2] = 2;
+
+    std::vector<std::vector<int>> actual_n_r (4, std::vector<int>(5));
+    under_test->CountNGrams(&actual_n_r);
+
+    EXPECT_EQ(actual_n_r, expected_n_r);
+}
