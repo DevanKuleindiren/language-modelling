@@ -20,6 +20,7 @@ class NGram : public LM {
 protected:
     const int n;
     ProbTrie *prob_trie;
+    virtual void ProcessCountTrie(CountTrie *);
     virtual void PopulateProbTrie(CountTrie *, CountTrie::Node *, int, std::list<size_t>);
 public:
     NGram(int n) : NGram(n, new ProbTrie(), 1) {}

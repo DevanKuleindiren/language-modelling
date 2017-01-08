@@ -34,16 +34,16 @@ double Katz::Prob(std::list<size_t> seq) {
     }
 }
 
-void Katz::ProcessFile(std::string file_name) {
-    vocab->ProcessFile(file_name);
-    CountTrie *count_trie = new CountTrie(n);
-    count_trie->ProcessFile(file_name, vocab);
+tensorflow::Source::lm::ngram::NGramProto *Katz::ToProto() {
+    tensorflow::Source::lm::ngram::NGramProto *ngram_proto = NGram::ToProto();
+    ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::KATZ);
+    return ngram_proto;
+}
 
-    std::cout << "Processing probability trie..." << std::endl;
-
+void Katz::ProcessCountTrie(CountTrie *count_trie) {
     // Compute n_r for n in [1, n] and r in [0, k + 1], where n_r is the number of n-grams that occur r times.
     std::vector<std::vector<int>> n_r (n + 1, std::vector<int>(Katz::k + 2));
-    CountNGrams(count_trie->GetRoot(), 0, &n_r);
+    count_trie->CountNGrams(&n_r);
 
     // Use these counts to calculate d_r (from the Katz smoothing equation) for i in the range [1, k].
     std::vector<std::vector<double>> adjusted_counts (n + 1, std::vector<double>(Katz::k + 1));
@@ -65,31 +65,6 @@ void Katz::ProcessFile(std::string file_name) {
 
     // Compute a(w_{i - n + 1}^{i - 1}) and store them in backoffs.
     PopulateProbTrieBackoff(prob_trie, prob_trie->GetRoot(), 0, seq);
-}
-
-tensorflow::Source::lm::ngram::NGramProto *Katz::ToProto() {
-    tensorflow::Source::lm::ngram::NGramProto *ngram_proto = NGram::ToProto();
-    ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::KATZ);
-    return ngram_proto;
-}
-
-void Katz::CountNGrams(CountTrie::Node *node, int depth, std::vector<std::vector<int>> *n_r) {
-    if (depth > 0) {
-        (*n_r)[depth][0]++;
-        if (node->count <= (Katz::k + 1)) {
-            (*n_r)[depth][node->count]++;
-        }
-    }
-
-    for (std::unordered_map<size_t, CountTrie::Node*>::iterator it = node->children.begin(); it != node->children.end(); ++it) {
-        CountNGrams(it->second, depth + 1, n_r);
-    }
-
-    if (depth == 0) {
-        for (int i = 1; i <= n; ++i) {
-            (*n_r)[i][0] = (int) (pow(vocab->Size(), i) - (*n_r)[i][0]);
-        }
-    }
 }
 
 void Katz::PopulateProbTriePseudoProb(CountTrie *countTrie,

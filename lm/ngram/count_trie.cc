@@ -155,3 +155,31 @@ void CountTrie::ComputeCountsAndSums(CountTrie::Node *node, std::list<size_t> se
 CountTrie::Node *CountTrie::GetRoot() {
     return root;
 }
+
+void CountTrie::CountNGrams(std::vector<std::vector<int>> *n_r) {
+    CountNGramsRec(root, 0, n_r);
+}
+
+void CountTrie::CountNGramsRec(CountTrie::Node *node, int depth, std::vector<std::vector<int>> *n_r) {
+    int max_n = (*n_r).size() - 1;
+    int max_k = (*n_r)[0].size() - 1;
+
+    if (depth > max_n) return;
+
+    if (depth > 0) {
+        (*n_r)[depth][0]++;
+        if (node->count <= max_k) {
+            (*n_r)[depth][node->count]++;
+        }
+    }
+
+    for (std::unordered_map<size_t, CountTrie::Node*>::iterator it = node->children.begin(); it != node->children.end(); ++it) {
+        CountNGramsRec(it->second, depth + 1, n_r);
+    }
+
+    if (depth == 0) {
+        for (int i = 1; i <= max_n; ++i) {
+            (*n_r)[i][0] = (int) (pow(VocabSize(), i) - (*n_r)[i][0]);
+        }
+    }
+}

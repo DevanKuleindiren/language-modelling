@@ -26,6 +26,7 @@ private:
     Node *root;
     int n;
     Node *GetNode(std::list<size_t>, bool);
+    void CountNGramsRec(Node *, int, std::vector<std::vector<int>> *);
 public:
     CountTrie(int n) : root(new Node()), n(n) {}
     void ProcessFile(std::string, Vocab *);
@@ -38,6 +39,7 @@ public:
     void Insert(std::list<size_t>);
     void ComputeCountsAndSums(Node *, std::list<size_t>);
     Node *GetRoot();
+    void CountNGrams(std::vector<std::vector<int>> *);
 };
 
 #endif /* count_trie_h */

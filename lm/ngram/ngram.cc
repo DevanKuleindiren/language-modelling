@@ -35,14 +35,10 @@ void NGram::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<st
 
 void NGram::ProcessFile(std::string file_name) {
     vocab->ProcessFile(file_name);
-    CountTrie *countTrie = new CountTrie(n);
-    countTrie->ProcessFile(file_name, vocab);
-
-    std::cout << "Populating probability trie..." << std::endl;
-    std::list<size_t> seq;
-    PopulateProbTrie(countTrie, countTrie->GetRoot(), 0, seq);
-    std::cout << "Done." << std::endl;
-
+    CountTrie *count_trie = new CountTrie(n);
+    count_trie->ProcessFile(file_name, vocab);
+    std::cout << "Processing probability trie..." << std::endl;
+    ProcessCountTrie(count_trie);
     trained = true;
 }
 
@@ -75,6 +71,11 @@ void NGram::Save(std::string directory_path) {
     } else {
         std::cout << "Saved ngram proto." << std::endl;
     }
+}
+
+void NGram::ProcessCountTrie(CountTrie *count_trie) {
+    std::list<size_t> seq;
+    PopulateProbTrie(count_trie, count_trie->GetRoot(), 0, seq);
 }
 
 void NGram::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, int depth, std::list<size_t> seq) {
