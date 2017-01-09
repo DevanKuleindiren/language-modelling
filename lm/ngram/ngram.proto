@@ -8,7 +8,7 @@ message NGramProto {
     int32 n = 1;
     Smoothing smoothing = 2;
     ProbTrieProto prob_trie = 3;
-    double discount = 4;
+    repeated double discount = 4;
 }
 
 enum Smoothing {
@@ -17,5 +17,5 @@ enum Smoothing {
     KATZ = 2;
     ABSOLUTE_DISCOUNTING = 3;
     KNESER_NEY = 4;
-    MODIFIED_KNESER_NEY = 5;
+    KNESER_NEY_MOD = 5;
 }

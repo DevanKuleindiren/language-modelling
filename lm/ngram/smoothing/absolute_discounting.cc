@@ -18,7 +18,7 @@ bool AbsoluteDiscounting::operator==(const NGram &to_compare) {
 tensorflow::Source::lm::ngram::NGramProto *AbsoluteDiscounting::ToProto() {
     tensorflow::Source::lm::ngram::NGramProto *ngram_proto = NGram::ToProto();
     ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::ABSOLUTE_DISCOUNTING);
-    ngram_proto->set_discount(discount);
+    ngram_proto->add_discount(discount);
     return ngram_proto;
 }
 

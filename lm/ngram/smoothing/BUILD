@@ -90,3 +90,25 @@ cc_test(
         "//tensorflow/core:test_main",
     ],
 )
+
+cc_library(
+    name = "kneser_ney_mod",
+    srcs = ["kneser_ney_mod.cc"],
+    hdrs = ["kneser_ney_mod.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":kneser_ney",
+        "//tensorflow/Source/lm/ngram:ngram",
+    ],
+)
+
+cc_test(
+    name = "kneser_ney_mod_test",
+    size = "small",
+    srcs = ["kneser_ney_mod_test.cc"],
+    deps = [
+        ":kneser_ney_mod",
+        "//tensorflow/core:test",
+        "//tensorflow/core:test_main",
+    ],
+)

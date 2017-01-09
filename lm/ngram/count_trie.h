@@ -32,6 +32,7 @@ public:
     void ProcessFile(std::string, Vocab *);
     int Count(std::list<size_t>);
     int CountFollowing(std::list<size_t>);
+    int CountFollowing(std::list<size_t>, int, bool);
     int CountPreceding(std::list<size_t>);
     int CountPrecedingAndFollowing(std::list<size_t>);
     int SumFollowing(std::list<size_t>);

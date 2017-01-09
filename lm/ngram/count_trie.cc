@@ -62,6 +62,21 @@ int CountTrie::CountFollowing(std::list<size_t> seq) {
     return 0;
 }
 
+int CountTrie::CountFollowing(std::list<size_t> seq, int count, bool is_min) {
+    CountTrie::Node *node = GetNode(seq, false);
+    int result = 0;
+    if (node) {
+        for (std::unordered_map<size_t, Node*>::iterator it = node->children.begin(); it != node->children.end(); ++it) {
+            if (is_min && (it->second)->count >= count) {
+                result++;
+            } else if (!is_min && (it->second)->count == count) {
+                result++;
+            }
+        }
+    }
+    return result;
+}
+
 int CountTrie::CountPreceding(std::list<size_t> seq) {
     CountTrie::Node *node = GetNode(seq, false);
     if (node) {

@@ -7,7 +7,7 @@ KneserNey::KneserNey(std::string file_name, int n, int min_frequency) : Absolute
 tensorflow::Source::lm::ngram::NGramProto *KneserNey::ToProto() {
     tensorflow::Source::lm::ngram::NGramProto *ngram_proto = NGram::ToProto();
     ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::KNESER_NEY);
-    ngram_proto->set_discount(discount);
+    ngram_proto->add_discount(discount);
     return ngram_proto;
 }
 
@@ -22,13 +22,14 @@ void KneserNey::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, in
             pseudo_prob_numerator = countTrie->CountPreceding(seq);
             pseudo_prob_denominator = countTrie->CountPrecedingAndFollowing(std::list<size_t>({}));
         } else if (depth == n) {
-            pseudo_prob_numerator = std::max(countTrie->Count(seq) - discount, 0.0);
+            int count = countTrie->Count(seq);
+            pseudo_prob_numerator = std::max(count - Discount(depth, count), 0.0);
             size_t last_word_index = seq.back();
             seq.pop_back();
             pseudo_prob_denominator = countTrie->SumFollowing(seq);
             seq.push_back(last_word_index);
         } else {
-            pseudo_prob_numerator = std::max(countTrie->CountPreceding(seq) - discount, 0.0);
+            pseudo_prob_numerator = std::max(countTrie->CountPreceding(seq) - Discount(depth, countTrie->Count(seq)), 0.0);
             size_t last_word_index = seq.back();
             seq.pop_back();
             pseudo_prob_denominator = countTrie->CountPrecedingAndFollowing(seq);
@@ -47,7 +48,7 @@ void KneserNey::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, in
             backoff_denominator = countTrie->CountPrecedingAndFollowing(seq);
         }
         if (backoff_denominator > 0) {
-            backoff = (discount * countTrie->CountFollowing(seq)) / backoff_denominator;
+            backoff = BackoffNumerator(countTrie, depth, seq) / backoff_denominator;
         }
 
         prob_trie->Insert(seq, pseudo_prob, backoff);
@@ -57,4 +58,12 @@ void KneserNey::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, in
         PopulateProbTrie(countTrie, it->second, depth + 1, seq);
         seq.pop_back();
     }
+}
+
+double KneserNey::Discount(int n, int count) {
+    return discount;
+}
+
+double KneserNey::BackoffNumerator(CountTrie *count_trie, int depth, std::list<size_t> seq) {
+    return discount * count_trie->CountFollowing(seq);
 }

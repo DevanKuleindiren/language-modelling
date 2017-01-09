@@ -1,10 +1,10 @@
-#include "kneser_ney.h"
+#include "kneser_ney_mod.h"
 #include "tensorflow/core/platform/test.h"
 #include <fstream>
 #include <google/protobuf/util/message_differencer.h>
 
 
-class KneserNeyTest : public ::testing::Test {
+class KneserNeyModTest : public ::testing::Test {
 protected:
     virtual void SetUp() {
         std::ofstream test_file;
@@ -15,9 +15,9 @@ protected:
         test_file << "the dog sat on the cat .\n";
         test_file.close();
 
-        under_test = new KneserNey(test_file_name, 3, 1);
+        under_test = new KneserNeyMod(test_file_name, 3, 1);
     }
-    KneserNey *under_test;
+    KneserNeyMod *under_test;
 };
 
 void SetChildProperties(tensorflow::Source::lm::ngram::Node::Child *child, int id, tensorflow::Source::lm::ngram::Node *node) {
@@ -32,35 +32,38 @@ tensorflow::Source::lm::ngram::Node *BuildNode(double pseudo_prob, double backof
     return node;
 }
 
-TEST_F(KneserNeyTest, Prob) {
-    // Discount, d = n_1 / (n_1 + 2n_2) = 13/17.
-    // P(cat|<s> the) = (2-d)/3 + ((dx2)/3)((2-d/5) + (dx4/5)(1/14))
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), (7/17.0) + (4498/30345.0));
+TEST_F(KneserNeyModTest, Prob) {
+    // Discounts:
+    // d_3_1 = 13/17, d_3_2 = 2, d_3_3 = 3
+    // d_2_1 = 5/17, d_2_2 = -1/7, d_2_3 = 3
 
-    // P(sat|the cat) = (1-d)/3 + ((dx3)/3)((1-d/3) + (dx3/3)(2/14))
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 449/2023.0);
+    // P(cat|<s> the) = (0)/3 + ((d_3_1x1 + d_3_2x2)/3)((0/5) + (d_2_1x3 + d_2_3x1/5)(1/14))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), 282/4165.0);
 
-    // P(mat|on the) = (1-d)/2 + ((dx2)/2)((1-d/6) + (dx4/6)(1/20))
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 1892/10115.0);
+    // P(sat|the cat) = (1-d_3_1)/3 + ((d_3_1x3)/3)((1-d_2_1/3) + (d_2_1x1/3)(2/14))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 191/833.0);
 
-    // P(sat|the mouse) = (0)/1 + ((dx1)/1)((0/1) + (dx1/1)(2/14))
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 169/2023.0);
+    // P(mat|on the) = (1-d_3_1)/2 + ((d_3_1x2)/2)((1-d_2_1/5) + (d_2_1x3 + d_2_3x1/5)(1/14))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 906/4165.0);
 
-    // P(.|the mouse) = (1-d)/1 + ((dx1)/1)((1-d/1) + (dx1/1)(3/14))
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 2187/4046.0);
+    // P(sat|the mouse) = (0)/1 + ((d_3_1x1)/1)((0/1) + (d_2_1x1/1)(2/14))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 65/833.0);
+
+    // P(.|the mouse) = (1-d_3_1)/1 + ((d_3_1x1)/1)((1-d_2_1/1) + (d_2_1x1/1)(3/14))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 951/1666.0);
 
     // P(blah|blah blah) = 0
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"blah", "blah", "blah"})), 0.0);
 }
 
-TEST(KneserNeyTestToProto, ToProto) {
+TEST(KneserNeyModTestToProto, ToProto) {
     std::ofstream test_file;
     std::string test_file_name = "/tmp/kneser_ney_test_file";
     test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
     test_file << "the the cat\n";
     test_file.close();
 
-    KneserNey *under_test = new KneserNey(test_file_name, 2, 1);
+    KneserNeyMod *under_test = new KneserNeyMod(test_file_name, 2, 1);
 
     tensorflow::Source::lm::ngram::NGramProto *expected_ngram_proto = new tensorflow::Source::lm::ngram::NGramProto();
     tensorflow::Source::lm::ngram::NGramProto *actual_ngram_proto = under_test->ToProto();
@@ -77,8 +80,10 @@ TEST(KneserNeyTestToProto, ToProto) {
     */
 
     expected_ngram_proto->set_n(2);
-    expected_ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::KNESER_NEY);
+    expected_ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::KNESER_NEY_MOD);
     expected_ngram_proto->add_discount(1);
+    expected_ngram_proto->add_discount(2);
+    expected_ngram_proto->add_discount(3);
 
     tensorflow::Source::lm::ngram::ProbTrieProto *prob_trie_proto = new tensorflow::Source::lm::ngram::ProbTrieProto();
 

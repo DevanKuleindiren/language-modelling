@@ -69,6 +69,25 @@ TEST_F(CountTrieTest, CountFollowing) {
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({10, 4})), 1);
 }
 
+TEST_F(CountTrieTest, CountFollowingSpecific) {
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({}), 0, true), 10);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({}), 1, false), 4);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({}), 2, true), 5);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({}), 2, false), 2);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({}), 6, false), 1);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({11}), 1, true), 0);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({11, 11}), 3, false), 0);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({11, 11, 11}), 1, true), 0);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({2}), 1, false), 3);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({2}), 2, false), 0);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({2}), 2, true), 1);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({2}), 3, false), 1);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({2}), 4, false), 0);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({10, 4}), 1, true), 1);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({10, 4}), 1, false), 1);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({10, 4}), 2, false), 0);
+}
+
 TEST_F(CountTrieTest, CountPreceding) {
     EXPECT_EQ(under_test->CountPreceding(std::list<size_t>({})), 0);
     EXPECT_EQ(under_test->CountPreceding(std::list<size_t>({11})), 0);

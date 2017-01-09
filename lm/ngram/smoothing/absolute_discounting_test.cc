@@ -78,7 +78,7 @@ TEST(AbsoluteDiscountingTestToProto, ToProto) {
 
     expected_ngram_proto->set_n(2);
     expected_ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::ABSOLUTE_DISCOUNTING);
-    expected_ngram_proto->set_discount(1);
+    expected_ngram_proto->add_discount(1);
 
     tensorflow::Source::lm::ngram::ProbTrieProto *prob_trie_proto = new tensorflow::Source::lm::ngram::ProbTrieProto();
 

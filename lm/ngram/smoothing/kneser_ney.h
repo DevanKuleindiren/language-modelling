@@ -7,11 +7,14 @@
 
 class KneserNey : public AbsoluteDiscounting {
 protected:
-    void PopulateProbTrie(CountTrie *, CountTrie::Node *, int, std::list<size_t>);
+    KneserNey(int n, int min_frequency) : AbsoluteDiscounting(n, min_frequency) {}
+    virtual void PopulateProbTrie(CountTrie *, CountTrie::Node *, int, std::list<size_t>);
+    virtual double Discount(int, int);
+    virtual double BackoffNumerator(CountTrie *, int, std::list<size_t>);
 public:
     KneserNey(std::string file_name, int n, int min_frequency);
     KneserNey(int n, double discount, ProbTrie *prob_trie, Vocab *vocab) : AbsoluteDiscounting(n, discount, prob_trie, vocab) {}
-    tensorflow::Source::lm::ngram::NGramProto *ToProto();
+    virtual tensorflow::Source::lm::ngram::NGramProto *ToProto();
 };
 
 #endif // kneser_ney.h

@@ -23,7 +23,7 @@ NGram *Load(std::string directory_path) {
 
     switch (ngram_proto->smoothing()) {
         case tensorflow::Source::lm::ngram::Smoothing::ABSOLUTE_DISCOUNTING: {
-            ngram = new AbsoluteDiscounting(n, ngram_proto->discount(), prob_trie, vocab);
+            ngram = new AbsoluteDiscounting(n, ngram_proto->discount(0), prob_trie, vocab);
             break;
         }
         case tensorflow::Source::lm::ngram::Smoothing::ADD_ONE: {
@@ -35,7 +35,7 @@ NGram *Load(std::string directory_path) {
             break;
         }
         case tensorflow::Source::lm::ngram::Smoothing::KNESER_NEY: {
-            ngram = new KneserNey(n, ngram_proto->discount(), prob_trie, vocab);
+            ngram = new KneserNey(n, ngram_proto->discount(0), prob_trie, vocab);
             break;
         }
         default: {
