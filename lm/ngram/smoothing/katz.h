@@ -13,8 +13,7 @@ protected:
     void PopulateProbTriePseudoProb(CountTrie *, CountTrie::Node *, std::vector<std::vector<double>> *, int, std::list<size_t>);
     void PopulateProbTrieBackoff(ProbTrie *, ProbTrie::Node *, int, std::list<size_t>);
 public:
-    Katz(int n) : Katz(n, 1) {}
-    Katz(int n, int min_frequency) : NGram(n, min_frequency) {}
+    Katz(std::string file_name, int n, int min_frequency);
     Katz(int n, ProbTrie *prob_trie, Vocab *vocab) : NGram(n, prob_trie, vocab) {}
     virtual std::pair<int, int> ContextSize();
     virtual double Prob(std::list<std::string>);

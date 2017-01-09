@@ -28,8 +28,6 @@ LSTM::LSTM(std::string directory_path) {
     if (!status.ok()) {
         std::cout << status.ToString() << std::endl;
     }
-
-    trained = true;
 }
 
 std::pair<int, int> LSTM::ContextSize() {
@@ -48,10 +46,6 @@ double LSTM::Prob(std::list<std::string> seq) {
 }
 
 void LSTM::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &probs) {
-    if (!trained) {
-        throw UntrainedException();
-    }
-
     std::list<size_t> seq_ids = WordsToIds(seq);
     seq_ids = Trim(seq_ids, ContextSize().second);
 

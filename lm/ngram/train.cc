@@ -68,17 +68,15 @@ int main(int argc, char* argv[]) {
 
     NGram *lm;
     if (smoothing.compare(ABSD) == 0) {
-        lm = new AbsoluteDiscounting(n, std::atof(discount.c_str()), min_frequency);
+        lm = new AbsoluteDiscounting(training_path, n, std::atof(discount.c_str()), min_frequency);
     } else if (smoothing.compare(ADD1) == 0) {
-        lm = new AddOne(n, min_frequency);
+        lm = new AddOne(training_path, n, min_frequency);
     } else if (smoothing.compare(KATZ) == 0) {
-        lm = new Katz(n, min_frequency);
+        lm = new Katz(training_path, n, min_frequency);
     } else if (smoothing.compare(KNES) == 0) {
-        lm = new KneserNey(n, std::atof(discount.c_str()), min_frequency);
+        lm = new KneserNey(training_path, n, std::atof(discount.c_str()), min_frequency);
     } else {
-        lm = new NGram(n, min_frequency);
+        lm = new NGram(training_path, n, min_frequency);
     }
-
-    lm->ProcessFile(training_path);
     lm->Save(save_path);
 }

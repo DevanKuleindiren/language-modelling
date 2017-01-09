@@ -5,10 +5,6 @@ bool LM::ContainsWord(std::string word) {
 }
 
 void LM::Predict(std::list<std::string> seq, std::pair<std::string, double> &prediction) {
-    if (!trained) {
-        throw UntrainedException();
-    }
-
     std::list<std::pair<std::string, double>> probs;
     ProbAllFollowing(seq, probs);
 
@@ -24,10 +20,6 @@ void LM::Predict(std::list<std::string> seq, std::pair<std::string, double> &pre
 }
 
 void LM::PredictTopK(std::list<std::string> seq, std::list<std::pair<std::string, double>> &predictions, int k) {
-    if (!trained) {
-        throw UntrainedException();
-    }
-
     std::priority_queue<std::pair<std::string, double>, std::vector<std::pair<std::string, double>>, PredictionCompare> min_heap_max_predictions;
     std::list<std::pair<std::string, double>> probs;
     ProbAllFollowing(seq, probs);

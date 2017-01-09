@@ -1,5 +1,9 @@
 #include "absolute_discounting.h"
 
+AbsoluteDiscounting::AbsoluteDiscounting(std::string file_name, int n, double discount, int min_frequency) : NGram(n, min_frequency), discount(discount) {
+    ProcessFile(file_name);
+}
+
 std::pair<int, int> AbsoluteDiscounting::ContextSize() {
     return std::make_pair(1, n);
 }

@@ -7,8 +7,6 @@
 class KatzTest : public ::testing::Test {
 protected:
     virtual void SetUp() {
-        under_test = new Katz(3);
-
         std::ofstream test_file;
         std::string test_file_name = "/tmp/katz_test_file";
         test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
@@ -17,7 +15,7 @@ protected:
         test_file << "the dog sat on the cat .\n";
         test_file.close();
 
-        under_test->ProcessFile(test_file_name);
+        under_test = new Katz(test_file_name, 3, 1);
     }
     Katz *under_test;
 };
@@ -47,15 +45,13 @@ TEST_F(KatzTest, Prob) {
 }
 
 TEST(KatzTestToProto, ToProto) {
-    Katz *under_test = new Katz(2, 1);
-
     std::ofstream test_file;
     std::string test_file_name = "/tmp/katz_test_file";
     test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
     test_file << "the the cat\n";
     test_file.close();
 
-    under_test->ProcessFile(test_file_name);
+    Katz *under_test = new Katz(test_file_name, 2, 1);
 
     tensorflow::Source::lm::ngram::NGramProto *expected_ngram_proto = new tensorflow::Source::lm::ngram::NGramProto();
     tensorflow::Source::lm::ngram::NGramProto *actual_ngram_proto = under_test->ToProto();

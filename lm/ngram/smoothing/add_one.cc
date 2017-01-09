@@ -1,14 +1,13 @@
 #include "add_one.h"
 
+AddOne::AddOne(std::string file_name, int n, int min_frequency) : NGram(n, min_frequency) {
+     ProcessFile(file_name);
+}
 double AddOne::Prob(std::list<std::string> seq) {
     return Prob(WordsToIds(seq));
 }
 
 double AddOne::Prob(std::list<size_t> seq) {
-    if (!trained) {
-        throw UntrainedException();
-    }
-
     // Add one smoothing doesn't exhibit any backoff.
     if (seq.size() < n) {
         return 0;

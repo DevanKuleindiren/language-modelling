@@ -1,5 +1,9 @@
 #include "ngram.h"
 
+NGram::NGram(std::string file_name, int n, int min_frequency) : LM(min_frequency), n(n), prob_trie(new ProbTrie()) {
+    ProcessFile(file_name);
+}
+
 std::pair<int, int> NGram::ContextSize() {
     return std::make_pair(n - 1, n);
 }
@@ -9,10 +13,6 @@ double NGram::Prob(std::list<std::string> seq) {
 }
 
 double NGram::Prob(std::list<size_t> seq) {
-    if (!trained) {
-        throw UntrainedException();
-    }
-
     // Trim off any words in the sequence beyond the value of n.
     seq = Trim(seq, n);
 
@@ -20,10 +20,6 @@ double NGram::Prob(std::list<size_t> seq) {
 }
 
 void NGram::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &probs) {
-    if (!trained) {
-        throw UntrainedException();
-    }
-
     std::list<size_t> seq_ids = WordsToIds(seq);
     seq_ids = Trim(seq_ids, n - 1);
     for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
@@ -33,20 +29,10 @@ void NGram::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<st
     }
 }
 
-void NGram::ProcessFile(std::string file_name) {
-    vocab->ProcessFile(file_name);
-    CountTrie *count_trie = new CountTrie(n);
-    count_trie->ProcessFile(file_name, vocab);
-    std::cout << "Processing probability trie..." << std::endl;
-    ProcessCountTrie(count_trie);
-    trained = true;
-}
-
 bool NGram::operator==(const NGram &to_compare) {
     return (n == to_compare.n)
         && (*prob_trie == *to_compare.prob_trie)
-        && (*vocab == *to_compare.vocab)
-        && (trained == to_compare.trained);
+        && (*vocab == *to_compare.vocab);
 }
 
 tensorflow::Source::lm::ngram::NGramProto *NGram::ToProto() {
@@ -71,6 +57,14 @@ void NGram::Save(std::string directory_path) {
     } else {
         std::cout << "Saved ngram proto." << std::endl;
     }
+}
+
+void NGram::ProcessFile(std::string file_name) {
+    vocab->ProcessFile(file_name);
+    CountTrie *count_trie = new CountTrie(n);
+    count_trie->ProcessFile(file_name, vocab);
+    std::cout << "Processing probability trie..." << std::endl;
+    ProcessCountTrie(count_trie);
 }
 
 void NGram::ProcessCountTrie(CountTrie *count_trie) {

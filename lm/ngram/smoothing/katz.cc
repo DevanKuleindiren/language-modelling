@@ -1,5 +1,9 @@
 #include "katz.h"
 
+Katz::Katz(std::string file_name, int n, int min_frequency) : NGram(n, min_frequency) {
+    ProcessFile(file_name);
+}
+
 std::pair<int, int> Katz::ContextSize() {
     return std::make_pair(1, n);
 }
@@ -9,10 +13,6 @@ double Katz::Prob(std::list<std::string> seq) {
 }
 
 double Katz::Prob(std::list<size_t> seq) {
-    if (!trained) {
-        throw UntrainedException();
-    }
-
     // Trim off any words in the sequence beyond the value of n.
     seq = Trim(seq, n);
 

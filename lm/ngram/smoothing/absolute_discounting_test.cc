@@ -7,8 +7,6 @@
 class AbsoluteDiscountingTest : public ::testing::Test {
 protected:
     virtual void SetUp() {
-        under_test = new AbsoluteDiscounting(3, 0.5);
-
         std::ofstream test_file;
         std::string test_file_name = "/tmp/absolute_discounting_test_file";
         test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
@@ -17,7 +15,7 @@ protected:
         test_file << "the dog sat on the cat .\n";
         test_file.close();
 
-        under_test->ProcessFile(test_file_name);
+        under_test = new AbsoluteDiscounting(test_file_name, 3, 0.5, 1);
     }
     AbsoluteDiscounting *under_test;
 };
@@ -44,15 +42,13 @@ TEST_F(AbsoluteDiscountingTest, Prob) {
 }
 
 TEST(AbsoluteDiscountingTestToProto, ToProto) {
-    AbsoluteDiscounting *under_test = new AbsoluteDiscounting(2, 0.5, 1);
-
     std::ofstream test_file;
     std::string test_file_name = "/tmp/absolute_discounting_test_file";
     test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
     test_file << "the the cat\n";
     test_file.close();
 
-    under_test->ProcessFile(test_file_name);
+    AbsoluteDiscounting *under_test = new AbsoluteDiscounting(test_file_name, 2, 0.5, 1);
 
     tensorflow::Source::lm::ngram::NGramProto *expected_ngram_proto = new tensorflow::Source::lm::ngram::NGramProto();
     tensorflow::Source::lm::ngram::NGramProto *actual_ngram_proto = under_test->ToProto();
