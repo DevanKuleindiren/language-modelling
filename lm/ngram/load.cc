@@ -38,6 +38,14 @@ NGram *Load(std::string directory_path) {
             ngram = new KneserNey(n, ngram_proto->discount(0), prob_trie, vocab);
             break;
         }
+        case tensorflow::Source::lm::ngram::Smoothing::KNESER_NEY_MOD: {
+            std::list<double> discounts;
+            for (int i = 0; i < ngram_proto->discount_size(); i++) {
+                discounts.push_back(ngram_proto->discount(i));
+            }
+            ngram = new KneserNeyMod(n, discounts, prob_trie, vocab);
+            break;
+        }
         default: {
             ngram = new NGram(n, prob_trie, vocab);
             break;

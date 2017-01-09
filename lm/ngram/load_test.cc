@@ -59,3 +59,12 @@ TEST(LoadTest, KneserNey) {
 
     ASSERT_TRUE(*under_test == *under_test_loaded);
 }
+
+TEST(LoadTest, KneserNeyMod) {
+    NGram *under_test = new KneserNeyMod(::SetUp(), 3, 1);
+    under_test->Save("/tmp");
+
+    NGram *under_test_loaded = Load("/tmp");
+
+    ASSERT_TRUE(*under_test == *under_test_loaded);
+}

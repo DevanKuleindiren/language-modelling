@@ -92,6 +92,7 @@ cc_binary(
         "//tensorflow/Source/lm/ngram/smoothing:add_one",
         "//tensorflow/Source/lm/ngram/smoothing:katz",
         "//tensorflow/Source/lm/ngram/smoothing:kneser_ney",
+        "//tensorflow/Source/lm/ngram/smoothing:kneser_ney_mod",
     ],
 )
 
@@ -106,6 +107,7 @@ cc_library(
         "//tensorflow/Source/lm/ngram/smoothing:add_one",
         "//tensorflow/Source/lm/ngram/smoothing:katz",
         "//tensorflow/Source/lm/ngram/smoothing:kneser_ney",
+        "//tensorflow/Source/lm/ngram/smoothing:kneser_ney_mod",
         "//tensorflow/Source/lm:vocab",
     ],
     visibility = ["//visibility:public"],

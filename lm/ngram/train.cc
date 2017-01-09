@@ -3,6 +3,7 @@
 #include "smoothing/absolute_discounting.h"
 #include "smoothing/add_one.h"
 #include "smoothing/katz.h"
+#include "smoothing/kneser_ney_mod.h"
 #include "smoothing/kneser_ney.h"
 #include "tensorflow/core/platform/init_main.h"
 #include "tensorflow/core/util/command_line_flags.h"
@@ -11,6 +12,7 @@
 #define ADD1 std::string("add_one")
 #define KATZ std::string("katz")
 #define KNES std::string("kneser_ney")
+#define KNSM std::string("kneser_ney_mod")
 
 void usage(char* const argv_0) {
     std::cerr << "Usage: " << argv_0
@@ -20,7 +22,7 @@ void usage(char* const argv_0) {
     std::cerr << "    N        is the N (a positive integer) in N-gram." << std::endl;
     std::cerr << "    MIN_FREQ is the minimum number of times a word must be seen to not be OOV." << std::endl;
     std::cerr << "    SMOOTH   is the smoothing method applied (one of: ";
-    std::cerr << ABSD << ", " << ADD1 << ", " << KATZ << " or " << KNES << ")." << std::endl;
+    std::cerr << ABSD << ", " << ADD1 << ", " << KATZ << ", " << KNES  << " or " << KNSM << ")." << std::endl;
     std::cerr << "    T_PATH   is the file path to the training data." << std::endl;
     std::cerr << "    S_PATH   is the directory in which the trained model should be saved." << std::endl;
 }
@@ -71,6 +73,8 @@ int main(int argc, char* argv[]) {
         lm = new Katz(training_path, n, min_frequency);
     } else if (smoothing.compare(KNES) == 0) {
         lm = new KneserNey(training_path, n, min_frequency);
+    } else if (smoothing.compare(KNSM) == 0) {
+        lm = new KneserNeyMod(training_path, n, min_frequency);
     } else {
         lm = new NGram(training_path, n, min_frequency);
     }
