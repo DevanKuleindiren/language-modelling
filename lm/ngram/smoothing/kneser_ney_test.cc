@@ -15,7 +15,7 @@ protected:
         test_file << "the dog sat on the cat .\n";
         test_file.close();
 
-        under_test = new KneserNey(test_file_name, 3, 0.5, 1);
+        under_test = new KneserNey(test_file_name, 3, 1);
     }
     KneserNey *under_test;
 };
@@ -33,11 +33,23 @@ tensorflow::Source::lm::ngram::Node *BuildNode(double pseudo_prob, double backof
 }
 
 TEST_F(KneserNeyTest, Prob) {
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), 64/105.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 2/7.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 11/35.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 1/28.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 45/56.0);
+    // Discount, d = n_1 / (n_1 + 2n_2) = 13/17.
+    // P(cat|<s> the) = (2-d)/3 + ((dx2)/3)((2-d/5) + (dx4/5)(1/14))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), (7/17.0) + (4498/30345.0));
+
+    // P(sat|the cat) = (1-d)/3 + ((dx3)/3)((1-d/3) + (dx3/3)(2/14))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 449/2023.0);
+
+    // P(mat|on the) = (1-d)/2 + ((dx2)/2)((1-d/6) + (dx4/6)(1/20))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 1892/10115.0);
+
+    // P(sat|the mouse) = (0)/1 + ((dx1)/1)((0/1) + (dx1/1)(2/14))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 169/2023.0);
+
+    // P(.|the mouse) = (1-d)/1 + ((dx1)/1)((1-d/1) + (dx1/1)(3/14))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 2187/4046.0);
+
+    // P(blah|blah blah) = 0
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"blah", "blah", "blah"})), 0.0);
 }
 
@@ -48,7 +60,7 @@ TEST(KneserNeyTestToProto, ToProto) {
     test_file << "the the cat\n";
     test_file.close();
 
-    KneserNey *under_test = new KneserNey(test_file_name, 2, 0.5, 1);
+    KneserNey *under_test = new KneserNey(test_file_name, 2, 1);
 
     tensorflow::Source::lm::ngram::NGramProto *expected_ngram_proto = new tensorflow::Source::lm::ngram::NGramProto();
     tensorflow::Source::lm::ngram::NGramProto *actual_ngram_proto = under_test->ToProto();
@@ -66,19 +78,19 @@ TEST(KneserNeyTestToProto, ToProto) {
 
     expected_ngram_proto->set_n(2);
     expected_ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::KNESER_NEY);
-    expected_ngram_proto->set_discount(0.5);
+    expected_ngram_proto->set_discount(1);
 
     tensorflow::Source::lm::ngram::ProbTrieProto *prob_trie_proto = new tensorflow::Source::lm::ngram::ProbTrieProto();
 
-    tensorflow::Source::lm::ngram::Node *node_e = ::BuildNode(0.25, 1);
-    tensorflow::Source::lm::ngram::Node *node_f = ::BuildNode(0.25, 1);
-    tensorflow::Source::lm::ngram::Node *node_g = ::BuildNode(0.5, 1);
+    tensorflow::Source::lm::ngram::Node *node_e = ::BuildNode(0, 1);
+    tensorflow::Source::lm::ngram::Node *node_f = ::BuildNode(0, 1);
+    tensorflow::Source::lm::ngram::Node *node_g = ::BuildNode(0, 1);
 
-    tensorflow::Source::lm::ngram::Node *node_b = ::BuildNode(2/3.0, 0.5);
+    tensorflow::Source::lm::ngram::Node *node_b = ::BuildNode(2/3.0, 1);
     SetChildProperties(node_b->add_child(), 2, node_e);
     SetChildProperties(node_b->add_child(), 3, node_f);
 
-    tensorflow::Source::lm::ngram::Node *node_c = ::BuildNode(0, 0.5);
+    tensorflow::Source::lm::ngram::Node *node_c = ::BuildNode(0, 1);
     SetChildProperties(node_c->add_child(), 2, node_g);
 
     tensorflow::Source::lm::ngram::Node *node_d = ::BuildNode(1/3.0, 1);

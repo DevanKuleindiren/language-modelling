@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <vector>
 #include "ngram.h"
 #include "smoothing/absolute_discounting.h"
@@ -15,14 +14,13 @@
 
 void usage(char* const argv_0) {
     std::cerr << "Usage: " << argv_0
-              << " --n=N --min_frequency=MIN_FREQ --smoothing=SMOOTH --discount=D --training_path=T_PATH "
+              << " --n=N --min_frequency=MIN_FREQ --smoothing=SMOOTH --training_path=T_PATH "
               << "--save_path=S_PATH" << std::endl;
     std::cerr << "Where:" << std::endl;
     std::cerr << "    N        is the N (a positive integer) in N-gram." << std::endl;
     std::cerr << "    MIN_FREQ is the minimum number of times a word must be seen to not be OOV." << std::endl;
     std::cerr << "    SMOOTH   is the smoothing method applied (one of: ";
     std::cerr << ABSD << ", " << ADD1 << ", " << KATZ << " or " << KNES << ")." << std::endl;
-    std::cerr << "    D        is the discount, 0 <= D <= 1, used in any of: " << KNES << "." << std::endl;
     std::cerr << "    T_PATH   is the file path to the training data." << std::endl;
     std::cerr << "    S_PATH   is the directory in which the trained model should be saved." << std::endl;
 }
@@ -33,7 +31,6 @@ int main(int argc, char* argv[]) {
     int n = 0;
     int min_frequency = 1;
     tensorflow::string smoothing;
-    std::string discount = "0.5";
     std::string training_path;
     std::string save_path;
 
@@ -41,7 +38,6 @@ int main(int argc, char* argv[]) {
         tensorflow::Flag("n", &n),
         tensorflow::Flag("min_frequency", &min_frequency),
         tensorflow::Flag("smoothing", &smoothing),
-        tensorflow::Flag("discount", &discount),
         tensorflow::Flag("training_path", &training_path),
         tensorflow::Flag("save_path", &save_path),
     });
@@ -68,13 +64,13 @@ int main(int argc, char* argv[]) {
 
     NGram *lm;
     if (smoothing.compare(ABSD) == 0) {
-        lm = new AbsoluteDiscounting(training_path, n, std::atof(discount.c_str()), min_frequency);
+        lm = new AbsoluteDiscounting(training_path, n, min_frequency);
     } else if (smoothing.compare(ADD1) == 0) {
         lm = new AddOne(training_path, n, min_frequency);
     } else if (smoothing.compare(KATZ) == 0) {
         lm = new Katz(training_path, n, min_frequency);
     } else if (smoothing.compare(KNES) == 0) {
-        lm = new KneserNey(training_path, n, std::atof(discount.c_str()), min_frequency);
+        lm = new KneserNey(training_path, n, min_frequency);
     } else {
         lm = new NGram(training_path, n, min_frequency);
     }

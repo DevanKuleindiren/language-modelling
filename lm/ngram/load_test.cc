@@ -25,7 +25,7 @@ TEST(LoadTest, NGram) {
 }
 
 TEST(LoadTest, AbsoluteDiscounting) {
-    NGram *under_test = new AbsoluteDiscounting(::SetUp(), 3, 0.5, 1);
+    NGram *under_test = new AbsoluteDiscounting(::SetUp(), 3, 1);
     under_test->Save("/tmp");
 
     NGram *under_test_loaded = Load("/tmp");
@@ -52,7 +52,7 @@ TEST(LoadTest, Katz) {
 }
 
 TEST(LoadTest, KneserNey) {
-    NGram *under_test = new KneserNey(::SetUp(), 3, 0.5, 1);
+    NGram *under_test = new KneserNey(::SetUp(), 3, 1);
     under_test->Save("/tmp");
 
     NGram *under_test_loaded = Load("/tmp");

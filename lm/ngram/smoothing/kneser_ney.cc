@@ -1,18 +1,7 @@
 #include "kneser_ney.h"
 
-KneserNey::KneserNey(std::string file_name, int n, double discount, int min_frequency) : NGram(n, min_frequency), discount(discount) {
+KneserNey::KneserNey(std::string file_name, int n, int min_frequency) : AbsoluteDiscounting(n, min_frequency) {
     ProcessFile(file_name);
-}
-
-std::pair<int, int> KneserNey::ContextSize() {
-    return std::make_pair(1, n);
-}
-
-bool KneserNey::operator==(const NGram &to_compare) {
-    if (const KneserNey *to_compare_kn = dynamic_cast<const KneserNey*>(&to_compare)) {
-        return NGram::operator==(to_compare) && (discount == to_compare_kn->discount);
-    }
-    return false;
 }
 
 tensorflow::Source::lm::ngram::NGramProto *KneserNey::ToProto() {

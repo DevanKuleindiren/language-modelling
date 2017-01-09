@@ -1,11 +1,34 @@
 #include "absolute_discounting.h"
 
-AbsoluteDiscounting::AbsoluteDiscounting(std::string file_name, int n, double discount, int min_frequency) : NGram(n, min_frequency), discount(discount) {
+AbsoluteDiscounting::AbsoluteDiscounting(std::string file_name, int n, int min_frequency) : NGram(n, min_frequency) {
     ProcessFile(file_name);
 }
 
 std::pair<int, int> AbsoluteDiscounting::ContextSize() {
     return std::make_pair(1, n);
+}
+
+bool AbsoluteDiscounting::operator==(const NGram &to_compare) {
+    if (const AbsoluteDiscounting *to_compare_ads = dynamic_cast<const AbsoluteDiscounting*>(&to_compare)) {
+        return NGram::operator==(to_compare) && (discount == to_compare_ads->discount);
+    }
+    return false;
+}
+
+tensorflow::Source::lm::ngram::NGramProto *AbsoluteDiscounting::ToProto() {
+    tensorflow::Source::lm::ngram::NGramProto *ngram_proto = NGram::ToProto();
+    ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::ABSOLUTE_DISCOUNTING);
+    ngram_proto->set_discount(discount);
+    return ngram_proto;
+}
+
+void AbsoluteDiscounting::ProcessCountTrie(CountTrie *count_trie) {
+    std::vector<std::vector<int>> n_r (n + 1, std::vector<int>(3));
+    count_trie->CountNGrams(&n_r);
+    discount = n_r[n][1] / (double) (n_r[n][1] + (2 * n_r[n][2]));
+
+    std::list<size_t> seq;
+    PopulateProbTrie(count_trie, count_trie->GetRoot(), 0, seq);
 }
 
 void AbsoluteDiscounting::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node *node, int depth, std::list<size_t> seq) {
@@ -46,18 +69,4 @@ void AbsoluteDiscounting::PopulateProbTrie(CountTrie *countTrie, CountTrie::Node
         PopulateProbTrie(countTrie, it->second, depth + 1, seq);
         seq.pop_back();
     }
-}
-
-bool AbsoluteDiscounting::operator==(const NGram &to_compare) {
-    if (const AbsoluteDiscounting *to_compare_ads = dynamic_cast<const AbsoluteDiscounting*>(&to_compare)) {
-        return NGram::operator==(to_compare) && (discount == to_compare_ads->discount);
-    }
-    return false;
-}
-
-tensorflow::Source::lm::ngram::NGramProto *AbsoluteDiscounting::ToProto() {
-    tensorflow::Source::lm::ngram::NGramProto *ngram_proto = NGram::ToProto();
-    ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::ABSOLUTE_DISCOUNTING);
-    ngram_proto->set_discount(discount);
-    return ngram_proto;
 }

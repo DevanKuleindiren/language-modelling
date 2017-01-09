@@ -15,7 +15,7 @@ protected:
         test_file << "the dog sat on the cat .\n";
         test_file.close();
 
-        under_test = new AbsoluteDiscounting(test_file_name, 3, 0.5, 1);
+        under_test = new AbsoluteDiscounting(test_file_name, 3, 1);
     }
     AbsoluteDiscounting *under_test;
 };
@@ -33,11 +33,23 @@ tensorflow::Source::lm::ngram::Node *BuildNode(double pseudo_prob, double backof
 }
 
 TEST_F(AbsoluteDiscountingTest, Prob) {
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), 59/90.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 0.275);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 0.3);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 0.025);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 0.7875);
+    // Discount, d = n_1 / (n_1 + 2n_2) = 13/17.
+    // P(cat|<s> the) = (2-d)/3 + ((dx2)/3)((3-d/6) + (dx4/6)(3/20))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), 8332/13005.0);
+
+    // P(sat|the cat) = (1-d)/3 + ((dx3)/3)((1-d/3) + (dx3/3)(2/20))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 569/2890.0);
+
+    // P(mat|on the) = (1-d)/2 + ((dx2)/2)((1-d/6) + (dx4/6)(1/20))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 483/2890.0);
+
+    // P(sat|the mouse) = (0)/1 + ((dx1)/1)((0/1) + (dx1/1)(2/20))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 169/2890.0);
+
+    // P(.|the mouse) = (1-d)/1 + ((dx1)/1)((1-d/1) + (dx1/1)(3/20))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 171/340.0);
+
+    // P(blah|blah blah) = 0
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"blah", "blah", "blah"})), 0.0);
 }
 
@@ -48,7 +60,7 @@ TEST(AbsoluteDiscountingTestToProto, ToProto) {
     test_file << "the the cat\n";
     test_file.close();
 
-    AbsoluteDiscounting *under_test = new AbsoluteDiscounting(test_file_name, 2, 0.5, 1);
+    AbsoluteDiscounting *under_test = new AbsoluteDiscounting(test_file_name, 2, 1);
 
     tensorflow::Source::lm::ngram::NGramProto *expected_ngram_proto = new tensorflow::Source::lm::ngram::NGramProto();
     tensorflow::Source::lm::ngram::NGramProto *actual_ngram_proto = under_test->ToProto();
@@ -56,29 +68,29 @@ TEST(AbsoluteDiscountingTestToProto, ToProto) {
     /* The expected proto structure:
 
     a (0, 0)
-    --the-- b (2/3, 0.5)
-            --the-- e (0.25, 1)
-            --cat-- f (0.25, 1)
-    --<s>-- c (0, 0.5)
-            --the-- g (0.5, 1)
+    --the-- b (2/3, 1)
+            --the-- e (0, 1)
+            --cat-- f (0, 1)
+    --<s>-- c (0, 1)
+            --the-- g (0, 1)
     --cat-- d (1/3, 1)
     */
 
     expected_ngram_proto->set_n(2);
     expected_ngram_proto->set_smoothing(tensorflow::Source::lm::ngram::Smoothing::ABSOLUTE_DISCOUNTING);
-    expected_ngram_proto->set_discount(0.5);
+    expected_ngram_proto->set_discount(1);
 
     tensorflow::Source::lm::ngram::ProbTrieProto *prob_trie_proto = new tensorflow::Source::lm::ngram::ProbTrieProto();
 
-    tensorflow::Source::lm::ngram::Node *node_e = ::BuildNode(0.25, 1);
-    tensorflow::Source::lm::ngram::Node *node_f = ::BuildNode(0.25, 1);
-    tensorflow::Source::lm::ngram::Node *node_g = ::BuildNode(0.5, 1);
+    tensorflow::Source::lm::ngram::Node *node_e = ::BuildNode(0, 1);
+    tensorflow::Source::lm::ngram::Node *node_f = ::BuildNode(0, 1);
+    tensorflow::Source::lm::ngram::Node *node_g = ::BuildNode(0, 1);
 
-    tensorflow::Source::lm::ngram::Node *node_b = ::BuildNode(2/3.0, 0.5);
+    tensorflow::Source::lm::ngram::Node *node_b = ::BuildNode(2/3.0, 1);
     SetChildProperties(node_b->add_child(), 2, node_e);
     SetChildProperties(node_b->add_child(), 3, node_f);
 
-    tensorflow::Source::lm::ngram::Node *node_c = ::BuildNode(0, 0.5);
+    tensorflow::Source::lm::ngram::Node *node_c = ::BuildNode(0, 1);
     SetChildProperties(node_c->add_child(), 2, node_g);
 
     tensorflow::Source::lm::ngram::Node *node_d = ::BuildNode(1/3.0, 1);

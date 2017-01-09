@@ -75,6 +75,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
+        ":absolute_discounting",
         "//tensorflow/Source/lm/ngram:ngram",
     ],
 )
