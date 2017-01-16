@@ -86,17 +86,19 @@ def run_epoch(session, data, config):
   iters = 0
 
   logits = tf.get_default_graph().get_tensor_by_name("inference/lstm/logits:0")
+  targets = tf.placeholder(tf.int32, [config.batch_size, config.num_steps], name="targets")
+  loss = tf.nn.seq2seq.sequence_loss_by_example(
+      [logits],
+      [tf.reshape(targets, [-1])],
+      [tf.ones([config.batch_size * config.num_steps], dtype=tf.float32)])
+  cost = tf.reduce_sum(loss) / config.batch_size
 
   for step, (x, y) in enumerate(ptb_reader.ptb_iterator(data, config.batch_size,
                                                     config.num_steps)):
-    feed_dict = {}
-    feed_dict = {"inference/lstm/inputs:0": x}
-    loss = tf.nn.seq2seq.sequence_loss_by_example(
-        [logits],
-        [tf.reshape(y, [-1])],
-        [tf.ones([config.batch_size * config.num_steps], dtype=tf.float32)])
-    cost = tf.reduce_sum(loss) / config.batch_size
-
+    feed_dict = {
+        "inference/lstm/inputs:0": x,
+        "targets:0": y,
+    }
     fetches = [cost]
 
     cost_f, = session.run(fetches, feed_dict)
