@@ -14,6 +14,16 @@ py_library(
     deps = [],
 )
 
+py_test(
+    name = "reader_test",
+    size = "small",
+    srcs = ["reader_test.py"],
+    deps = [
+        ":reader",
+        "//tensorflow:tensorflow_py",
+    ],
+)
+
 cc_library(
     name = "lstm_inference",
     srcs = [
