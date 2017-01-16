@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <sstream>
 #include <stdio.h>
 #include <string>
 #include <unordered_map>

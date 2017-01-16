@@ -6,53 +6,42 @@ double Benchmark::Perplexity(std::string file_name, bool use_exp_calculation) {
     if (f.is_open()) {
         std::string line;
         double num_words = 0;
-        int num_skipped = 0;
 
         // If using the product method, then x represents a product, otherwise, it represents a sum.
         double batch = use_exp_calculation ? 0 : 1;
         std::list<double> batches;
 
         while (std::getline(f, line)) {
-            size_t pos = 0;
             std::string word;
             std::list<std::string> seq;
-            for (int i = 0; i < (language_model->ContextSize()).first; i++) {
-                seq.push_back("<s>");
-            }
+            seq.push_back("<s>");
 
-            while (!line.empty()) {
-                pos = line.find(" ");
-                if (pos == std::string::npos) {
-                    pos = line.size();
-                }
+            std::istringstream iss (line);
+            while (iss >> word) {
+                seq.push_back(word);
 
-                if (pos > 0) {
-                    std::string word = line.substr(0, pos);
-                    seq.push_back(word);
+                double prob;
+                if (seq.size() > (language_model->ContextSize()).first &&
+                    language_model->ContainsWord(word) &&
+                    (prob = language_model->Prob(seq)) > 0) {
 
-                    double prob = language_model->Prob(seq);
-                    if (language_model->ContainsWord(word) && prob > 0) {
-                        num_words++;
-                        double tmp;
-                        double new_batch;
-                        if (use_exp_calculation) {
-                            tmp = log(prob);
-                            new_batch = batch + tmp;
-                        } else {
-                            tmp = 1 / prob;
-                            new_batch = batch * tmp;
-                        }
-                        if (isinf(new_batch)) {
-                            batches.push_back(batch);
-                            batch = tmp;
-                        } else {
-                            batch = new_batch;
-                        }
+                    num_words++;
+                    double tmp;
+                    double new_batch;
+                    if (use_exp_calculation) {
+                        tmp = log(prob);
+                        new_batch = batch + tmp;
                     } else {
-                        num_skipped++;
+                        tmp = 1 / prob;
+                        new_batch = batch * tmp;
+                    }
+                    if (isinf(new_batch)) {
+                        batches.push_back(batch);
+                        batch = tmp;
+                    } else {
+                        batch = new_batch;
                     }
                 }
-                line.erase(0, pos + 1);
 
                 if (num_words > 0 && ((int) num_words) % 1000 == 0) {
                     std::cout << "Processed " << num_words << " words." << std::endl;
@@ -68,10 +57,6 @@ double Benchmark::Perplexity(std::string file_name, bool use_exp_calculation) {
             } else {
                 perplexity *= pow(*it, 1 / num_words);
             }
-        }
-
-        if (num_skipped > 0) {
-            std::cout << "(Skipped " << num_skipped << " cases where the probability was 0)." << std::endl;
         }
 
         return perplexity;

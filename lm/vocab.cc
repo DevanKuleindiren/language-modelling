@@ -28,22 +28,14 @@ void Vocab::ProcessFile(std::string file_name) {
 
         Insert("<s>");
         while (std::getline(f, line)) {
-            size_t pos = 0;
             std::string word;
-
-            while (!line.empty()) {
-                pos = line.find(" ");
-                if (pos == std::string::npos) {
-                    pos = line.size();
-                }
-                word = line.substr(0, pos);
+            std::istringstream iss (line);
+            while (iss >> word) {
                 word_counts[word]++;
 
                 if (word_counts[word] == min_frequency) {
                     Insert(word);
                 }
-
-                line.erase(0, pos + 1);
             }
         }
     }
