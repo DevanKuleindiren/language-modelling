@@ -37,3 +37,18 @@ cc_library(
         "//tensorflow/Source/lm:vocab",
     ]
 )
+
+py_binary(
+    name = "ptb_word_lm",
+    srcs = ["ptb_word_lm.py"],
+    deps = [
+        ":ptb_reader",
+        "//tensorflow:tensorflow_py",
+    ],
+)
+
+py_library(
+    name = "ptb_reader",
+    srcs = ["ptb_reader.py"],
+    deps = [],
+)
