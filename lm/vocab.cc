@@ -15,6 +15,10 @@ size_t Vocab::Get(std::string word) {
     return word_to_id.find(word)->second;
 }
 
+bool Vocab::ContainsWord(std::string word) {
+    return word_to_id.count(word) > 0;
+}
+
 void Vocab::ProcessFile(std::string file_name) {
     std::ifstream f (file_name);
     std::unordered_map<std::string, int> word_counts;

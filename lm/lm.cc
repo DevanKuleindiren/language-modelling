@@ -1,7 +1,7 @@
 #include "lm.h"
 
 bool LM::ContainsWord(std::string word) {
-    return vocab->Get(word);
+    return vocab->ContainsWord(word);
 }
 
 void LM::Predict(std::list<std::string> seq, std::pair<std::string, double> &prediction) {

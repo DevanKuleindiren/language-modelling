@@ -20,6 +20,7 @@ public:
         word_to_id.insert(std::make_pair("<unk>", 0));
     }
     size_t Get(std::string word);
+    bool ContainsWord(std::string word);
     void ProcessFile(std::string file_name);
     std::unordered_map<std::string, size_t>::const_iterator begin();
     std::unordered_map<std::string, size_t>::const_iterator end();

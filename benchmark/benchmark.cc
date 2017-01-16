@@ -31,7 +31,7 @@ double Benchmark::Perplexity(std::string file_name, bool use_exp_calculation) {
                     seq.push_back(word);
 
                     double prob = language_model->Prob(seq);
-                    if (prob > 0) {
+                    if (language_model->ContainsWord(word) && prob > 0) {
                         num_words++;
                         double tmp;
                         double new_batch;
@@ -49,10 +49,6 @@ double Benchmark::Perplexity(std::string file_name, bool use_exp_calculation) {
                             batch = new_batch;
                         }
                     } else {
-                        for (std::list<std::string>::iterator it = seq.begin(); it != seq.end(); ++it) {
-                            std::cout << *it << " ";
-                        }
-                        std::cout << std::endl;
                         num_skipped++;
                     }
                 }
