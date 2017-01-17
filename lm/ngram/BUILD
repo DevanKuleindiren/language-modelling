@@ -65,7 +65,10 @@ cc_library(
         "count_trie.h",
         "count_trie.cc",
     ],
-    deps = ["//tensorflow/Source/lm:vocab"],
+    deps = [
+        "//tensorflow/Source/lm:vocab",
+        "//tensorflow/Source/util:reader",
+    ],
 )
 
 cc_test(

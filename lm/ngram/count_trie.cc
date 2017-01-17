@@ -2,42 +2,25 @@
 
 
 void CountTrie::ProcessFile(std::string file_name, Vocab *vocab) {
-    std::ifstream f (file_name);
+    FileReader *file_reader = new FileReader(file_name);
+    int num_words = 0;
+    std::list<size_t> ngram_window;
+    std::string word;
 
-    if (f.is_open()) {
-        std::string line;
-        int line_number = 0;
-        size_t start_marker_index = vocab->Get("<s>");
+    while (file_reader->GetNextWord(&word)) {
+        size_t word_index = vocab->Get(word);
+        ngram_window.push_back(word_index);
+        InsertSubNGrams(ngram_window);
+        ngram_window = Trim(ngram_window, n - 1);
 
-        while (std::getline(f, line)) {
-            std::string word;
-            std::list<size_t> ngram_window;
-            ngram_window.push_back(start_marker_index);
-
-            std::istringstream iss (line);
-            while (iss >> word) {
-                size_t word_index = vocab->Get(word);
-
-                ngram_window.push_back(word_index);
-                std::list<size_t> ngram;
-                for (std::list<size_t>::reverse_iterator it = ngram_window.rbegin(); it != ngram_window.rend(); ++it) {
-                    ngram.push_front(*it);
-                    Insert(ngram);
-                }
-
-                if (ngram_window.size() >= n) {
-                    ngram_window.pop_front();
-                }
-            }
-
-            line_number++;
-            if (line_number % 10000 == 0) {
-                std::cout << "Read " << line_number << " lines." << std::endl;
-            }
+        num_words++;
+        if (num_words % 100000 == 0) {
+            std::cout << "Read " << num_words << " words." << std::endl;
         }
-        std::list<size_t> seq;
-        ComputeCountsAndSums(root, seq);
     }
+
+    std::list<size_t> seq;
+    ComputeCountsAndSums(root, seq);
 }
 
 int CountTrie::Count(std::list<size_t> seq) {
@@ -191,4 +174,19 @@ void CountTrie::CountNGramsRec(CountTrie::Node *node, int depth, std::vector<std
             (*n_r)[i][0] = (int) (pow(VocabSize(), i) - (*n_r)[i][0]);
         }
     }
+}
+
+void CountTrie::InsertSubNGrams(std::list<size_t> ngram_window) {
+    std::list<size_t> ngram;
+    for (std::list<size_t>::reverse_iterator it = ngram_window.rbegin(); it != ngram_window.rend(); ++it) {
+        ngram.push_front(*it);
+        Insert(ngram);
+    }
+}
+
+std::list<size_t> CountTrie::Trim(std::list<size_t> seq, int max) {
+    while (seq.size() > max) {
+        seq.pop_front();
+    }
+    return seq;
 }
