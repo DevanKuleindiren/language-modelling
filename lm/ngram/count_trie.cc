@@ -2,7 +2,8 @@
 
 
 void CountTrie::ProcessFile(std::string file_name, Vocab *vocab) {
-    FileReader *file_reader = new FileReader(file_name);
+    std::ifstream file_stream (file_name);
+    FileReader *file_reader = new FileReader(file_stream);
     int num_words = 0;
     std::list<size_t> ngram_window;
     std::string word;

@@ -1,7 +1,8 @@
 #include "benchmark.h"
 
 double Benchmark::Perplexity(std::string file_name, bool use_exp_calculation) {
-    FileReader *file_reader = new FileReader(file_name);
+    std::ifstream file_stream (file_name);
+    FileReader *file_reader = new FileReader(file_stream);
     int num_words = 0;
 
     // If using the product method, then x represents a product, otherwise, it represents a sum.
