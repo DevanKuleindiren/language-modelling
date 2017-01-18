@@ -133,6 +133,9 @@ class PTBModel(object):
         "softmax_w", [size, vocab_size], dtype=data_type())
     softmax_b = tf.get_variable("softmax_b", [vocab_size], dtype=data_type())
     logits = tf.matmul(output, softmax_w) + softmax_b
+
+    predictions = tf.nn.softmax(logits, name="predictions")
+
     loss = tf.nn.seq2seq.sequence_loss_by_example(
         [logits],
         [tf.reshape(self._targets, [-1])],
@@ -306,11 +309,22 @@ def main(_):
   with tf.Graph().as_default(), tf.Session() as session:
     initializer = tf.random_uniform_initializer(-config.init_scale,
                                                 config.init_scale)
-    with tf.variable_scope("model", reuse=None, initializer=initializer):
-      m = PTBModel(is_training=True, config=config)
-    with tf.variable_scope("model", reuse=True, initializer=initializer):
-      mvalid = PTBModel(is_training=False, config=config)
-      mtest = PTBModel(is_training=False, config=eval_config)
+
+    with tf.name_scope("train"):
+      with tf.variable_scope("lstm", reuse=None, initializer=initializer):
+        m = PTBModel(is_training=True, config=config)
+
+    with tf.name_scope("valid"):
+      with tf.variable_scope("lstm", reuse=True, initializer=initializer):
+        mvalid = PTBModel(is_training=False, config=config)
+
+    with tf.name_scope("test"):
+      with tf.variable_scope("lstm", reuse=True, initializer=initializer):
+        mtest = PTBModel(is_training=False, config=eval_config)
+
+    with tf.name_scope("inference"):
+      with tf.variable_scope("lstm", reuse=True, initializer=initializer):
+        minfer = PTBModel(is_training=False, config=config)
 
     tf.initialize_all_variables().run()
 
