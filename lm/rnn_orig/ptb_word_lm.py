@@ -56,6 +56,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
 import time
 
 import numpy as np
@@ -70,6 +71,7 @@ flags.DEFINE_string(
     "model", "small",
     "A type of model. Possible options are: small, medium, large.")
 flags.DEFINE_string("data_path", None, "data_path")
+flags.DEFINE_string("save_path", None, "The directory to store the model & checkpoints.")
 flags.DEFINE_bool("use_fp16", False,
                   "Train using 16-bit floats instead of 32bit floats")
 
@@ -297,6 +299,8 @@ def get_config():
 def main(_):
   if not FLAGS.data_path:
     raise ValueError("Must set --data_path to PTB data directory")
+  if not FLAGS.save_path:
+    raise ValueError("Must set --save_path to PTB model directory")
 
   raw_data = reader.ptb_raw_data(FLAGS.data_path)
   train_data, valid_data, test_data, _ = raw_data
@@ -328,6 +332,10 @@ def main(_):
 
     tf.initialize_all_variables().run()
 
+    # Create saver for saving checkpoints.
+    saver = tf.train.Saver()
+    checkpoint_path = os.path.join(FLAGS.save_path, "model.ckpt")
+
     for i in range(config.max_max_epoch):
       lr_decay = config.lr_decay ** max(i - config.max_epoch, 0.0)
       m.assign_lr(session, config.learning_rate * lr_decay)
@@ -338,6 +346,9 @@ def main(_):
       print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
       valid_perplexity = run_epoch(session, mvalid, valid_data, tf.no_op())
       print("Epoch: %d Valid Perplexity: %.3f" % (i + 1, valid_perplexity))
+
+      # Save checkpoints.
+      saver.save(session, checkpoint_path, global_step=i)
 
     test_perplexity = run_epoch(session, mtest, test_data, tf.no_op())
     print("Test Perplexity: %.3f" % test_perplexity)
