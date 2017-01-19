@@ -31,23 +31,26 @@ LSTM::LSTM(std::string directory_path) {
 }
 
 std::pair<int, int> LSTM::ContextSize() {
-    return std::make_pair(1, num_steps);
+    return std::make_pair(1, num_steps + 1);
 }
 
 double LSTM::Prob(std::list<std::string> seq) {
     std::list<size_t> seq_ids = WordsToIds(seq);
-    seq_ids = Trim(seq_ids, ContextSize().second);
+    size_t next_word = seq_ids.back();
+    seq_ids.pop_back();
+
+    seq_ids = Trim(seq_ids, ContextSize().second - 1);
 
     std::vector<tensorflow::Tensor> outputs;
     RunInference(seq_ids, outputs);
     auto predictions = outputs[0].tensor<float, 2>();
 
-    return predictions(seq_ids.size() - 2, seq_ids.back());
+    return predictions(seq_ids.size() - 1, next_word);
 }
 
 void LSTM::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &probs) {
     std::list<size_t> seq_ids = WordsToIds(seq);
-    seq_ids = Trim(seq_ids, ContextSize().second);
+    seq_ids = Trim(seq_ids, ContextSize().second - 1);
 
     std::vector<tensorflow::Tensor> outputs;
     RunInference(seq_ids, outputs);
