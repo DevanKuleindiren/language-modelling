@@ -62,6 +62,7 @@ import time
 import numpy as np
 import tensorflow as tf
 
+from tensorflow.python.framework import graph_util
 from tensorflow.Source.lm.rnn_orig import reader
 
 flags = tf.flags
@@ -91,8 +92,8 @@ class PTBModel(object):
     size = config.hidden_size
     vocab_size = config.vocab_size
 
-    self._input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
-    self._targets = tf.placeholder(tf.int32, [batch_size, num_steps])
+    self._input_data = tf.placeholder(tf.int32, [batch_size, num_steps], name="inputs")
+    self._targets = tf.placeholder(tf.int32, [batch_size, num_steps], name="targets")
 
     # Slightly better results can be obtained with forget gate biases
     # initialized to 1 but the hyperparameters of the model would need to be
@@ -142,7 +143,7 @@ class PTBModel(object):
         [logits],
         [tf.reshape(self._targets, [-1])],
         [tf.ones([batch_size * num_steps], dtype=data_type())])
-    self._cost = cost = tf.reduce_sum(loss) / batch_size
+    self._cost = cost = tf.reduce_sum(loss, name="reduce_sum") / batch_size
     self._final_state = state
 
     if not is_training:
@@ -359,6 +360,22 @@ def main(_):
       f.write("Train perplexity = %f\n" % train_perplexity)
       f.write("Valid perplexity = %f\n" % valid_perplexity)
       f.write("Test perplexity = %f\n" % test_perplexity)
+
+    # Save const graph def.
+    # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
+    # is why it isn't included in 'inference/lstm/predictions'.
+    output_node_names = [
+      "inference/lstm/predictions",
+      "train/lstm/reduce_sum",
+      "train/lstm/predictions",
+      "test/lstm/reduce_sum",
+      "test/lstm/predictions",
+    ]
+    graph_def = graph_util.convert_variables_to_constants(
+      sess=session, input_graph_def=session.graph.as_graph_def(), output_node_names=output_node_names)
+
+    tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pb", as_text=False)
+    tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pbtxt")
 
 if __name__ == "__main__":
   tf.app.run()
