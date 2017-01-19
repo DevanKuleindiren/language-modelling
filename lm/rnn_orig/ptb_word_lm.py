@@ -353,6 +353,12 @@ def main(_):
     test_perplexity = run_epoch(session, mtest, test_data, tf.no_op())
     print("Test Perplexity: %.3f" % test_perplexity)
 
+    # Save perplexities.
+    perplexity_path = os.path.join(FLAGS.save_path, "perplexity.txt")
+    with open(perplexity_path, 'w+') as f:
+      f.write("Train perplexity = %f\n" % train_perplexity)
+      f.write("Valid perplexity = %f\n" % valid_perplexity)
+      f.write("Test perplexity = %f\n" % test_perplexity)
 
 if __name__ == "__main__":
   tf.app.run()
