@@ -15,6 +15,7 @@ class LSTM : public LM {
 protected:
     tensorflow::Session *session;
     tensorflow::Status status;
+    std::vector<tensorflow::Tensor> state;
     unsigned long num_steps;
     virtual void RunInference(std::list<size_t>, std::vector<tensorflow::Tensor> &);
 public:

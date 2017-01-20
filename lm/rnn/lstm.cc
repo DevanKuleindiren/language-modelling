@@ -19,7 +19,7 @@ LSTM::LSTM(std::string directory_path) {
     }
 
     for (int i = 0; i < graph_def.node_size(); i++) {
-        if (graph_def.node(i).name().compare("inference/lstm/inputs") == 0) {
+        if (graph_def.node(i).name().compare("test/lstm/inputs") == 0) {
             num_steps = graph_def.node(i).attr().at("shape").shape().dim(1).size();
         }
     }
@@ -28,26 +28,38 @@ LSTM::LSTM(std::string directory_path) {
     if (!status.ok()) {
         std::cout << status.ToString() << std::endl;
     }
+
+    // Initialise the input state.
+    session->Run({}, {"test/lstm/zeros",
+                      "test/lstm/zeros_1",
+                      "test/lstm/zeros_2",
+                      "test/lstm/zeros_3"}, {}, &state);
+    if (!status.ok()) {
+        std::cout << status.ToString() << std::endl;
+    }
 }
 
 std::pair<int, int> LSTM::ContextSize() {
-    return std::make_pair(1, num_steps);
+    return std::make_pair(1, num_steps + 1);
 }
 
 double LSTM::Prob(std::list<std::string> seq) {
     std::list<size_t> seq_ids = WordsToIds(seq);
-    seq_ids = Trim(seq_ids, ContextSize().second);
+    size_t next_word = seq_ids.back();
+    seq_ids.pop_back();
+
+    seq_ids = Trim(seq_ids, ContextSize().second - 1);
 
     std::vector<tensorflow::Tensor> outputs;
     RunInference(seq_ids, outputs);
     auto predictions = outputs[0].tensor<float, 2>();
 
-    return predictions(seq_ids.size() - 2, seq_ids.back());
+    return predictions(seq_ids.size() - 1, next_word);
 }
 
 void LSTM::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &probs) {
     std::list<size_t> seq_ids = WordsToIds(seq);
-    seq_ids = Trim(seq_ids, ContextSize().second);
+    seq_ids = Trim(seq_ids, ContextSize().second - 1);
 
     std::vector<tensorflow::Tensor> outputs;
     RunInference(seq_ids, outputs);
@@ -81,11 +93,25 @@ void LSTM::RunInference(std::list<size_t> seq_ids, std::vector<tensorflow::Tenso
     }
 
     std::vector<std::pair<tensorflow::string, tensorflow::Tensor>> inputs = {
-        {"inference/lstm/inputs", seq_tensor},
+        {"test/lstm/inputs", seq_tensor},
+        {"test/lstm/zeros:0", state[0]},
+        {"test/lstm/zeros_1:0", state[1]},
+        {"test/lstm/zeros_2:0", state[2]},
+        {"test/lstm/zeros_3:0", state[3]},
     };
 
     // Run the inference to the node named 'inference/lstm/predictions'.
-    session->Run(inputs, {"inference/lstm/predictions"}, {}, &outputs);
+    session->Run(inputs, {"test/lstm/predictions",
+                          "test/lstm/RNN/MultiRNNCell/Cell0/BasicLSTMCell/add_2:0",
+                          "test/lstm/RNN/MultiRNNCell/Cell0/BasicLSTMCell/mul_2:0",
+                          "test/lstm/RNN/MultiRNNCell/Cell1/BasicLSTMCell/add_2:0",
+                          "test/lstm/RNN/MultiRNNCell/Cell1/BasicLSTMCell/mul_2:0",}, {}, &outputs);
+
+    state[0] = outputs[1];
+    state[1] = outputs[2];
+    state[2] = outputs[3];
+    state[3] = outputs[4];
+
     if (!status.ok()) {
         std::cout << status.ToString() << std::endl;
     }
