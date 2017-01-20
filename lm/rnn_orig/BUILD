@@ -48,6 +48,18 @@ py_binary(
     ],
 )
 
+py_binary(
+    name = "restore",
+    srcs = [
+        "restore.py",
+    ],
+    srcs_version = "PY2AND3",
+    deps = [
+        ":reader",
+        "//tensorflow:tensorflow_py",
+    ],
+)
+
 filegroup(
     name = "all_files",
     srcs = glob(
