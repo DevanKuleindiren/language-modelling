@@ -5,14 +5,14 @@ size_t Vocab::Insert(std::string word) {
         word_to_id.insert(std::make_pair(word, id));
         id++;
     }
-    return word_to_id.find(word)->second;
+    return word_to_id[word];
 }
 
 size_t Vocab::Get(std::string word) {
     if (word_to_id.count(word) == 0) {
-        return 0;
+        return word_to_id["<unk>"];
     }
-    return word_to_id.find(word)->second;
+    return word_to_id[word];
 }
 
 bool Vocab::ContainsWord(std::string word) {
