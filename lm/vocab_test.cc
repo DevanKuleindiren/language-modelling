@@ -108,3 +108,7 @@ TEST_F(VocabTest, SaveAndLoadEqual) {
     under_test->Save(file_name);
     ASSERT_TRUE(*under_test == *Vocab::Load(file_name));
 }
+
+TEST_F(VocabTest, VocabSize) {
+    EXPECT_EQ(under_test->Size(), 6);
+}

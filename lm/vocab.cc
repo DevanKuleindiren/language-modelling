@@ -95,9 +95,6 @@ Vocab *Vocab::Load(std::string file_name) {
 
 int Vocab::Size() {
     int size = word_to_id.size();
-
-    if (word_to_id.count("<unk>") > 0) size--;
     if (word_to_id.count("<s>") > 0) size--;
-
     return size;
 }
