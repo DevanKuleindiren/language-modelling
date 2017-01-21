@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <utility>
 #include "tensorflow/Source/lm/vocab.h"
+#include "tensorflow/Source/util/reader.h"
 
 class CountTrie {
 public:
@@ -28,6 +29,8 @@ private:
     int n;
     Node *GetNode(std::list<size_t>, bool);
     void CountNGramsRec(Node *, int, std::vector<std::vector<int>> *);
+    void InsertSubNGrams(std::list<size_t>);
+    std::list<size_t> Trim(std::list<size_t>, int);
 public:
     CountTrie(int n) : root(new Node()), n(n) {}
     void ProcessFile(std::string, Vocab *);

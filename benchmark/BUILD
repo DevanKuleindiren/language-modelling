@@ -10,7 +10,10 @@ cc_library(
         "benchmark.cc",
     ],
     visibility = ["//visibility:public"],
-    deps = ["//tensorflow/Source/lm:lm"],
+    deps = [
+        "//tensorflow/Source/lm:lm",
+        "//tensorflow/Source/util:reader",
+    ],
 )
 
 cc_test(

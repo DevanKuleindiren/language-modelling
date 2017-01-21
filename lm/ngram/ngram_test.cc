@@ -54,6 +54,8 @@ TEST(NGramTestProb, ProbTrigram) {
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 0.5);
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 0.0);
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 1.0);
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"mouse", ".", "<s>"})), 1.0);
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({".", "<s>", "the"})), 1.0);
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"blah", "blah", "blah"})), 0.0);
 }
 
@@ -61,6 +63,7 @@ TEST(NGramTestProb, ProbTrigramWithMinFreq) {
     NGram *under_test = new NGram(::SetUp(), 3, 2);
 
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), 2/3.0);
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "frog"})), 1/3.0);
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 1/3.0);
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 0.5);
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 1/3.0);
@@ -148,11 +151,11 @@ TEST(NGramTest, ToProto) {
     /* The expected proto structure:
 
     a (0, 0)
-    --the-- b (0, 1)
-            --the-- d (0.5, 0)
-            --cat-- e (0.5, 0)
-    --<s>-- c (0, 1)
-            --the-- f (1, 0)
+    --<s>-- b (0, 1)
+            --the-- d (1, 0)
+    --the-- c (0, 1)
+            --the-- e (0.5, 0)
+            --cat-- f (0.5, 0)
     */
 
     expected_ngram_proto->set_n(2);
@@ -160,20 +163,20 @@ TEST(NGramTest, ToProto) {
 
     tensorflow::Source::lm::ngram::ProbTrieProto *prob_trie_proto = new tensorflow::Source::lm::ngram::ProbTrieProto();
 
-    tensorflow::Source::lm::ngram::Node *node_d = ::BuildNode(0.5, 0);
+    tensorflow::Source::lm::ngram::Node *node_d = ::BuildNode(1, 0);
     tensorflow::Source::lm::ngram::Node *node_e = ::BuildNode(0.5, 0);
-    tensorflow::Source::lm::ngram::Node *node_f = ::BuildNode(1, 0);
+    tensorflow::Source::lm::ngram::Node *node_f = ::BuildNode(0.5, 0);
 
     tensorflow::Source::lm::ngram::Node *node_b = ::BuildNode(0, 1);
     SetChildProperties(node_b->add_child(), 2, node_d);
-    SetChildProperties(node_b->add_child(), 3, node_e);
 
     tensorflow::Source::lm::ngram::Node *node_c = ::BuildNode(0, 1);
-    SetChildProperties(node_c->add_child(), 2, node_f);
+    SetChildProperties(node_c->add_child(), 2, node_e);
+    SetChildProperties(node_c->add_child(), 3, node_f);
 
     tensorflow::Source::lm::ngram::Node *node_a = ::BuildNode(0, 0);
-    SetChildProperties(node_a->add_child(), 2, node_b);
-    SetChildProperties(node_a->add_child(), 1, node_c);
+    SetChildProperties(node_a->add_child(), 1, node_b);
+    SetChildProperties(node_a->add_child(), 2, node_c);
 
     prob_trie_proto->set_allocated_root(node_a);
     expected_ngram_proto->set_allocated_prob_trie(prob_trie_proto);

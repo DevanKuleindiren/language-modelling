@@ -34,23 +34,23 @@ tensorflow::Source::lm::ngram::Node *BuildNode(double pseudo_prob, double backof
 
 TEST_F(KneserNeyModTest, Prob) {
     // Discounts:
-    // d_3_1 = 13/17, d_3_2 = 2, d_3_3 = 3
-    // d_2_1 = 5/17, d_2_2 = -1/7, d_2_3 = 3
+    // d_3_1 = 5/7, d_3_2 = 2, d_3_3 = 3
+    // d_2_1 = 5/8, d_2_2 = 3/4, d_2_3 = 3
 
-    // P(cat|<s> the) = (0)/3 + ((d_3_1x1 + d_3_2x2)/3)((0/5) + (d_2_1x3 + d_2_3x1/5)(1/14))
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), 282/4165.0);
+    // P(cat|<s> the) = (0)/3 + ((d_3_1x1 + d_3_2x1)/3)((0/5) + (d_2_1x3 + d_2_3x1/5)(1/15))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), 247/4200.0);
 
-    // P(sat|the cat) = (1-d_3_1)/3 + ((d_3_1x3)/3)((1-d_2_1/3) + (d_2_1x1/3)(2/14))
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 191/833.0);
+    // P(sat|the cat) = (1-d_3_1)/3 + ((d_3_1x3)/3)((1-d_2_1/3) + (d_2_1x3/3)(2/15))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 41/168.0);
 
-    // P(mat|on the) = (1-d_3_1)/2 + ((d_3_1x2)/2)((1-d_2_1/5) + (d_2_1x3 + d_2_3x1/5)(1/14))
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 906/4165.0);
+    // P(mat|on the) = (1-d_3_1)/2 + ((d_3_1x2)/2)((1-d_2_1/5) + (d_2_1x3 + d_2_3x1/5)(1/15))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 17/70.0);
 
-    // P(sat|the mouse) = (0)/1 + ((d_3_1x1)/1)((0/1) + (d_2_1x1/1)(2/14))
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 65/833.0);
+    // P(sat|the mouse) = (0)/1 + ((d_3_1x1)/1)((0/1) + (d_2_1x1/1)(2/15))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 5/84.0);
 
-    // P(.|the mouse) = (1-d_3_1)/1 + ((d_3_1x1)/1)((1-d_2_1/1) + (d_2_1x1/1)(3/14))
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 951/1666.0);
+    // P(.|the mouse) = (1-d_3_1)/1 + ((d_3_1x1)/1)((1-d_2_1/1) + (d_2_1x1/1)(3/15))
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 9/14.0);
 
     // P(blah|blah blah) = 0
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"blah", "blah", "blah"})), 0.0);
@@ -71,11 +71,11 @@ TEST(KneserNeyModTestToProto, ToProto) {
     /* The expected proto structure:
 
     a (0, 0)
-    --the-- b (2/3, 1)
+    --<s>-- b (0, 1)
             --the-- e (0, 1)
-            --cat-- f (0, 1)
-    --<s>-- c (0, 1)
-            --the-- g (0, 1)
+    --the-- c (2/3, 1)
+            --the-- f (0, 1)
+            --cat-- g (0, 1)
     --cat-- d (1/3, 1)
     */
 
@@ -91,18 +91,18 @@ TEST(KneserNeyModTestToProto, ToProto) {
     tensorflow::Source::lm::ngram::Node *node_f = ::BuildNode(0, 1);
     tensorflow::Source::lm::ngram::Node *node_g = ::BuildNode(0, 1);
 
-    tensorflow::Source::lm::ngram::Node *node_b = ::BuildNode(2/3.0, 1);
+    tensorflow::Source::lm::ngram::Node *node_b = ::BuildNode(0, 1);
     SetChildProperties(node_b->add_child(), 2, node_e);
-    SetChildProperties(node_b->add_child(), 3, node_f);
 
-    tensorflow::Source::lm::ngram::Node *node_c = ::BuildNode(0, 1);
-    SetChildProperties(node_c->add_child(), 2, node_g);
+    tensorflow::Source::lm::ngram::Node *node_c = ::BuildNode(2/3.0, 1);
+    SetChildProperties(node_c->add_child(), 2, node_f);
+    SetChildProperties(node_c->add_child(), 3, node_g);
 
     tensorflow::Source::lm::ngram::Node *node_d = ::BuildNode(1/3.0, 1);
 
     tensorflow::Source::lm::ngram::Node *node_a = ::BuildNode(0, 0);
-    SetChildProperties(node_a->add_child(), 2, node_b);
-    SetChildProperties(node_a->add_child(), 1, node_c);
+    SetChildProperties(node_a->add_child(), 1, node_b);
+    SetChildProperties(node_a->add_child(), 2, node_c);
     SetChildProperties(node_a->add_child(), 3, node_d);
 
     prob_trie_proto->set_allocated_root(node_a);

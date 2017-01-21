@@ -63,7 +63,7 @@ TEST_F(CountTrieTest, CountFollowing) {
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({3})), 3);
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({4})), 1);
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({8})), 1);
-    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({7})), 0);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({7})), 1);
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({2, 3})), 3);
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({5, 2})), 2);
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({10, 4})), 1);
@@ -72,7 +72,7 @@ TEST_F(CountTrieTest, CountFollowing) {
 TEST_F(CountTrieTest, CountFollowingSpecific) {
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({}), 0, true), 10);
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({}), 1, false), 4);
-    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({}), 2, true), 5);
+    EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({}), 2, true), 6);
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({}), 2, false), 2);
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({}), 6, false), 1);
     EXPECT_EQ(under_test->CountFollowing(std::list<size_t>({11}), 1, true), 0);
@@ -103,7 +103,7 @@ TEST_F(CountTrieTest, CountPreceding) {
 }
 
 TEST_F(CountTrieTest, CountPrecedingAndFollowing) {
-    EXPECT_EQ(under_test->CountPrecedingAndFollowing(std::list<size_t>({})), 14);
+    EXPECT_EQ(under_test->CountPrecedingAndFollowing(std::list<size_t>({})), 15);
     EXPECT_EQ(under_test->CountPrecedingAndFollowing(std::list<size_t>({11})), 0);
     EXPECT_EQ(under_test->CountPrecedingAndFollowing(std::list<size_t>({11, 11})), 0);
     EXPECT_EQ(under_test->CountPrecedingAndFollowing(std::list<size_t>({11, 11, 11})), 0);
@@ -113,7 +113,7 @@ TEST_F(CountTrieTest, CountPrecedingAndFollowing) {
 }
 
 TEST_F(CountTrieTest, SumFollowing) {
-    EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({})), 20);
+    EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({})), 23);
     EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({11})), 0);
     EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({11, 11})), 0);
     EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({11, 11, 11})), 0);
@@ -121,7 +121,7 @@ TEST_F(CountTrieTest, SumFollowing) {
     EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({3})), 3);
     EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({4})), 2);
     EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({9})), 1);
-    EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({7})), 0);
+    EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({7})), 2);
     EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({5, 2})), 2);
     EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({4, 5})), 2);
     EXPECT_EQ(under_test->SumFollowing(std::list<size_t>({2, 3})), 3);
@@ -133,17 +133,17 @@ TEST_F(CountTrieTest, VocabSize) {
 
 TEST_F(CountTrieTest, CountNGrams) {
     std::vector<std::vector<int>> expected_n_r (4, std::vector<int>(5));
-    expected_n_r[1][0] = -2;
+    expected_n_r[1][0] = -1;
     expected_n_r[1][1] = 4;
     expected_n_r[1][2] = 2;
-    expected_n_r[1][3] = 2;
-    expected_n_r[2][0] = 67;
+    expected_n_r[1][3] = 3;
+    expected_n_r[2][0] = 66;
     expected_n_r[2][1] = 10;
-    expected_n_r[2][2] = 2;
+    expected_n_r[2][2] = 3;
     expected_n_r[2][3] = 2;
-    expected_n_r[3][0] = 714;
-    expected_n_r[3][1] = 13;
-    expected_n_r[3][2] = 2;
+    expected_n_r[3][0] = 711;
+    expected_n_r[3][1] = 15;
+    expected_n_r[3][2] = 3;
 
     std::vector<std::vector<int>> actual_n_r (4, std::vector<int>(5));
     under_test->CountNGrams(&actual_n_r);

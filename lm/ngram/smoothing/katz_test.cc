@@ -33,14 +33,46 @@ tensorflow::Source::lm::ngram::Node *BuildNode(double pseudo_prob, double backof
 }
 
 TEST_F(KatzTest, Prob) {
+    /* Counts:
+    n\r| 0 | 1 | 2 | 3 | 4 | 5 | 6
+    -------------------------------
+     1 |-1 | 4 | 2 | 3 | 0 | 0 | 1
+     2 | 66| 10| 3 | 2 | 0 | 0 | 0
+     2 |711| 15| 3 | 0 | 0 | 0 | 0
+
+    r * d_{n,r}:
+     n\r| 0   | 1 | 2 | 3 | 4 | 5
+     ----------------------------
+      1 | 8   | 1 |-3 | 9 | 0 | 0
+      2 |5/33 |3/5| 2 | 0 | 0 | 0
+      2 |5/237|2/5| 0 | 0 | 0 | 0
+    */
+    
+    // P(cat|<s> the) = 0/3
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"<s>", "the", "cat"})), 0.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 4/39.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 2/13.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), 0.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "mat"})), 9/143.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "ate", "mat"})), 3/70.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 4/13.0);
-    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"blah", "blah", "mat"})), 1/20.0);
+
+    // P(sat|the cat) = (2/5)/3
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "cat", "sat"})), 2/15.0);
+
+    // P(mat|on the) = (2/5)/2
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"on", "the", "mat"})), 0.2);
+
+    // P(sat|the mouse) = ((1-2/5)/(1-3/5))((1-3/5)/(1-9/23))(-3/23)
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "sat"})), -9/70.0);
+
+    // P(mat|the mouse) = ((1-2/5)/(1-3/5))((1-3/5)/(1-9/23))(1/23)
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "mat"})), 3/70.0);
+
+    // P(mat|the ate) = ((1-0)/(1-0))((1-3/5)/(1-6/23))(1/23)
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "ate", "mat"})), 2/85.0);
+
+    // P(.|the mouse) = (2/5)/1
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"the", "mouse", "."})), 0.4);
+
+    // P(mat|blah blah) = ((1-0)/(1-0))((1-0)/(1-0))(1/23)
+    ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"blah", "blah", "mat"})), 1/23.0);
+
+    // P(blah|blah blah) = 0
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"blah", "blah", "blah"})), 0.0);
 }
 
@@ -59,12 +91,12 @@ TEST(KatzTestToProto, ToProto) {
     /* The expected proto structure:
 
     a (0, 0)
-    --the-- b (0, 3)
+    --<s>-- b (1/4, 1)
             --the-- e (0, 1)
-            --cat-- f (0, 1)
-    --<s>-- c (0, 1)
-            --the-- g (0, 1)
-    --cat-- d (2/3, 1)
+    --the-- c (0, 4/3)
+            --the-- f (0, 1)
+            --cat-- g (0, 1)
+    --cat-- d (1/4, 1)
     */
 
     expected_ngram_proto->set_n(2);
@@ -76,18 +108,18 @@ TEST(KatzTestToProto, ToProto) {
     tensorflow::Source::lm::ngram::Node *node_f = ::BuildNode(0, 1);
     tensorflow::Source::lm::ngram::Node *node_g = ::BuildNode(0, 1);
 
-    tensorflow::Source::lm::ngram::Node *node_b = ::BuildNode(0, 3);
+    tensorflow::Source::lm::ngram::Node *node_b = ::BuildNode(0.25, 1);
     SetChildProperties(node_b->add_child(), 2, node_e);
-    SetChildProperties(node_b->add_child(), 3, node_f);
 
-    tensorflow::Source::lm::ngram::Node *node_c = ::BuildNode(0, 1);
-    SetChildProperties(node_c->add_child(), 2, node_g);
+    tensorflow::Source::lm::ngram::Node *node_c = ::BuildNode(0, 4/3.0);
+    SetChildProperties(node_c->add_child(), 2, node_f);
+    SetChildProperties(node_c->add_child(), 3, node_g);
 
-    tensorflow::Source::lm::ngram::Node *node_d = ::BuildNode(2/3.0, 1);
+    tensorflow::Source::lm::ngram::Node *node_d = ::BuildNode(0.25, 1);
 
     tensorflow::Source::lm::ngram::Node *node_a = ::BuildNode(0, 0);
-    SetChildProperties(node_a->add_child(), 2, node_b);
-    SetChildProperties(node_a->add_child(), 1, node_c);
+    SetChildProperties(node_a->add_child(), 1, node_b);
+    SetChildProperties(node_a->add_child(), 2, node_c);
     SetChildProperties(node_a->add_child(), 3, node_d);
 
     prob_trie_proto->set_allocated_root(node_a);
