@@ -10,7 +10,7 @@ from tensorflow.python.framework import graph_util
 from tensorflow.Source.lm import vocab_pb2
 
 tf.flags.DEFINE_bool("infer", False, "Run inference on a previously saved model.")
-tf.flags.DEFINE_string("training_data_path", None,"The path to the training data.")
+tf.flags.DEFINE_string("training_data_path", None, "The path to the training data.")
 tf.flags.DEFINE_string("save_path", None, "The path to save the model.")
 tf.flags.DEFINE_string("size", None, "The size of the lstm model (one of: small, large).")
 
@@ -70,11 +70,8 @@ class LSTM:
         self._epoch_size = epoch_size
         self._vocab_size = vocab_size
 
-        batch_size = 1
-        if is_training:
-            batch_size = config.batch_size
-        self._input_data = tf.placeholder(tf.int32, [batch_size, config.num_steps], name="inputs")
-        self._target_data = tf.placeholder(tf.int32, [batch_size, config.num_steps], name="targets")
+        self._input_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps], name="inputs")
+        self._target_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps], name="targets")
 
         # A 'cell' in TensorFlow actually refers to an array of the LSTMs cells described in literature, so this is an
         # array of config.hidden_size LSTM cells.
@@ -88,14 +85,14 @@ class LSTM:
         cell = tf.nn.rnn_cell.MultiRNNCell([rnn_cell] * config.num_layers, state_is_tuple=True)
 
         # Initialise the LSTM cell weights.
-        self._initial_state = cell.zero_state(batch_size, dtype=tf.float32)
+        self._initial_state = cell.zero_state(config.batch_size, dtype=tf.float32)
 
         with tf.device("/cpu:0"):
             # Create a (vocab_size x config.hidden_size) size embedding matrix.
             embedding = tf.get_variable("embedding", [vocab_size, config.hidden_size], dtype=tf.float32)
 
-            # This converts the (batch_size x config.num_steps) input Tensor to a
-            # (batch_size x config.num_steps x config.hidden_size) Tensor by replacing each word id, X, with the
+            # This converts the (config.batch_size x config.num_steps) input Tensor to a
+            # (config.batch_size x config.num_steps x config.hidden_size) Tensor by replacing each word id, X, with the
             # Xth row of the embedding matrix.
             inputs = tf.nn.embedding_lookup(embedding, self._input_data)
 
@@ -131,21 +128,21 @@ class LSTM:
                 #                    ...
                 #                    {a}]
                 #
-                # The shape of cell_output is (batch_size x config.hidden_size).
+                # The shape of cell_output is (config.batch_size x config.hidden_size).
                 (cell_output, state) = cell(inputs[:, time_step, :], state)
 
                 # Each LSTM cell activation is stored in a list of outputs.
                 outputs.append(cell_output)
 
         # Concatenate the outputs from each time step along dimension 1 (which should give a matrix of shape
-        # ((batch_size * config.num_steps) x config.hidden_size).
+        # ((config.batch_size * config.num_steps) x config.hidden_size).
         output = tf.reshape(tf.concat(1, outputs), [-1, config.hidden_size])
 
         softmax_w = tf.get_variable(
             "softmax_w", [config.hidden_size, vocab_size], dtype=tf.float32)
         softmax_b = tf.get_variable("softmax_b", [vocab_size], dtype=tf.float32)
         # Multiply the LSTM activations and add bias to give logits of shape
-        # (batch_size * config.num_steps) x vocab_size. Note that tf.add() doesn't require the Tensor shapes to
+        # (config.batch_size * config.num_steps) x vocab_size. Note that tf.add() doesn't require the Tensor shapes to
         # match due to broadcasting.
         logits = tf.add(tf.matmul(output, softmax_w), softmax_b, name="logits")
         self._logits = logits
@@ -155,15 +152,15 @@ class LSTM:
         self._predictions = tf.nn.softmax(logits, name="predictions")
 
         # The cross-entropy loss is calculated between the logits and the targets (which are flattened into a Tensor
-        # of shape (batch_size * config.num_steps). The tf.ones() are just weights in the weighted cross-entropy
+        # of shape (config.batch_size * config.num_steps). The tf.ones() are just weights in the weighted cross-entropy
         # loss.
         loss = tf.nn.seq2seq.sequence_loss_by_example(
             [logits],
             [tf.reshape(self._target_data, [-1])],
-            [tf.ones([batch_size * config.num_steps], dtype=tf.float32)])
+            [tf.ones([config.batch_size * config.num_steps], dtype=tf.float32)])
 
-        # The total loss is divided by batch_size which gives an average cost per example.
-        self._cost = cost = tf.reduce_sum(loss) / batch_size
+        # The total loss is divided by config.batch_size which gives an average cost per example.
+        self._cost = cost = tf.reduce_sum(loss) / config.batch_size
         self._final_state = state
 
         if not is_training:
@@ -285,11 +282,15 @@ def main(_):
 
     with tf.Graph().as_default():
         if FLAGS.size == "small":
-            config = SmallConfig()
+            train_config = SmallConfig()
+            infer_config = SmallConfig()
         elif FLAGS.size == "large":
-            config = LargeConfig()
+            train_config = LargeConfig()
+            infer_config = LargeConfig()
         else:
             raise ValueError("%s is not a valid --size." % FLAGS.size)
+        infer_config.batch_size = 1
+        infer_config.num_steps = 1
 
         word_to_id = {}
         id_to_word = {}
@@ -321,31 +322,31 @@ def main(_):
                         else:
                             print "'%s' was not seen in the training data." % w
                             seq_ids.append(word_to_id["<unk>"])
-                    padded_input = np.pad(np.array([seq_ids]), ((0, 0), (0, config.num_steps - len(seq_words))), 'constant', constant_values=0)
+                    padded_input = np.pad(np.array([seq_ids]), ((0, 0), (0, infer_config.num_steps - len(seq_words))), 'constant', constant_values=0)
                     print predict(sess, padded_input, id_to_word, len(seq_words))
 
 
         else:
-            input_data, word_to_id = reader.raw_data(FLAGS.training_data_path, config.min_frequency)
+            input_data, word_to_id = reader.raw_data(FLAGS.training_data_path, train_config.min_frequency)
             id_to_word = dict(zip(word_to_id.values(), word_to_id.keys()))
-            epoch_size_scalar = ((len(input_data) // config.batch_size) - 1) // config.num_steps
+            epoch_size_scalar = ((len(input_data) // train_config.batch_size) - 1) // train_config.num_steps
 
-            initialiser = tf.random_uniform_initializer(-config.init_scale, config.init_scale)
+            initialiser = tf.random_uniform_initializer(-train_config.init_scale, train_config.init_scale)
             vocab_size = len(word_to_id)
             with tf.name_scope("training"):
                 with tf.variable_scope("lstm", reuse=None, initializer=initialiser):
-                    training_model = LSTM(config, vocab_size, epoch_size_scalar, is_training=True)
+                    training_model = LSTM(train_config, vocab_size, epoch_size_scalar, is_training=True)
             with tf.name_scope("inference"):
                 with tf.variable_scope("lstm", reuse=True, initializer=initialiser):
-                    inference_model = LSTM(config, vocab_size, epoch_size_scalar, is_training=False)
+                    inference_model = LSTM(infer_config, vocab_size, epoch_size_scalar, is_training=False)
 
             with tf.Session() as sess:
                 saver = tf.train.Saver()
                 tf.initialize_all_variables().run()
 
-                for i in xrange(config.max_max_epoch):
-                    lr_decay = config.lr_decay ** max(i + 1 - config.max_epoch, 0.0)
-                    training_model.assign_lr(sess, config.lr * lr_decay)
+                for i in xrange(train_config.max_max_epoch):
+                    lr_decay = train_config.lr_decay ** max(i + 1 - train_config.max_epoch, 0.0)
+                    training_model.assign_lr(sess, train_config.lr * lr_decay)
 
                     train_perplexity = run_epoch(sess, training_model, input_data)
                     print "Epoch: %d, Train perplexity: %.3f" % (i + 1, train_perplexity)
@@ -354,7 +355,7 @@ def main(_):
                     print "Saving model to %s" % FLAGS.save_path
 
                     vocab = vocab_pb2.VocabProto()
-                    vocab.min_frequency = config.min_frequency
+                    vocab.min_frequency = train_config.min_frequency
                     for i in id_to_word:
                         item = vocab.item.add()
                         item.id = i
