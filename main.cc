@@ -22,7 +22,11 @@ std::list<std::pair<std::string, double>> GetNextK(LM *lm, std::list<std::string
     std::list<std::pair<std::string, double>> result;
     for (int i = 0; i < k; i++) {
         std::list<std::pair<std::string, double>> probs;
-        lm->ProbAllFollowing(seq, probs);
+        if (LSTM* lstm = dynamic_cast<LSTM*>(lm)) {
+            lstm->ProbAllFollowing(seq, probs, false);
+        } else {
+            lm->ProbAllFollowing(seq, probs);
+        }
         double max_prob = 0;
         std::string max_prediction;
         for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {

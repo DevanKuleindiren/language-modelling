@@ -1,0 +1,12 @@
+min_frequency: 1
+item {
+  id: 1
+  word: "<s>"
+}
+item {
+  id: 2
+  word: "the"
+}
+item {
+  word: "<unk>"
+}
