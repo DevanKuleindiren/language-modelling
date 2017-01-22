@@ -363,7 +363,7 @@ def main(_):
                     item = vocab.item.add()
                     item.id = i
                     item.word = id_to_word[i]
-                with open(FLAGS.save_path + "/vocab.pbtxt", "wb") as f:
+                with open(os.path.join(FLAGS.save_path, "/vocab.pbtxt"), "wb") as f:
                     f.write(text_format.MessageToString(vocab))
 
                 # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
