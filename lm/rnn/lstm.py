@@ -1,4 +1,3 @@
-import heapq
 import reader
 import numpy as np
 import os
@@ -9,7 +8,6 @@ from google.protobuf import text_format
 from tensorflow.python.framework import graph_util
 from tensorflow.Source.lm import vocab_pb2
 
-tf.flags.DEFINE_bool("infer", False, "Run inference on a previously saved model.")
 tf.flags.DEFINE_string("training_data_path", None, "The path to the training data.")
 tf.flags.DEFINE_string("save_path", None, "The path to save the model.")
 tf.flags.DEFINE_string("size", None, "The size of the lstm model (one of: small, large).")
@@ -262,16 +260,6 @@ def run_epoch(sess, model, input_data):
 
     return np.exp(costs / iters)
 
-def predict(sess, inputs, id_to_word, seq_len):
-    fetches = {"predictions": "inference/lstm/predictions:0"}
-    feed_dict = {"inference/lstm/inputs:0": inputs}
-    vocab_size = len(id_to_word)
-
-    vals = sess.run(fetches, feed_dict)
-    predictions = vals["predictions"]
-
-    return sorted(heapq.nlargest(10, [(id_to_word[i], p) for (i, p) in zip(xrange(vocab_size), predictions[seq_len - 1])], key=lambda x: x[1]), key=lambda x: -x[1])
-
 def main(_):
     if not FLAGS.training_data_path:
         raise ValueError("Must set --training_data_path.")
@@ -292,87 +280,52 @@ def main(_):
         infer_config.batch_size = 1
         infer_config.num_steps = 1
 
-        word_to_id = {}
-        id_to_word = {}
+        input_data, word_to_id = reader.raw_data(FLAGS.training_data_path, train_config.min_frequency)
+        id_to_word = dict(zip(word_to_id.values(), word_to_id.keys()))
+        epoch_size_scalar = ((len(input_data) // train_config.batch_size) - 1) // train_config.num_steps
 
-        if FLAGS.infer:
+        initialiser = tf.random_uniform_initializer(-train_config.init_scale, train_config.init_scale)
+        vocab_size = len(word_to_id)
+        with tf.name_scope("training"):
+            with tf.variable_scope("lstm", reuse=None, initializer=initialiser):
+                training_model = LSTM(train_config, vocab_size, epoch_size_scalar, is_training=True)
+        with tf.name_scope("inference"):
+            with tf.variable_scope("lstm", reuse=True, initializer=initialiser):
+                inference_model = LSTM(infer_config, vocab_size, epoch_size_scalar, is_training=False)
+
+        with tf.Session() as sess:
+            saver = tf.train.Saver()
+            tf.initialize_all_variables().run()
+
+            for i in xrange(train_config.max_max_epoch):
+                lr_decay = train_config.lr_decay ** max(i + 1 - train_config.max_epoch, 0.0)
+                training_model.assign_lr(sess, train_config.lr * lr_decay)
+
+                train_perplexity = run_epoch(sess, training_model, input_data)
+                print "Epoch: %d, Train perplexity: %.3f" % (i + 1, train_perplexity)
+
+            print "Saving model to %s" % FLAGS.save_path
+
+            # Save checkpoint.
+            saver.save(sess, os.path.join(FLAGS.save_path, "graph.ckpt"))
+
+            # Save model for use in C++.
             vocab = vocab_pb2.VocabProto()
-            with open(FLAGS.save_path + "/vocab.pbtxt", "rb") as f:
-                text_format.Merge(f.read(), vocab)
-                for i in vocab.item:
-                    word_to_id[i.word] = i.id
-                    id_to_word[i.id] = i.word
+            vocab.min_frequency = train_config.min_frequency
+            for i in id_to_word:
+                item = vocab.item.add()
+                item.id = i
+                item.word = id_to_word[i]
+            with open(os.path.join(FLAGS.save_path, "vocab.pbtxt"), "wb") as f:
+                f.write(text_format.MessageToString(vocab))
 
-            vocab_size = len(word_to_id)
+            # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
+            # is why it isn't included in 'inference/lstm/predictions'.
+            graph_def = graph_util.convert_variables_to_constants(
+                sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["inference/lstm/predictions"])
 
-            graph_def = tf.GraphDef()
-            with open(FLAGS.save_path + "/graph.pb", "rb") as f:
-                graph_def.ParseFromString(f.read())
-            tf.import_graph_def(graph_def, name="")
-
-            with tf.Session() as sess:
-                sess.run(tf.initialize_all_variables())
-                while True:
-                    print "Sequence:"
-                    seq_words = raw_input().split()
-                    seq_ids = []
-                    for w in seq_words:
-                        if w in word_to_id:
-                            seq_ids.append(word_to_id[w])
-                        else:
-                            print "'%s' was not seen in the training data." % w
-                            seq_ids.append(word_to_id["<unk>"])
-                    padded_input = np.pad(np.array([seq_ids]), ((0, 0), (0, infer_config.num_steps - len(seq_words))), 'constant', constant_values=0)
-                    print predict(sess, padded_input, id_to_word, len(seq_words))
-
-
-        else:
-            input_data, word_to_id = reader.raw_data(FLAGS.training_data_path, train_config.min_frequency)
-            id_to_word = dict(zip(word_to_id.values(), word_to_id.keys()))
-            epoch_size_scalar = ((len(input_data) // train_config.batch_size) - 1) // train_config.num_steps
-
-            initialiser = tf.random_uniform_initializer(-train_config.init_scale, train_config.init_scale)
-            vocab_size = len(word_to_id)
-            with tf.name_scope("training"):
-                with tf.variable_scope("lstm", reuse=None, initializer=initialiser):
-                    training_model = LSTM(train_config, vocab_size, epoch_size_scalar, is_training=True)
-            with tf.name_scope("inference"):
-                with tf.variable_scope("lstm", reuse=True, initializer=initialiser):
-                    inference_model = LSTM(infer_config, vocab_size, epoch_size_scalar, is_training=False)
-
-            with tf.Session() as sess:
-                saver = tf.train.Saver()
-                tf.initialize_all_variables().run()
-
-                for i in xrange(train_config.max_max_epoch):
-                    lr_decay = train_config.lr_decay ** max(i + 1 - train_config.max_epoch, 0.0)
-                    training_model.assign_lr(sess, train_config.lr * lr_decay)
-
-                    train_perplexity = run_epoch(sess, training_model, input_data)
-                    print "Epoch: %d, Train perplexity: %.3f" % (i + 1, train_perplexity)
-
-                print "Saving model to %s" % FLAGS.save_path
-
-                # Save checkpoint.
-                saver.save(sess, os.path.join(FLAGS.save_path, "graph.ckpt"))
-
-                # Save model for use in C++.
-                vocab = vocab_pb2.VocabProto()
-                vocab.min_frequency = train_config.min_frequency
-                for i in id_to_word:
-                    item = vocab.item.add()
-                    item.id = i
-                    item.word = id_to_word[i]
-                with open(os.path.join(FLAGS.save_path, "/vocab.pbtxt"), "wb") as f:
-                    f.write(text_format.MessageToString(vocab))
-
-                # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
-                # is why it isn't included in 'inference/lstm/predictions'.
-                graph_def = graph_util.convert_variables_to_constants(
-                    sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["inference/lstm/predictions"])
-
-                tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pb", as_text=False)
-                tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pbtxt")
+            tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pb", as_text=False)
+            tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pbtxt")
 
 if __name__ == "__main__":
     tf.app.run()
