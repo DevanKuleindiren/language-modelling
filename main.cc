@@ -3,17 +3,17 @@
 #include "tensorflow/core/platform/init_main.h"
 #include "tensorflow/core/util/command_line_flags.h"
 #include "tensorflow/Source/lm/ngram/load.h"
-#include "tensorflow/Source/lm/rnn/lstm.h"
+#include "tensorflow/Source/lm/rnn/rnn.h"
 
-#define RNN std::string("rnn")
-#define NGRAM std::string("ngram")
+#define RNN_TYPE std::string("rnn")
+#define NGRAM_TYPE std::string("ngram")
 
 void usage(char* const argv_0) {
     std::cerr << "Usage: " << argv_0;
     std::cerr << " --model_path=PATH --type=TYPE --generate=GENR --finish_the_sentence=FNSH" << std::endl;
     std::cerr << "Where:" << std::endl;
     std::cerr << "    PATH is the path the directory containing the model protos." << std::endl;
-    std::cerr << "    TYPE is the type of language model (one of: " << RNN << " or " << NGRAM << ")." << std::endl;
+    std::cerr << "    TYPE is the type of language model (one of: " << RNN_TYPE << " or " << NGRAM_TYPE << ")." << std::endl;
     std::cerr << "    GENR is the number of words to generate using the language model." << std::endl;
     std::cerr << "    FNSH is set if you want the LM to finish your sentence." << std::endl;
 }
@@ -22,8 +22,8 @@ std::list<std::pair<std::string, double>> GetNextK(LM *lm, std::list<std::string
     std::list<std::pair<std::string, double>> result;
     for (int i = 0; i < k; i++) {
         std::list<std::pair<std::string, double>> probs;
-        if (LSTM* lstm = dynamic_cast<LSTM*>(lm)) {
-            lstm->ProbAllFollowing(seq, probs, false);
+        if (RNN* rnn = dynamic_cast<RNN*>(lm)) {
+            rnn->ProbAllFollowing(seq, probs, false);
         } else {
             lm->ProbAllFollowing(seq, probs);
         }
@@ -72,10 +72,13 @@ int main(int argc, char* argv[]) {
     }
 
     LM *lm;
-    if (type.compare(RNN) == 0) {
-        lm = new LSTM(model_path);
-    } else {
+    if (type.compare(RNN_TYPE) == 0) {
+        lm = new RNN(model_path);
+    } else if (type.compare(NGRAM_TYPE) == 0) {
         lm = Load(model_path);
+    } else {
+        std::cerr << type << " is not a valid --type." << std::endl;
+        return -1;
     }
 
     if (generate > 0) {

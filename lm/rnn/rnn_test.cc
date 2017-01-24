@@ -1,36 +1,36 @@
 #include <list>
 #include <unordered_set>
-#include "lstm.h"
+#include "rnn.h"
 #include "tensorflow/core/platform/test.h"
 
 #define ABS_ERROR 1e-6
 
-class LSTMTest : public ::testing::Test {
+class RNNTest : public ::testing::Test {
 protected:
     virtual void SetUp() {
-        under_test = new LSTM("tensorflow/Source/lm/rnn/test_data");
+        under_test = new RNN("tensorflow/Source/lm/rnn/test_data");
     }
 
-    LSTM *under_test;
+    RNN *under_test;
 };
 
 // Note: These tests use a dummy LSTM graph protocol buffer, which doesn't actually produce probabilities between 0
 // and 1.
-TEST_F(LSTMTest, ProbWithMemory) {
+TEST_F(RNNTest, ProbWithMemory) {
     ASSERT_NEAR(under_test->Prob(std::list<std::string>({"<s>", "the"}), true), 0.6, ABS_ERROR);
     ASSERT_NEAR(under_test->Prob(std::list<std::string>({"the", "<unk>"}), true), 3.2, ABS_ERROR);
     ASSERT_NEAR(under_test->Prob(std::list<std::string>({"<unk>", "the", "<unk>", "<s>", "the"}), true), 8.1, ABS_ERROR);
     ASSERT_NEAR(under_test->Prob(std::list<std::string>({"the", "<unk>", "<s>"}), true), 0, ABS_ERROR);
 }
 
-TEST_F(LSTMTest, ProbWithoutMemory) {
+TEST_F(RNNTest, ProbWithoutMemory) {
     ASSERT_NEAR(under_test->Prob(std::list<std::string>({"<s>", "the"}), false), 0.6, ABS_ERROR);
     ASSERT_NEAR(under_test->Prob(std::list<std::string>({"the", "<unk>"}), false), 1.2, ABS_ERROR);
     ASSERT_NEAR(under_test->Prob(std::list<std::string>({"<unk>", "the", "<unk>", "<s>", "the"}), false), 3.9, ABS_ERROR);
     ASSERT_NEAR(under_test->Prob(std::list<std::string>({"the", "<unk>", "<s>"}), false), 0, ABS_ERROR);
 }
 
-TEST_F(LSTMTest, ProbAllFollowingWithMemory) {
+TEST_F(RNNTest, ProbAllFollowingWithMemory) {
     std::list<std::pair<std::string, double>> probs;
     std::unordered_map<std::string, double> expected_probs;
 
@@ -55,7 +55,7 @@ TEST_F(LSTMTest, ProbAllFollowingWithMemory) {
     }
 }
 
-TEST_F(LSTMTest, ProbAllFollowingWithoutMemory) {
+TEST_F(RNNTest, ProbAllFollowingWithoutMemory) {
     std::list<std::pair<std::string, double>> probs;
     std::unordered_map<std::string, double> expected_probs;
 

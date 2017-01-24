@@ -5,17 +5,17 @@
 #include "tensorflow/Source/benchmark/benchmark.h"
 #include "tensorflow/Source/benchmark/benchmark.pb.h"
 #include "tensorflow/Source/lm/ngram/load.h"
-#include "tensorflow/Source/lm/rnn/lstm.h"
+#include "tensorflow/Source/lm/rnn/rnn.h"
 
-#define RNN std::string("rnn")
-#define NGRAM std::string("ngram")
+#define RNN_TYPE std::string("rnn")
+#define NGRAM_TYPE std::string("ngram")
 
 void usage(char* const argv_0) {
     std::cerr << "Usage: " << argv_0;
     std::cerr << " --model_path=PATH --type=TYPE --test_data_path=TEST" << std::endl;
     std::cerr << "Where:" << std::endl;
     std::cerr << "    PATH is the path the directory containing the model protos." << std::endl;
-    std::cerr << "    TYPE is the type of language model (one of: " << RNN << " or " << NGRAM << ")." << std::endl;
+    std::cerr << "    TYPE is the type of language model (one of: " << RNN_TYPE << " or " << NGRAM_TYPE << ")." << std::endl;
     std::cerr << "    TEST is the file path of the test data to run the benchmarking against." << std::endl;
 }
 
@@ -53,10 +53,13 @@ int main(int argc, char* argv[]) {
     }
 
     LM *lm;
-    if (type.compare(RNN) == 0) {
-        lm = new LSTM(model_path);
-    } else {
+    if (type.compare(RNN_TYPE) == 0) {
+        lm = new RNN(model_path);
+    } else if (type.compare(NGRAM_TYPE) == 0) {
         lm = Load(model_path);
+    } else {
+        std::cerr << type << " is not a valid --type." << std::endl;
+        return -1;
     }
 
     Benchmark *benchmark = new Benchmark(lm);

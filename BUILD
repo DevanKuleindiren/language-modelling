@@ -7,6 +7,6 @@ cc_binary(
         "//tensorflow/core:framework_internal",
         "//tensorflow/core:framework_headers_lib",
         "//tensorflow/Source/lm/ngram:load",
-        "//tensorflow/Source/lm/rnn:lstm_inference",
+        "//tensorflow/Source/lm/rnn:rnn_inference",
     ],
 )

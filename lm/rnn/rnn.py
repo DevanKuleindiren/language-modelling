@@ -1,12 +1,13 @@
-import reader
 import numpy as np
 import os
+import reader
 import tensorflow as tf
 import time
 
 from google.protobuf import text_format
 from tensorflow.python.framework import graph_util
 from tensorflow.Source.lm import vocab_pb2
+from tensorflow.Source.lm.rnn import rnn_pb2
 
 tf.flags.DEFINE_string("type", None, "The type of RNN you want to train (one of: rnn, gru, lstm).")
 tf.flags.DEFINE_string("training_data_path", None, "The file path of the training data.")
@@ -65,9 +66,9 @@ class LargeConfig:
 
 
 class CellType:
-    RNN = 1
-    GRU = 2
-    LSTM = 3
+    VANILLA = 0
+    GRU = 1
+    LSTM = 2
 
 
 class RNN:
@@ -84,7 +85,7 @@ class RNN:
 
         # A 'cell' in TensorFlow actually refers to an array of the RNNs cells described in literature, so this is an
         # array of config.hidden_size RNN cells.
-        if cell_type == CellType.RNN:
+        if cell_type == CellType.VANILLA:
             rnn_cell = tf.nn.rnn_cell.BasicRNNCell(config.hidden_size)
         elif cell_type == CellType.GRU:
             rnn_cell = tf.nn.rnn_cell.GRUCell(config.hidden_size)
@@ -195,6 +196,22 @@ class RNN:
             tf.float32, shape=[], name="new_learning_rate")
         self._lr_update = tf.assign(self._lr, self._new_lr)
 
+    @property
+    def inputs(self):
+        return self._input_data
+
+    @property
+    def predictions(self):
+        return self._predictions
+
+    @property
+    def initial_state(self):
+        return self._initial_state
+
+    @property
+    def final_state(self):
+        return self._final_state
+
     def assign_lr(self, session, lr_value):
         session.run(self._lr_update, feed_dict={self._new_lr: lr_value})
 
@@ -215,7 +232,7 @@ class RNN:
             feed_dict[self._input_data] = x
             feed_dict[self._target_data] = t
 
-            if self._cell_type == CellType.RNN or self._cell_type == CellType.GRU:
+            if self._cell_type == CellType.VANILLA or self._cell_type == CellType.GRU:
                 for i, h in enumerate(self._initial_state):
                     feed_dict[h] = state[i]
             else:
@@ -250,7 +267,7 @@ def main(_):
 
     with tf.Graph().as_default():
         if FLAGS.type == "rnn":
-            cell_type = CellType.RNN
+            cell_type = CellType.VANILLA
         elif FLAGS.type == "gru":
             cell_type = CellType.GRU
         elif FLAGS.type == "lstm":
@@ -285,6 +302,7 @@ def main(_):
         with tf.Session() as sess:
             saver = tf.train.Saver()
             tf.initialize_all_variables().run()
+            start_time = time.time()
 
             for i in xrange(train_config.max_max_epoch):
                 lr_decay = train_config.lr_decay ** max(i + 1 - train_config.max_epoch, 0.0)
@@ -293,12 +311,38 @@ def main(_):
                 train_perplexity = training_model.run_epoch(sess, input_data)
                 print "Epoch: %d, Train perplexity: %.3f" % (i + 1, train_perplexity)
 
+            print "Trained in %d seconds." % (time.time() - start_time)
             print "Saving model to %s" % FLAGS.save_path
 
             # Save checkpoint.
             saver.save(sess, os.path.join(FLAGS.save_path, "graph.ckpt"))
 
             # Save model for use in C++.
+            # --------------------------
+
+            # Save meta information about the RNN.
+            rnn_proto = rnn_pb2.RNNProto()
+            rnn_proto.type = cell_type
+            rnn_proto.input_tensor_name = inference_model.inputs.name
+            rnn_proto.predictions_tensor_name = inference_model.predictions.name
+            if cell_type == CellType.VANILLA or cell_type == CellType.GRU:
+                for i, (h_0, h_1) in enumerate(zip(inference_model.initial_state, inference_model.final_state)):
+                    h_name_pair = rnn_proto.h.add()
+                    h_name_pair.initial = h_0.name
+                    h_name_pair.final = h_1.name
+            else:
+                for i, ((c_0, h_0), (c_1, h_1)) in enumerate(zip(inference_model.initial_state, inference_model.final_state)):
+                    h_name_pair = rnn_proto.h.add()
+                    h_name_pair.initial = h_0.name
+                    h_name_pair.final = h_1.name
+
+                    c_name_pair = rnn_proto.c.add()
+                    c_name_pair.initial = c_0.name
+                    c_name_pair.final = c_1.name
+            with open(os.path.join(FLAGS.save_path, "rnn.pbtxt"), "wb") as f:
+                f.write(text_format.MessageToString(rnn_proto))
+
+            # Save the vocabulary.
             vocab = vocab_pb2.VocabProto()
             vocab.min_frequency = train_config.min_frequency
             for i in id_to_word:
@@ -311,8 +355,10 @@ def main(_):
             # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
             # is why it isn't included in 'inference/rnn/predictions'.
             graph_def = graph_util.convert_variables_to_constants(
-                sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["inference/rnn/predictions"])
+                sess=sess, input_graph_def=sess.graph.as_graph_def(),
+                output_node_names=[inference_model.predictions.name.split(':', 1)[0]])
 
+            # Save the frozen graph (which can be loaded into C++).
             tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pb", as_text=False)
             tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pbtxt")
 

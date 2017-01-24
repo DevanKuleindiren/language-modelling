@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package tensorflow.Source.lm.rnn;
+
+message RNNProto {
+    // The type of RNN.
+    Type type = 1;
+
+    // The name of the input placeholder tensor.
+    string input_tensor_name = 2;
+
+    // The name of the softmax predictions op.
+    string predictions_tensor_name = 3;
+
+    message TensorNamePair {
+        string initial = 1;
+        string final = 2;
+    }
+    // The names of the tensors storing the state of the RNN.
+    repeated TensorNamePair h = 4;
+
+    // This is only set if the type is LSTM (which has additional state).
+    repeated TensorNamePair c = 5;
+}
+
+enum Type {
+    VANILLA = 0;
+    GRU = 1;
+    LSTM = 2;
+}

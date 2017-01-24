@@ -4,6 +4,7 @@ import tensorflow as tf
 from google.protobuf import text_format
 from tensorflow.python.framework import graph_util
 from tensorflow.Source.lm import vocab_pb2
+from tensorflow.Source.lm.rnn import rnn_pb2
 
 tf.flags.DEFINE_string("save_path", None, "The path to save the model.")
 
@@ -13,7 +14,7 @@ def main(_):
     if not FLAGS.save_path:
         print "You must specify --save_path."
 
-    with tf.name_scope("inference/lstm"):
+    with tf.name_scope("inference/rnn"):
         input_data = tf.placeholder(tf.int32, [1, 1], name="inputs")
         input_data_f = tf.to_float(input_data)
         initial_state_c_0 = tf.zeros([1, 3], name="zeros")
@@ -32,6 +33,34 @@ def main(_):
         tf.initialize_all_variables().run()
 
         # Save model for use in C++.
+        # --------------------------
+
+        # Save meta information about the RNN.
+        rnn_proto = rnn_pb2.RNNProto()
+        rnn_proto.type = 2
+        rnn_proto.input_tensor_name = input_data.name
+        rnn_proto.predictions_tensor_name = predictions.name
+
+        rnn_proto.h.add(
+            initial = initial_state_h_0.name,
+            final = final_state_h_0.name,
+        )
+        rnn_proto.h.add(
+            initial = initial_state_h_1.name,
+            final = final_state_h_1.name,
+        )
+        rnn_proto.c.add(
+            initial = initial_state_c_0.name,
+            final = final_state_c_0.name,
+        )
+        rnn_proto.c.add(
+            initial = initial_state_c_1.name,
+            final = final_state_c_1.name,
+        )
+        with open(os.path.join(FLAGS.save_path, "rnn.pbtxt"), "wb") as f:
+            f.write(text_format.MessageToString(rnn_proto))
+
+        # Save the vocabulary.
         vocab = vocab_pb2.VocabProto()
         vocab.min_frequency = 1
         word_to_id = {
@@ -49,7 +78,8 @@ def main(_):
         # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
         # is why it isn't included in 'inference/lstm/predictions'.
         graph_def = graph_util.convert_variables_to_constants(
-            sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["inference/lstm/predictions"])
+            sess=sess, input_graph_def=sess.graph.as_graph_def(),
+            output_node_names=[predictions.name.split(':', 1)[0]])
 
         tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pb", as_text=False)
         tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pbtxt")

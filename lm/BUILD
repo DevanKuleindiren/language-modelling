@@ -2,6 +2,7 @@ load(
     "//tensorflow/core:platform/default/build_config.bzl",
     "tf_proto_library",
 )
+
 cc_library(
     name = "lm",
     srcs = ["lm.cc"],

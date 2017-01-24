@@ -1,11 +1,25 @@
+load(
+    "//tensorflow/core:platform/default/build_config.bzl",
+    "tf_proto_library",
+)
+
 py_binary(
     name = "rnn",
     srcs = ["rnn.py"],
     deps = [
         ":reader",
+        ":rnn_pb_py",
         "//tensorflow/Source/lm:vocab_pb_py",
         "//tensorflow:tensorflow_py",
     ],
+)
+
+tf_proto_library(
+    name = "rnn_pb",
+    srcs = ["rnn.proto"],
+    cc_api_version = 2,
+    py_api_version = 2,
+    visibility = ["//visibility:public"],
 )
 
 py_library(
@@ -25,11 +39,12 @@ py_test(
 )
 
 cc_library(
-    name = "lstm_inference",
-    srcs = ["lstm.cc"],
-    hdrs = ["lstm.h"],
+    name = "rnn_inference",
+    srcs = ["rnn.cc"],
+    hdrs = ["rnn.h"],
     visibility = ["//visibility:public"],
     deps = [
+        ":rnn_pb_cc",
         "//tensorflow/core:tensorflow",
         "//tensorflow/Source/lm:lm",
         "//tensorflow/Source/lm:vocab",
@@ -37,11 +52,11 @@ cc_library(
 )
 
 cc_test(
-    name = "lstm_inference_test",
+    name = "rnn_inference_test",
     size = "small",
-    srcs = ["lstm_test.cc"],
+    srcs = ["rnn_test.cc"],
     deps = [
-        ":lstm_inference",
+        ":rnn_inference",
         "//tensorflow/core:test",
         "//tensorflow/core:test_main",
     ],
@@ -54,6 +69,7 @@ filegroup(
     name = "test_data",
     srcs = [
         "test_data/graph.pb",
+        "test_data/rnn.pbtxt",
         "test_data/vocab.pbtxt",
     ],
 )
@@ -62,6 +78,7 @@ py_binary(
     name = "gen_data",
     srcs = ["test_data/gen_data.py"],
     deps = [
+        ":rnn_pb_py",
         "//tensorflow/Source/lm:vocab_pb_py",
         "//tensorflow:tensorflow_py",
     ],
