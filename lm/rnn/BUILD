@@ -1,6 +1,6 @@
 py_binary(
-    name = "lstm",
-    srcs = ["lstm.py"],
+    name = "rnn",
+    srcs = ["rnn.py"],
     deps = [
         ":reader",
         "//tensorflow/Source/lm:vocab_pb_py",

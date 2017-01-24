@@ -8,27 +8,29 @@ from google.protobuf import text_format
 from tensorflow.python.framework import graph_util
 from tensorflow.Source.lm import vocab_pb2
 
-tf.flags.DEFINE_string("training_data_path", None, "The path to the training data.")
-tf.flags.DEFINE_string("save_path", None, "The path to save the model.")
-tf.flags.DEFINE_string("size", None, "The size of the lstm model (one of: small, large).")
+tf.flags.DEFINE_string("type", None, "The type of RNN you want to train (one of: rnn, gru, lstm).")
+tf.flags.DEFINE_string("training_data_path", None, "The file path of the training data.")
+tf.flags.DEFINE_string("save_path", None, "The directory path to save the model in.")
+tf.flags.DEFINE_string("size", None, "The size of the model (one of: small, large).")
 
 FLAGS = tf.flags.FLAGS
+
 
 class SmallConfig:
     """
     The hyperparameters used in the model:
-    - batch_size - the batch size
-    - hidden_size - the number of LSTM units
-    - init_scale - the initial scale of the weights
-    - keep_prob - the probability of keeping weights in the dropout layer
-    - lr - the initial value of the learning rate
-    - lr_decay - the decay of the learning rate for each epoch after "max_epoch"
-    - max_grad_norm - the maximum permissible norm of the gradient
-    - max_epoch - the number of epochs trained with the initial learning rate
-    - max_max_epoch - the total number of epochs for training
-    - min_frequency - the minimum number of times a word needs to be seen to be considered part of the vocabulary
-    - num_layers - the number of LSTM layers
-    - num_steps - the number of unrolled steps of LSTM
+    - batch_size - The batch size.
+    - hidden_size - The number of RNN units.
+    - init_scale - The initial scale of the weights.
+    - keep_prob - The probability of keeping weights in the dropout layer.
+    - lr - The initial value of the learning rate.
+    - lr_decay - The decay of the learning rate for each epoch after "max_epoch".
+    - max_grad_norm - The maximum permissible norm of the gradient.
+    - max_epoch - The number of epochs trained with the initial learning rate.
+    - max_max_epoch - The total number of epochs for training.
+    - min_frequency - The minimum number of times a word needs to be seen to be considered part of the vocabulary.
+    - num_layers - The number of RNN layers.
+    - num_steps - The number of unrolled steps of the RNN for each chunk of the training data.
     """
     batch_size = 20
     hidden_size = 200
@@ -42,6 +44,7 @@ class SmallConfig:
     min_frequency = 1
     num_layers = 2
     num_steps = 20
+
 
 class LargeConfig:
     """
@@ -60,29 +63,42 @@ class LargeConfig:
     num_layers = 2
     num_steps = 35
 
-class LSTM:
 
-    def __init__(self, config, vocab_size, epoch_size, is_training):
+class CellType:
+    RNN = 1
+    GRU = 2
+    LSTM = 3
+
+
+class RNN:
+
+    def __init__(self, config, cell_type, vocab_size, epoch_size, is_training):
 
         self._config = config
+        self._cell_type = cell_type
         self._epoch_size = epoch_size
         self._vocab_size = vocab_size
 
         self._input_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps], name="inputs")
         self._target_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps], name="targets")
 
-        # A 'cell' in TensorFlow actually refers to an array of the LSTMs cells described in literature, so this is an
-        # array of config.hidden_size LSTM cells.
-        rnn_cell = tf.nn.rnn_cell.BasicLSTMCell(config.hidden_size, forget_bias=0.0, state_is_tuple=True)
+        # A 'cell' in TensorFlow actually refers to an array of the RNNs cells described in literature, so this is an
+        # array of config.hidden_size RNN cells.
+        if cell_type == CellType.RNN:
+            rnn_cell = tf.nn.rnn_cell.BasicRNNCell(config.hidden_size)
+        elif cell_type == CellType.GRU:
+            rnn_cell = tf.nn.rnn_cell.GRUCell(config.hidden_size)
+        else:
+            rnn_cell = tf.nn.rnn_cell.BasicLSTMCell(config.hidden_size, forget_bias=0.0, state_is_tuple=True)
 
-        # This adds dropout to the LSTM cells by applying the probability of keeping a weight.
+        # This adds dropout to the RNN cells by applying the probability of keeping a weight.
         if is_training and config.keep_prob < 1:
             rnn_cell = tf.nn.rnn_cell.DropoutWrapper(rnn_cell, output_keep_prob=config.keep_prob)
 
         # This adds layers to the RNN to give config.num_layers layers overall.
         cell = tf.nn.rnn_cell.MultiRNNCell([rnn_cell] * config.num_layers, state_is_tuple=True)
 
-        # Initialise the LSTM cell weights.
+        # Initialise the RNN cell weights.
         self._initial_state = cell.zero_state(config.batch_size, dtype=tf.float32)
 
         with tf.device("/cpu:0"):
@@ -101,15 +117,17 @@ class LSTM:
 
         outputs = []
         state = self._initial_state
-        with tf.variable_scope("LSTM"):
+        with tf.variable_scope("RNN"):
             for time_step in range(config.num_steps):
                 # We want to use the same set of weights in each time step. This is due to the recurrent structure of
                 # RNNs.
                 if time_step > 0: tf.get_variable_scope().reuse_variables()
 
-                # Each LSTM cell has a __call__ function which takes a batch of words at a particular time step
-                # (represented as embedding vectors) and returns the tuple (h, c) where h is the new
-                # LSTM activation and c is the new cell state as shown in Figure 1 of http://arxiv.org/abs/1409.2329.
+                # Each RNN cell has a __call__ function which takes a batch of words at a particular time step
+                # (represented as embedding vectors) and returns the tuple (h, s) where h is the new RNN activation
+                # and s is the new cell state. In the case of the vanilla RNN and GRU architectures,this state is just
+                # the activations from the previous time step. In the case of the LSTM architecture, this state is a
+                # tuple (c, h), which corresponds to c and h in Figure 1 of http://arxiv.org/abs/1409.2329.
                 #
                 # For example, if we denote {cat} as the embedding vector for the word "cat", then we might have
                 # something like:
@@ -129,7 +147,7 @@ class LSTM:
                 # The shape of cell_output is (config.batch_size x config.hidden_size).
                 (cell_output, state) = cell(inputs[:, time_step, :], state)
 
-                # Each LSTM cell activation is stored in a list of outputs.
+                # Each RNN cell activation is stored in a list of outputs.
                 outputs.append(cell_output)
 
         # Concatenate the outputs from each time step along dimension 1 (which should give a matrix of shape
@@ -139,7 +157,7 @@ class LSTM:
         softmax_w = tf.get_variable(
             "softmax_w", [config.hidden_size, vocab_size], dtype=tf.float32)
         softmax_b = tf.get_variable("softmax_b", [vocab_size], dtype=tf.float32)
-        # Multiply the LSTM activations and add bias to give logits of shape
+        # Multiply the RNN activations and add bias to give logits of shape
         # (config.batch_size * config.num_steps) x vocab_size. Note that tf.add() doesn't require the Tensor shapes to
         # match due to broadcasting.
         logits = tf.add(tf.matmul(output, softmax_w), softmax_b, name="logits")
@@ -180,87 +198,49 @@ class LSTM:
     def assign_lr(self, session, lr_value):
         session.run(self._lr_update, feed_dict={self._new_lr: lr_value})
 
-    @property
-    def input_data(self):
-        return self._input_data
+    def run_epoch(self, sess, input_data):
+        start_time = time.time()
+        costs = 0.0
+        iters = 0
+        state = sess.run(self._initial_state)
 
-    @property
-    def target_data(self):
-        return self._target_data
+        fetches = {
+            "cost": self._cost,
+            "final_state": self._final_state,
+            "train_op": self._train_op,
+        }
 
-    @property
-    def initial_state(self):
-        return self._initial_state
+        for step, (x, t) in enumerate(reader.batch_producer(input_data, self._config.batch_size, self._config.num_steps)):
+            feed_dict = {}
+            feed_dict[self._input_data] = x
+            feed_dict[self._target_data] = t
 
-    @property
-    def config(self):
-        return self._config
+            if self._cell_type == CellType.RNN or self._cell_type == CellType.GRU:
+                for i, h in enumerate(self._initial_state):
+                    feed_dict[h] = state[i]
+            else:
+                # For the LSTM model, the states are tuples (c, h).
+                for i, (c, h) in enumerate(self._initial_state):
+                    feed_dict[c] = state[i].c
+                    feed_dict[h] = state[i].h
 
-    @property
-    def cost(self):
-        return self._cost
+            vals = sess.run(fetches, feed_dict)
+            cost = vals["cost"]
+            state = vals["final_state"]
 
-    @property
-    def logits(self):
-        return self._logits
+            costs += cost
+            iters += self._config.num_steps
 
-    @property
-    def vocab_size(self):
-        return self._vocab_size
+            if step % (self._epoch_size // 10) == 10:
+                print("%.3f perplexity: %.3f speed: %.0f wps" %
+                    (step * 1.0 / self._epoch_size, np.exp(costs / iters),
+                     iters * self._config.batch_size / (time.time() - start_time)))
 
-    @property
-    def final_state(self):
-        return self._final_state
-
-    @property
-    def train_op(self):
-        return self._train_op
-
-    @property
-    def epoch_size(self):
-        return self._epoch_size
-
-    @property
-    def predictions(self):
-        return self._predictions
-
-
-def run_epoch(sess, model, input_data):
-    start_time = time.time()
-    costs = 0.0
-    iters = 0
-    state = sess.run(model.initial_state)
-
-    fetches = {
-        "cost": model.cost,
-        "final_state": model.final_state,
-        "train_op": model.train_op,
-    }
-
-    for step, (x, t) in enumerate(reader.batch_producer(input_data, model.config.batch_size, model.config.num_steps)):
-        feed_dict = {}
-        feed_dict[model.input_data] = x
-        feed_dict[model.target_data] = t
-
-        for i, (c, h) in enumerate(model.initial_state):
-            feed_dict[c] = state[i].c
-            feed_dict[h] = state[i].h
-
-        vals = sess.run(fetches, feed_dict)
-        cost = vals["cost"]
-        state = vals["final_state"]
-
-        costs += cost
-        iters += model.config.num_steps
-
-        if step % 10 == 0:
-            print("%.3f perplexity: %.3f speed: %.0f wps" %
-                (step * 1.0 / model.epoch_size, np.exp(costs / iters),
-                 iters * model.config.batch_size / (time.time() - start_time)))
-
-    return np.exp(costs / iters)
+        return np.exp(costs / iters)
 
 def main(_):
+    if not FLAGS.type:
+        raise ValueError("Must set --type.")
     if not FLAGS.training_data_path:
         raise ValueError("Must set --training_data_path.")
     if not FLAGS.save_path:
@@ -269,6 +249,15 @@ def main(_):
         raise ValueError("Must set --size.")
 
     with tf.Graph().as_default():
+        if FLAGS.type == "rnn":
+            cell_type = CellType.RNN
+        elif FLAGS.type == "gru":
+            cell_type = CellType.GRU
+        elif FLAGS.type == "lstm":
+            cell_type = CellType.LSTM
+        else:
+            raise ValueError("%s is not a valid --type." % FLAGS.type)
+
         if FLAGS.size == "small":
             train_config = SmallConfig()
             infer_config = SmallConfig()
@@ -287,11 +276,11 @@ def main(_):
         initialiser = tf.random_uniform_initializer(-train_config.init_scale, train_config.init_scale)
         vocab_size = len(word_to_id)
         with tf.name_scope("training"):
-            with tf.variable_scope("lstm", reuse=None, initializer=initialiser):
-                training_model = LSTM(train_config, vocab_size, epoch_size_scalar, is_training=True)
+            with tf.variable_scope("rnn", reuse=None, initializer=initialiser):
+                training_model = RNN(train_config, cell_type, vocab_size, epoch_size_scalar, is_training=True)
         with tf.name_scope("inference"):
-            with tf.variable_scope("lstm", reuse=True, initializer=initialiser):
-                inference_model = LSTM(infer_config, vocab_size, epoch_size_scalar, is_training=False)
+            with tf.variable_scope("rnn", reuse=True, initializer=initialiser):
+                inference_model = RNN(infer_config, cell_type, vocab_size, epoch_size_scalar, is_training=False)
 
         with tf.Session() as sess:
             saver = tf.train.Saver()
@@ -301,7 +290,7 @@ def main(_):
                 lr_decay = train_config.lr_decay ** max(i + 1 - train_config.max_epoch, 0.0)
                 training_model.assign_lr(sess, train_config.lr * lr_decay)
 
-                train_perplexity = run_epoch(sess, training_model, input_data)
+                train_perplexity = training_model.run_epoch(sess, input_data)
                 print "Epoch: %d, Train perplexity: %.3f" % (i + 1, train_perplexity)
 
             print "Saving model to %s" % FLAGS.save_path
@@ -320,9 +309,9 @@ def main(_):
                 f.write(text_format.MessageToString(vocab))
 
             # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
-            # is why it isn't included in 'inference/lstm/predictions'.
+            # is why it isn't included in 'inference/rnn/predictions'.
             graph_def = graph_util.convert_variables_to_constants(
-                sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["inference/lstm/predictions"])
+                sess=sess, input_graph_def=sess.graph.as_graph_def(), output_node_names=["inference/rnn/predictions"])
 
             tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pb", as_text=False)
             tf.train.write_graph(graph_def, FLAGS.save_path, "graph.pbtxt")
