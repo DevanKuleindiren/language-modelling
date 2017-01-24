@@ -78,7 +78,7 @@ Vocab *Vocab::Load(std::string file_name) {
 
     google::protobuf::io::IstreamInputStream isis(&ifs);
     if (!google::protobuf::TextFormat::Parse(&isis, &vocab_proto)) {
-        std::cerr << "Failed to read vocab trie." << std::endl;
+        std::cerr << "Failed to read vocab proto." << std::endl;
     } else {
         std::cout << "Read vocab proto." << std::endl;
     }
