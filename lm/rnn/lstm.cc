@@ -19,7 +19,7 @@ LSTM::LSTM(std::string directory_path) {
         directory_path += '/';
     }
 
-    vocab = Vocab::Load(directory_path + "/vocab.pbtxt");
+    vocab = Vocab::Load(directory_path + "vocab.pbtxt");
 
     status = NewSession(tensorflow::SessionOptions(), &session);
     if (!status.ok()) {
