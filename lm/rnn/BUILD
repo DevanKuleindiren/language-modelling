@@ -6,6 +6,7 @@ load(
 py_binary(
     name = "rnn",
     srcs = ["rnn.py"],
+    srcs_version = "PY2AND3",
     deps = [
         ":reader",
         ":rnn_pb_py",
@@ -25,6 +26,7 @@ tf_proto_library(
 py_library(
     name = "reader",
     srcs = ["reader.py"],
+    srcs_version = "PY2AND3",
     deps = [],
 )
 

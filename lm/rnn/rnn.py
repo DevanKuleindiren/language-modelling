@@ -220,6 +220,7 @@ class RNN:
         costs = 0.0
         iters = 0
         state = sess.run(self._initial_state)
+        perplexity_path = os.path.join(FLAGS.save_path, "perplexity.txt")
 
         fetches = {
             "cost": self._cost,
@@ -252,6 +253,10 @@ class RNN:
                 print("%.3f perplexity: %.3f speed: %.0f wps" %
                     (step * 1.0 / self._epoch_size, np.exp(costs / iters),
                      iters * self._config.batch_size / (time.time() - start_time)))
+                with open(perplexity_path, 'a') as f:
+                    f.write("%.3f perplexity: %.3f speed: %.0f wps\n" %
+                        (step * 1.0 / self._epoch_size, np.exp(costs / iters),
+                         iters * self._config.batch_size / (time.time() - start_time)))
 
         return np.exp(costs / iters)
 
@@ -303,16 +308,21 @@ def main(_):
             saver = tf.train.Saver()
             tf.initialize_all_variables().run()
             start_time = time.time()
+            perplexity_path = os.path.join(FLAGS.save_path, "perplexity.txt")
+            with open(perplexity_path, 'w') as f:
+                f.write("%s perplexities:\n" % FLAGS.type)
 
-            for i in xrange(train_config.max_max_epoch):
+            for i in range(train_config.max_max_epoch):
                 lr_decay = train_config.lr_decay ** max(i + 1 - train_config.max_epoch, 0.0)
                 training_model.assign_lr(sess, train_config.lr * lr_decay)
 
                 train_perplexity = training_model.run_epoch(sess, input_data)
-                print "Epoch: %d, Train perplexity: %.3f" % (i + 1, train_perplexity)
+                print ("Epoch: %d, Train perplexity: %.3f" % (i + 1, train_perplexity))
+                with open(perplexity_path, 'a') as f:
+                    f.write("Epoch: %d, Train perplexity: %.3f\n" % (i + 1, train_perplexity))
 
-            print "Trained in %d seconds." % (time.time() - start_time)
-            print "Saving model to %s" % FLAGS.save_path
+            print ("Trained in %d seconds." % (time.time() - start_time))
+            print ("Saving model to %s" % FLAGS.save_path)
 
             # Save checkpoint.
             saver.save(sess, os.path.join(FLAGS.save_path, "graph.ckpt"))
@@ -340,7 +350,7 @@ def main(_):
                     c_name_pair.initial = c_0.name
                     c_name_pair.final = c_1.name
             with open(os.path.join(FLAGS.save_path, "rnn.pbtxt"), "wb") as f:
-                f.write(text_format.MessageToString(rnn_proto))
+                f.write(bytes(text_format.MessageToString(rnn_proto), "utf-8"))
 
             # Save the vocabulary.
             vocab = vocab_pb2.VocabProto()
@@ -350,7 +360,7 @@ def main(_):
                 item.id = i
                 item.word = id_to_word[i]
             with open(os.path.join(FLAGS.save_path, "vocab.pbtxt"), "wb") as f:
-                f.write(text_format.MessageToString(vocab))
+                f.write(bytes(text_format.MessageToString(vocab), "utf-8"))
 
             # Note: graph_util.convert_variables_to_constants() appends ':0' onto the variable names, which
             # is why it isn't included in 'inference/rnn/predictions'.
