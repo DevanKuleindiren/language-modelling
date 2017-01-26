@@ -65,9 +65,12 @@ int main(int argc, char* argv[]) {
     Benchmark *benchmark = new Benchmark(lm);
     double perplexity = benchmark->Perplexity(test_data_path, false);
     std::cout << "Perplexity = " << perplexity << std::endl;
+    double average_keys_saved = benchmark->AverageKeysSaved(test_data_path, 1000);
+    std::cout << "Average Keys Saved = " << average_keys_saved << std::endl;
 
     tensorflow::Source::benchmark::BenchmarkProto benchmark_proto;
     benchmark_proto.set_perplexity(perplexity);
+    benchmark_proto.set_average_keys_saved(average_keys_saved);
 
     if (model_path.back() != '/') {
         model_path += '/';

@@ -58,3 +58,61 @@ double Benchmark::Perplexity(std::string file_name, bool use_exp_calculation) {
 
     return perplexity;
 }
+
+double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
+    // The average number of characters saved (per word), where 'saved' characters are those characters of the word
+    // that don't need to be typed as a result of the correct word being predicted in the top 3.
+
+    std::ifstream file_stream (file_name);
+    FileReader *file_reader = new FileReader(file_stream);
+    int num_words = 0;
+    double keys_saved = 0;
+    std::list<std::string> seq;
+    std::string word;
+
+    while (file_reader->GetNextWord(&word) && num_words < max_words) {
+        seq.push_back(word);
+
+        while (seq.size() > language_model->ContextSize().second) {
+            seq.pop_front();
+        }
+
+        if (seq.size() > (language_model->ContextSize()).first) {
+            num_words++;
+
+            std::string to_predict = seq.back();
+            seq.pop_back();
+            std::list<std::pair<std::string, double>> probs;
+            language_model->ProbAllFollowing(seq, probs);
+            seq.push_back(to_predict);
+
+            CharTrie *char_trie = new CharTrie();
+            for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {
+                char_trie->Insert(it->first, it->second);
+            }
+
+            bool next_word_predicted = false;
+            for (int i = 0; i <= to_predict.length() && !next_word_predicted; ++i) {
+                std::list<std::pair<std::string, double>> top_3 = char_trie->GetMaxKWithPrefix(to_predict.substr(0, i), 3);
+
+                for (std::list<std::pair<std::string, double>>::iterator it = top_3.begin(); it != top_3.end(); ++it) {
+                    if (to_predict.compare(it->first) == 0) {
+                        keys_saved += to_predict.length() - i;
+                        next_word_predicted = true;
+                        break;
+                    }
+                }
+            }
+
+            if (num_words > 0 && num_words % 1000 == 0) {
+                std::cout << "Processed " << num_words << " words." << std::endl;
+            }
+        }
+    }
+
+    if (num_words > 0) {
+        return (keys_saved / num_words);
+    } else {
+        return 0;
+    }
+}

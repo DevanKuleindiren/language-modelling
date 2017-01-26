@@ -12,6 +12,8 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//tensorflow/Source/lm:lm",
+        "//tensorflow/Source/lm/ngram:ngram",
+        "//tensorflow/Source/util:char_trie",
         "//tensorflow/Source/util:reader",
     ],
 )

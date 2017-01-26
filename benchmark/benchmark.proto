@@ -4,4 +4,5 @@ package tensorflow.Source.benchmark;
 
 message BenchmarkProto {
     double perplexity = 1;
+    double average_keys_saved = 2;
 }
