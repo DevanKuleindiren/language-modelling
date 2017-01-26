@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <time.h>
 #include "tensorflow/core/platform/init_main.h"
 #include "tensorflow/core/util/command_line_flags.h"
 #include "tensorflow/Source/benchmark/benchmark.h"
@@ -63,10 +64,18 @@ int main(int argc, char* argv[]) {
     }
 
     Benchmark *benchmark = new Benchmark(lm);
+
+    clock_t begin_time = clock();
+    std::cout << "Calculating perplexity..." << std::endl;
     double perplexity = benchmark->Perplexity(test_data_path, false);
     std::cout << "Perplexity = " << perplexity << std::endl;
+    std::cout << "Completed in " << float(clock () - begin_time) / CLOCKS_PER_SEC << " seconds." << std::endl;
+
+    begin_time = clock();
+    std::cout << "Calculating average keys saved..." << std::endl;
     double average_keys_saved = benchmark->AverageKeysSaved(test_data_path, 1000);
-    std::cout << "Average Keys Saved = " << average_keys_saved << std::endl;
+    std::cout << "Average keys saved = " << average_keys_saved << std::endl;
+    std::cout << "Completed in " << float(clock () - begin_time) / CLOCKS_PER_SEC << " seconds." << std::endl;
 
     tensorflow::Source::benchmark::BenchmarkProto benchmark_proto;
     benchmark_proto.set_perplexity(perplexity);
