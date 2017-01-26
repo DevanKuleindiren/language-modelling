@@ -7,6 +7,7 @@
 #include <queue>
 #include <string>
 #include <utility>
+#include "tensorflow/Source/util/prediction_compare.h"
 #include "vocab.h"
 
 class LM {
@@ -24,16 +25,6 @@ public:
     virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int);
     virtual double Prob (std::list<std::string>) = 0;
     virtual void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &) = 0;
-};
-
-class PredictionCompare {
-public:
-    bool operator() (std::pair<std::string, double> const &a, std::pair<std::string, double> const &b) const {
-        if (a.second == b.second) {
-            return a.first > b.first;
-        }
-        return a.second > b.second;
-    }
 };
 
 #endif // lm.h

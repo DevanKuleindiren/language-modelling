@@ -8,7 +8,10 @@ cc_library(
     srcs = ["lm.cc"],
     hdrs = ["lm.h"],
     visibility = ["//visibility:public"],
-    deps = [":vocab"],
+    deps = [
+        ":vocab",
+        "//tensorflow/Source/util:prediction_compare",
+    ],
 )
 
 cc_library(
