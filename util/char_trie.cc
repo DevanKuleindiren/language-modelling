@@ -4,13 +4,23 @@
 void CharTrie::Insert(std::string word, double prob) {
     CharTrie::Node *curr = root;
 
+    probs[word] = prob;
     for (std::string::iterator it = word.begin(); it != word.end(); ++it) {
         if (curr->children.empty() || curr->children.count(*it) < 1) {
-            curr->children.insert(std::make_pair(*it, new CharTrie::Node(0)));
+            curr->children.insert(std::make_pair(*it, new CharTrie::Node(false)));
         }
         curr = curr->children[*it];
     }
-    curr->prob = prob;
+    curr->is_word = true;
+}
+
+bool CharTrie::Update(std::string word, double prob) {
+    if (probs.count(word) > 0) {
+        probs[word] = prob;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 std::pair<std::string, double> CharTrie::GetMaxWithPrefix(std::string prefix) {
@@ -59,14 +69,15 @@ void CharTrie::Max(CharTrie::Node *node, std::string prefix,
     std::priority_queue<std::pair<std::string, double>, std::vector<std::pair<std::string, double>>, PredictionCompare> &min_heap_max_predictions,
     int k) {
 
-    if (node->prob > 0) {
+    double prob = probs[prefix];
+    if (prob > 0) {
         if (min_heap_max_predictions.size() < k) {
-            min_heap_max_predictions.push(std::make_pair(prefix, node->prob));
+            min_heap_max_predictions.push(std::make_pair(prefix, prob));
         } else {
             double min_of_max_k = min_heap_max_predictions.top().second;
-            if (node->prob > min_of_max_k) {
+            if (prob > min_of_max_k) {
                 min_heap_max_predictions.pop();
-                min_heap_max_predictions.push(std::make_pair(prefix, node->prob));
+                min_heap_max_predictions.push(std::make_pair(prefix, prob));
             }
         }
     }

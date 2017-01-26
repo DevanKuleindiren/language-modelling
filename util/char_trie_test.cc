@@ -28,6 +28,25 @@ protected:
 };
 
 // Note: In practice, these probabilities would sum to 1.
+TEST_F(CharTrieTest, Update) {
+    ASSERT_STREQ(under_test->GetMaxWithPrefix("").first.c_str(), "and");
+    ASSERT_EQ(under_test->GetMaxWithPrefix("").second, 0.78);
+    ASSERT_STREQ(under_test->GetMaxWithPrefix("t").first.c_str(), "too");
+    ASSERT_EQ(under_test->GetMaxWithPrefix("t").second, 0.7);
+    ASSERT_STREQ(under_test->GetMaxWithPrefix("to").first.c_str(), "too");
+    ASSERT_EQ(under_test->GetMaxWithPrefix("to").second, 0.7);
+
+    under_test->Update("candle", 0.8);
+    under_test->Update("thesaurus", 0.72);
+
+    ASSERT_STREQ(under_test->GetMaxWithPrefix("").first.c_str(), "candle");
+    ASSERT_EQ(under_test->GetMaxWithPrefix("").second, 0.8);
+    ASSERT_STREQ(under_test->GetMaxWithPrefix("t").first.c_str(), "thesaurus");
+    ASSERT_EQ(under_test->GetMaxWithPrefix("t").second, 0.72);
+    ASSERT_STREQ(under_test->GetMaxWithPrefix("to").first.c_str(), "too");
+    ASSERT_EQ(under_test->GetMaxWithPrefix("to").second, 0.7);
+}
+
 TEST_F(CharTrieTest, GetMaxWithPrefix) {
     ASSERT_STREQ(under_test->GetMaxWithPrefix("").first.c_str(), "and");
     ASSERT_EQ(under_test->GetMaxWithPrefix("").second, 0.78);

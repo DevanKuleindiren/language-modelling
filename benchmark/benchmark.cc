@@ -70,6 +70,10 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
     std::list<std::string> seq;
     std::string word;
 
+    // Only populate once, and then afterwards only call Update() for efficiency.
+    CharTrie *char_trie = new CharTrie();
+    bool char_trie_populated = false;
+
     while (file_reader->GetNextWord(&word) && num_words < max_words) {
         seq.push_back(word);
 
@@ -86,9 +90,14 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
             language_model->ProbAllFollowing(seq, probs);
             seq.push_back(to_predict);
 
-            CharTrie *char_trie = new CharTrie();
-            for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {
-                char_trie->Insert(it->first, it->second);
+            if (char_trie_populated) {
+                for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {
+                    char_trie->Update(it->first, it->second);
+                }
+            } else {
+                for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {
+                    char_trie->Insert(it->first, it->second);
+                }
             }
 
             bool next_word_predicted = false;
