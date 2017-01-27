@@ -10,6 +10,10 @@ bazel-*
 # Misc
 .swp
 
+# Protocol Buffers
+*.pb.h
+*.pb.cc
+
 # Python
 __pycache__
 *.pyc

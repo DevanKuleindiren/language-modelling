@@ -1,0 +1,19 @@
+type: LSTM
+input_tensor_name: "inference/rnn/inputs:0"
+predictions_tensor_name: "inference/rnn/predictions:0"
+h {
+  initial: "inference/rnn/zeros_1:0"
+  final: "inference/rnn/RNN/MultiRNNCell/Cell0/BasicLSTMCell/mul_2:0"
+}
+h {
+  initial: "inference/rnn/zeros_3:0"
+  final: "inference/rnn/RNN/MultiRNNCell/Cell1/BasicLSTMCell/mul_2:0"
+}
+c {
+  initial: "inference/rnn/zeros:0"
+  final: "inference/rnn/RNN/MultiRNNCell/Cell0/BasicLSTMCell/add_2:0"
+}
+c {
+  initial: "inference/rnn/zeros_2:0"
+  final: "inference/rnn/RNN/MultiRNNCell/Cell1/BasicLSTMCell/add_2:0"
+}
