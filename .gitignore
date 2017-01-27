@@ -17,3 +17,7 @@ bazel-*
 # Python
 __pycache__
 *.pyc
+
+# XCode
+ios/lm_keyboard.xcodeproj/project.xcworkspace/
+ios/lm_keyboard.xcodeproj/xcuserdata/
