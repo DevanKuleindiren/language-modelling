@@ -31,7 +31,8 @@ RNN::RNN(std::string directory_path) {
             break;
         }
         default: {
-            throw std::invalid_argument("The RNN proto doesn't contain a valid RNN type.");
+            type = RNN::Type::LSTM;
+            break;
         }
     }
 
