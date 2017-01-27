@@ -13,7 +13,7 @@ protected:
     std::list<std::string> prev_words;
     virtual double CombineFunction(double, double) = 0;
 public:
-    NGramRNN(NGram *ngram_lm, RNN *rnn_lm) : LM(), ngram_lm(ngram_lm), rnn_lm(rnn_lm) {}
+    NGramRNN(NGram *ngram_lm, RNN *rnn_lm) : LM(ngram_lm->GetVocab()), ngram_lm(ngram_lm), rnn_lm(rnn_lm) {}
     virtual bool ContainsWord(std::string);
     virtual std::pair<int, int> ContextSize();
     virtual double Prob(std::list<std::string>);

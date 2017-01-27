@@ -20,6 +20,7 @@ public:
     LM(int min_frequency) : vocab(new Vocab(min_frequency)) {}
     LM(Vocab *vocab) : vocab(vocab) {}
     virtual bool ContainsWord(std::string);
+    virtual Vocab *GetVocab();
     virtual std::pair<int, int> ContextSize() = 0;
     virtual void Predict(std::list<std::string>, std::pair<std::string, double> &);
     virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int);

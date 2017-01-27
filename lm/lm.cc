@@ -4,6 +4,10 @@ bool LM::ContainsWord(std::string word) {
     return vocab->ContainsWord(word);
 }
 
+Vocab *LM::GetVocab() {
+    return vocab;
+}
+
 void LM::Predict(std::list<std::string> seq, std::pair<std::string, double> &prediction) {
     std::list<std::pair<std::string, double>> probs;
     ProbAllFollowing(seq, probs);

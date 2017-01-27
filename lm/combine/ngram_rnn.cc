@@ -15,7 +15,7 @@ double NGramRNN::Prob(std::list<std::string> seq) {
 
 double NGramRNN::Prob(std::list<std::string> seq, bool use_prev_state) {
     if (use_prev_state) {
-        prev_words.splice(prev_words.end(), seq);
+        prev_words.insert(prev_words.end(), seq.begin(), seq.end());
         while (prev_words.size() > ngram_lm->ContextSize().second) {
             prev_words.pop_front();
         }
@@ -31,7 +31,7 @@ void NGramRNN::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair
 
 void NGramRNN::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &probs, bool use_prev_state) {
     if (use_prev_state) {
-        prev_words.splice(prev_words.end(), seq);
+        prev_words.insert(prev_words.end(), seq.begin(), seq.end());
         while (prev_words.size() > ngram_lm->ContextSize().second) {
             prev_words.pop_front();
         }
