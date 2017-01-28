@@ -7,13 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#include "rnn.hpp"
 
 @interface KeyboardViewController : UIInputViewController {
     IBOutlet UILabel *firstPrediction;
     IBOutlet UILabel *secondPrediction;
     IBOutlet UILabel *thirdPrediction;
-    
     bool caps_on;
+    
+    RNN2 *rnn;
 }
 
 - (void)insertString:(NSString *)s;

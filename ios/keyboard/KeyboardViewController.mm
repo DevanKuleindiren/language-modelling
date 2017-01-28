@@ -8,8 +8,11 @@
 
 #import "KeyboardViewController.h"
 
+#include <list>
+#include <string>
+
+
 @interface KeyboardViewController ()
-@property (nonatomic, strong) UIButton *nextKeyboardButton;
 @end
 
 @implementation KeyboardViewController
@@ -18,6 +21,15 @@
     [super updateViewConstraints];
     
     // Add custom view sizing constraints here
+}
+
+- (id) init {
+    self = [super init];
+    if (self) {
+        // Init here.
+    }
+    
+    return self;
 }
 
 - (void)viewDidLoad {
@@ -37,14 +49,6 @@
 
 - (void)textDidChange:(id<UITextInput>)textInput {
     // The app has just changed the document's contents, the document context has been updated.
-    
-    UIColor *textColor = nil;
-    if (self.textDocumentProxy.keyboardAppearance == UIKeyboardAppearanceDark) {
-        textColor = [UIColor whiteColor];
-    } else {
-        textColor = [UIColor blackColor];
-    }
-    [self.nextKeyboardButton setTitleColor:textColor forState:UIControlStateNormal];
 }
 
 - (void)insertString:(NSString *)s {
@@ -52,6 +56,20 @@
 }
 
 -(IBAction)keyPress:(id)sender {
+    NSString* model_path = [[NSBundle mainBundle] pathForResource:@"graph" ofType:@"pb"];
+    NSRange range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
+    NSLog(@"%@", [model_path substringToIndex: range.location]);
+    
+    model_path = [[NSBundle mainBundle] pathForResource:@"rnn" ofType:@"pbtxt"];
+    range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
+    NSLog(@"%@", [model_path substringToIndex: range.location]);
+    
+    model_path = [[NSBundle mainBundle] pathForResource:@"vocab" ofType:@"pbtxt"];
+    range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
+    NSLog(@"%@", [model_path substringToIndex: range.location]);
+    
+    rnn = new RNN2(std::string([[model_path substringToIndex: range.location] UTF8String]));
+    
     if (![sender isKindOfClass:[UIButton class]]) {
         return;
     }
@@ -68,13 +86,11 @@
         if ([v isKindOfClass:[UIButton class]]) {
             NSString *label = [(UIButton *)v currentTitle];
             if (label.length == 1) {
-                [UIView setAnimationsEnabled:NO];
                 if (caps_on) {
                     [(UIButton *)v setTitle:[label uppercaseString] forState:UIControlStateNormal];
                 } else {
                     [(UIButton *)v setTitle:[label lowercaseString] forState:UIControlStateNormal];
                 }
-                [UIView setAnimationsEnabled:YES];
             }
         }
     }

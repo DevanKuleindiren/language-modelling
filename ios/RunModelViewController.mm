@@ -27,13 +27,15 @@ NSString* FilePathForResourceName(NSString* name, NSString* extension) {
 }
 
 void LoadAndTestRNN() {
-    NSString* model_path = FilePathForResourceName(@"graph", @"pb");
     
-    // Strip the end of the file path to make it a directory path.
-    NSRange range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
-    NSString* model_dir = [model_path substringToIndex: range.location];
-    
-    std::list<std::string> seq = std::list<std::string>({"it", "is"});
-    RNN *rnn = new RNN(std::string([model_dir UTF8String]));
-    LOG(INFO) << rnn->Prob(seq);
+    NSLog(@"HELP.");
+//    NSString* model_path = FilePathForResourceName(@"graph", @"pb");
+//    
+//    // Strip the end of the file path to make it a directory path.
+//    NSRange range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
+//    NSString* model_dir = [model_path substringToIndex: range.location];
+//    
+//    std::list<std::string> seq = std::list<std::string>({"it", "is"});
+//    RNN *rnn = new RNN(std::string([model_dir UTF8String]));
+//    LOG(INFO) << rnn->Prob(seq);
 }
