@@ -21,6 +21,8 @@ public:
     LM(Vocab *vocab) : vocab(vocab) {}
     virtual bool ContainsWord(std::string);
     virtual Vocab *GetVocab();
+    // The minimum (inclusive) and maximum (exclusive) number of words that can occur in the context, where the
+    // language model estimates P(word | context). That is, we return x and y where |context| is in [x, y).
     virtual std::pair<int, int> ContextSize() = 0;
     virtual void Predict(std::list<std::string>, std::pair<std::string, double> &);
     virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int);
