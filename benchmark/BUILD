@@ -12,6 +12,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//tensorflow/Source/lm:lm",
+        "//tensorflow/Source/lm/ngram:ngram",
         "//tensorflow/Source/util:char_trie",
         "//tensorflow/Source/util:reader",
     ],
@@ -47,7 +48,6 @@ cc_binary(
         "//tensorflow/core:framework_headers_lib",
         "//tensorflow/Source/lm/combine:ngram_rnn",
         "//tensorflow/Source/lm/ngram:load",
-        "//tensorflow/Source/lm/ngram:ngram",
         "//tensorflow/Source/lm/rnn:rnn_inference",
     ],
 )

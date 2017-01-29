@@ -16,7 +16,9 @@ public:
     double Prob (std::list<std::string>) {
         return 0.25;
     }
-    void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &) {}
+    void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &) {
+        std::this_thread::sleep_for (std::chrono::seconds(1));
+    }
 };
 
 void SetUpTestFile(std::string test_file_name) {
@@ -94,4 +96,22 @@ TEST(BenchmarkTest, AverageKeysSavedEndToEnd) {
     Benchmark *under_test = new Benchmark(ngram);
 
     ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, 1000), 57/22.0);
+}
+
+TEST(BenchmarkTest, MemoryUsage) {
+    ConstantLanguageModelMock *lm = new ConstantLanguageModelMock();
+    Benchmark *under_test = new Benchmark(lm);
+
+    ASSERT_GT(under_test->PhysicalMemoryUsageBytes(), 1e3);
+    ASSERT_LT(under_test->PhysicalMemoryUsageBytes(), 1e8);
+}
+
+TEST(BenchmarkTest, AverageInferenceTime) {
+    std::string test_file_name = "/tmp/benchmark_test_file";
+    ::SetUpTestFile(test_file_name);
+
+    ConstantLanguageModelMock *lm = new ConstantLanguageModelMock();
+    Benchmark *under_test = new Benchmark(lm);
+
+    ASSERT_NEAR(under_test->AverageInferenceTimeMicroSeconds(test_file_name, 5), 1e6, 1e5);
 }

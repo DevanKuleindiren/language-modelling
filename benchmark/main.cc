@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <fstream>
 #include <time.h>
@@ -98,21 +99,40 @@ int main(int argc, char* argv[]) {
 
     Benchmark *benchmark = new Benchmark(lm);
 
-    clock_t begin_time = clock();
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     std::cout << "Calculating perplexity..." << std::endl;
     double perplexity = benchmark->Perplexity(test_data_path, false);
     std::cout << "Perplexity = " << perplexity << std::endl;
-    std::cout << "Completed in " << float(clock () - begin_time) / CLOCKS_PER_SEC << " seconds." << std::endl;
+    std::cout << "Completed in ";
+    std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
+    std::cout << " seconds." << std::endl;
 
-    begin_time = clock();
+    start = std::chrono::steady_clock::now();
     std::cout << "Calculating average keys saved..." << std::endl;
     double average_keys_saved = benchmark->AverageKeysSaved(test_data_path, 1000);
     std::cout << "Average keys saved = " << average_keys_saved << std::endl;
-    std::cout << "Completed in " << float(clock () - begin_time) / CLOCKS_PER_SEC << " seconds." << std::endl;
+    std::cout << "Completed in ";
+    std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
+    std::cout << " seconds." << std::endl;
+
+    start = std::chrono::steady_clock::now();
+    std::cout << "Calculating average inference time..." << std::endl;
+    long average_inference_time_us = benchmark->AverageInferenceTimeMicroSeconds(test_data_path, 50);
+    std::cout << "Average inference time = " << average_inference_time_us << "us" << std::endl;
+    std::cout << "Completed in ";
+    std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
+    std::cout << " seconds." << std::endl;
+
+    std::cout << "Calculating physical memory usage..." << std::endl;
+    long physical_memory_usage_bytes = benchmark->PhysicalMemoryUsageBytes();
+    std::cout << "Physical memory usage = " << physical_memory_usage_bytes << "bytes" << std::endl;
+
 
     tensorflow::Source::benchmark::BenchmarkProto benchmark_proto;
     benchmark_proto.set_perplexity(perplexity);
     benchmark_proto.set_average_keys_saved(average_keys_saved);
+    benchmark_proto.set_average_inference_time_us(average_inference_time_us);
+    benchmark_proto.set_physical_memory_usage_bytes(physical_memory_usage_bytes);
 
     std::string benchmark_dir_path;
     if (!save_path.empty()) {
