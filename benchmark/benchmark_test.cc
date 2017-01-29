@@ -1,3 +1,4 @@
+#include <math.h>
 #include "benchmark.h"
 #include "tensorflow/core/platform/test.h"
 #include "tensorflow/Source/lm/ngram/ngram.h"
@@ -51,7 +52,9 @@ TEST(BenchmarkTest, PerplexityExp) {
 }
 
 class LengthLanguageModelMock : public LM {
+    std::list<std::string> pseudo_vocab;
 public:
+    LengthLanguageModelMock(std::list<std::string> pseudo_vocab) : LM(), pseudo_vocab(pseudo_vocab) {}
     bool ContainsWord(std::string) {
         return true;
     }
@@ -64,9 +67,7 @@ public:
         return (seq.back().length() / 10.0);
     }
     void ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &probs) {
-        std::list<std::string> vocab = {"<unk>", "<s>", "the", "wolf", "walked", "west", "on", "top", "of", "world",
-            ".", "then", "he", "saw", "a", "wealthy", "penguin"};
-        for (std::list<std::string>::iterator it = vocab.begin(); it != vocab.end(); ++it) {
+        for (std::list<std::string>::iterator it = pseudo_vocab.begin(); it != pseudo_vocab.end(); ++it) {
             seq.push_back(*it);
             probs.push_back(std::make_pair(*it, Prob(seq)));
             seq.pop_back();
@@ -82,7 +83,9 @@ TEST(BenchmarkTest, AverageKeysSavedCalculation) {
     test_file << " then he saw a wealthy penguin .\n";
     test_file.close();
 
-    LengthLanguageModelMock *lm = new LengthLanguageModelMock();
+    LengthLanguageModelMock *lm = new LengthLanguageModelMock(std::list<std::string>({
+        "<unk>", "<s>", "the", "wolf", "walked", "west", "on", "top", "of", "world", ".",
+        "then", "he", "saw", "a", "wealthy", "penguin"}));
     Benchmark *under_test = new Benchmark(lm);
 
     ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, 1000), 46/19.0);
@@ -96,6 +99,20 @@ TEST(BenchmarkTest, AverageKeysSavedEndToEnd) {
     Benchmark *under_test = new Benchmark(ngram);
 
     ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, 1000), 57/22.0);
+}
+
+TEST(BenchmarkTest, GuessingEntropy) {
+    std::string test_file_name = "/tmp/benchmark_test_file";
+    std::ofstream test_file;
+    test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
+    test_file << " a wolf walked carefully in fear . \n";
+    test_file.close();
+
+    LengthLanguageModelMock *lm = new LengthLanguageModelMock(std::list<std::string>({
+        "<unk>", "<s>", "a", "wolf", "walked", "carefully", "in", "fear", "."}));
+    Benchmark *under_test = new Benchmark(lm);
+
+    ASSERT_DOUBLE_EQ(under_test->GuessingEntropy(test_file_name, 1000), log2(14336) / 7.0);
 }
 
 TEST(BenchmarkTest, MemoryUsage) {

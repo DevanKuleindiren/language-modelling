@@ -126,6 +126,60 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
     }
 }
 
+double Benchmark::GuessingEntropy(std::string file_name, int max_words) {
+    std::ifstream file_stream (file_name);
+    FileReader *file_reader = new FileReader(file_stream);
+    int num_words = 0;
+    double total_entropy = 0;
+    std::list<std::string> seq;
+    std::string word;
+
+    while (file_reader->GetNextWord(&word) && num_words < max_words) {
+        seq.push_back(word);
+
+        while (seq.size() > language_model->ContextSize().second) {
+            seq.pop_front();
+        }
+
+        if (seq.size() > (language_model->ContextSize()).first) {
+            num_words++;
+
+            std::string to_predict = seq.back();
+            seq.pop_back();
+            std::list<std::pair<std::string, double>> probs;
+            language_model->ProbAllFollowing(seq, probs);
+            seq.push_back(to_predict);
+
+            double prob_of_to_predict;
+            for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {
+                if (to_predict.compare(it->first) == 0) {
+                    prob_of_to_predict = it->second;
+                }
+            }
+
+            // Count the number of words with a higher probability than to_predict.
+            int num_higher = 0;
+            for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {
+                if (it->second > prob_of_to_predict) {
+                    num_higher++;
+                }
+            }
+
+            total_entropy += log2(num_higher + 1);
+
+            if (num_words > 0 && num_words % 1000 == 0) {
+                std::cout << "Processed " << num_words << " words." << std::endl;
+            }
+        }
+    }
+
+    if (num_words > 0) {
+        return (total_entropy / num_words);
+    } else {
+        return 0;
+    }
+}
+
 long Benchmark::PhysicalMemoryUsageBytes() {
     struct task_basic_info t_info;
     mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;

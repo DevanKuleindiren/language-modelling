@@ -19,6 +19,7 @@ public:
     Benchmark(LM *language_model) : language_model(language_model) {}
     double Perplexity(std::string, bool);
     double AverageKeysSaved(std::string, int);
+    double GuessingEntropy(std::string, int);
     long PhysicalMemoryUsageBytes();
     long AverageInferenceTimeMicroSeconds(std::string, int);
 };

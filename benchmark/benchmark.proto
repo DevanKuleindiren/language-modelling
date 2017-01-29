@@ -5,6 +5,7 @@ package tensorflow.Source.benchmark;
 message BenchmarkProto {
     double perplexity = 1;
     double average_keys_saved = 2;
-    int64 physical_memory_usage_bytes = 3;
-    int64 average_inference_time_us = 4;
+    double guessing_entropy = 3;
+    int64 physical_memory_usage_bytes = 4;
+    int64 average_inference_time_us = 5;
 }

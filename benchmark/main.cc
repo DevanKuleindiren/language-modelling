@@ -116,6 +116,14 @@ int main(int argc, char* argv[]) {
     std::cout << " seconds." << std::endl;
 
     start = std::chrono::steady_clock::now();
+    std::cout << "Calculating guessing entropy..." << std::endl;
+    double guessing_entropy = benchmark->GuessingEntropy(test_data_path, 1000);
+    std::cout << "Guessing entropy = " << average_keys_saved << std::endl;
+    std::cout << "Completed in ";
+    std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
+    std::cout << " seconds." << std::endl;
+
+    start = std::chrono::steady_clock::now();
     std::cout << "Calculating average inference time..." << std::endl;
     long average_inference_time_us = benchmark->AverageInferenceTimeMicroSeconds(test_data_path, 50);
     std::cout << "Average inference time = " << average_inference_time_us << "us" << std::endl;
@@ -131,6 +139,7 @@ int main(int argc, char* argv[]) {
     tensorflow::Source::benchmark::BenchmarkProto benchmark_proto;
     benchmark_proto.set_perplexity(perplexity);
     benchmark_proto.set_average_keys_saved(average_keys_saved);
+    benchmark_proto.set_guessing_entropy(guessing_entropy);
     benchmark_proto.set_average_inference_time_us(average_inference_time_us);
     benchmark_proto.set_physical_memory_usage_bytes(physical_memory_usage_bytes);
 
