@@ -8,11 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		350656FD1E3C14990016F8CA /* Keyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350656FC1E3C14990016F8CA /* Keyboard.storyboard */; };
-		3520A97C1E3BEE0B008457AA /* graph.pb in Resources */ = {isa = PBXBuildFile; fileRef = 3520A9791E3BEE0B008457AA /* graph.pb */; };
-		3520A97D1E3BEE0B008457AA /* rnn.pbtxt in Resources */ = {isa = PBXBuildFile; fileRef = 3520A97A1E3BEE0B008457AA /* rnn.pbtxt */; };
-		3520A97E1E3BEE0B008457AA /* vocab.pbtxt in Resources */ = {isa = PBXBuildFile; fileRef = 3520A97B1E3BEE0B008457AA /* vocab.pbtxt */; };
-		3520A9871E3C0120008457AA /* KeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3520A9861E3C0120008457AA /* KeyboardViewController.m */; };
+		350656FE1E3C35180016F8CA /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5993C7731D5D4EAF0048CE6A /* Accelerate.framework */; };
+		350657011E3C35670016F8CA /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 350657001E3C35670016F8CA /* libprotobuf.a */; };
+		350657031E3C357A0016F8CA /* libprotobuf-lite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 350657021E3C357A0016F8CA /* libprotobuf-lite.a */; };
+		350657041E3C359C0016F8CA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59A3D0171CF4E86100C4259F /* UIKit.framework */; };
+		350657051E3C35A10016F8CA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59A3D0131CF4E82500C4259F /* CoreGraphics.framework */; };
+		3520A9871E3C0120008457AA /* KeyboardViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3520A9861E3C0120008457AA /* KeyboardViewController.mm */; };
 		3520A98B1E3C0120008457AA /* keyboard.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 3520A9831E3C0120008457AA /* keyboard.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		35DBFA621E3FB55100B445ED /* libz.1.2.5.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DBFA611E3FB55100B445ED /* libz.1.2.5.tbd */; };
+		35DBFA661E3FB8A800B445ED /* graph.pb in Resources */ = {isa = PBXBuildFile; fileRef = 35DBFA631E3FB8A800B445ED /* graph.pb */; };
+		35DBFA671E3FB8A800B445ED /* rnn.pbtxt in Resources */ = {isa = PBXBuildFile; fileRef = 35DBFA641E3FB8A800B445ED /* rnn.pbtxt */; };
+		35DBFA681E3FB8A800B445ED /* vocab.pbtxt in Resources */ = {isa = PBXBuildFile; fileRef = 35DBFA651E3FB8A800B445ED /* vocab.pbtxt */; };
 		590E7D881D02091F00DF5523 /* libprotobuf-lite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 590E7D861D02091F00DF5523 /* libprotobuf-lite.a */; };
 		590E7D8A1D0209DD00DF5523 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 590E7D871D02091F00DF5523 /* libprotobuf.a */; };
 		5993C7741D5D4EAF0048CE6A /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5993C7731D5D4EAF0048CE6A /* Accelerate.framework */; };
@@ -50,13 +56,16 @@
 
 /* Begin PBXFileReference section */
 		350656FC1E3C14990016F8CA /* Keyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Keyboard.storyboard; sourceTree = "<group>"; };
-		3520A9791E3BEE0B008457AA /* graph.pb */ = {isa = PBXFileReference; lastKnownFileType = file; path = graph.pb; sourceTree = "<group>"; };
-		3520A97A1E3BEE0B008457AA /* rnn.pbtxt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rnn.pbtxt; sourceTree = "<group>"; };
-		3520A97B1E3BEE0B008457AA /* vocab.pbtxt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vocab.pbtxt; sourceTree = "<group>"; };
+		350657001E3C35670016F8CA /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprotobuf.a; path = ../../contrib/makefile/gen/protobuf_ios/lib/libprotobuf.a; sourceTree = "<group>"; };
+		350657021E3C357A0016F8CA /* libprotobuf-lite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-lite.a"; path = "../../contrib/makefile/gen/protobuf_ios/lib/libprotobuf-lite.a"; sourceTree = "<group>"; };
 		3520A9831E3C0120008457AA /* keyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = keyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		3520A9851E3C0120008457AA /* KeyboardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardViewController.h; sourceTree = "<group>"; };
-		3520A9861E3C0120008457AA /* KeyboardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeyboardViewController.m; sourceTree = "<group>"; };
+		3520A9861E3C0120008457AA /* KeyboardViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = KeyboardViewController.mm; sourceTree = "<group>"; };
 		3520A9881E3C0120008457AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		35DBFA611E3FB55100B445ED /* libz.1.2.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.5.tbd; path = usr/lib/libz.1.2.5.tbd; sourceTree = SDKROOT; };
+		35DBFA631E3FB8A800B445ED /* graph.pb */ = {isa = PBXFileReference; lastKnownFileType = file; path = graph.pb; sourceTree = "<group>"; };
+		35DBFA641E3FB8A800B445ED /* rnn.pbtxt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rnn.pbtxt; sourceTree = "<group>"; };
+		35DBFA651E3FB8A800B445ED /* vocab.pbtxt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vocab.pbtxt; sourceTree = "<group>"; };
 		590E7D861D02091F00DF5523 /* libprotobuf-lite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-lite.a"; path = "../../makefile/gen/protobuf_ios/lib/libprotobuf-lite.a"; sourceTree = "<group>"; };
 		590E7D871D02091F00DF5523 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprotobuf.a; path = ../../makefile/gen/protobuf_ios/lib/libprotobuf.a; sourceTree = "<group>"; };
 		5911579B1CF4011C00C31E3A /* lm_keyboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = lm_keyboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +87,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35DBFA621E3FB55100B445ED /* libz.1.2.5.tbd in Frameworks */,
+				350657051E3C35A10016F8CA /* CoreGraphics.framework in Frameworks */,
+				350657041E3C359C0016F8CA /* UIKit.framework in Frameworks */,
+				350657031E3C357A0016F8CA /* libprotobuf-lite.a in Frameworks */,
+				350657011E3C35670016F8CA /* libprotobuf.a in Frameworks */,
+				350656FE1E3C35180016F8CA /* Accelerate.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,15 +111,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		350656FF1E3C35670016F8CA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				35DBFA611E3FB55100B445ED /* libz.1.2.5.tbd */,
+				350657021E3C357A0016F8CA /* libprotobuf-lite.a */,
+				350657001E3C35670016F8CA /* libprotobuf.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		3520A9841E3C0120008457AA /* keyboard */ = {
 			isa = PBXGroup;
 			children = (
+				354B813F1E3CB428004EFFE0 /* data */,
 				350656FC1E3C14990016F8CA /* Keyboard.storyboard */,
 				3520A9851E3C0120008457AA /* KeyboardViewController.h */,
-				3520A9861E3C0120008457AA /* KeyboardViewController.m */,
+				3520A9861E3C0120008457AA /* KeyboardViewController.mm */,
 				3520A9881E3C0120008457AA /* Info.plist */,
 			);
 			path = keyboard;
+			sourceTree = "<group>";
+		};
+		354B813F1E3CB428004EFFE0 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				35DBFA631E3FB8A800B445ED /* graph.pb */,
+				35DBFA641E3FB8A800B445ED /* rnn.pbtxt */,
+				35DBFA651E3FB8A800B445ED /* vocab.pbtxt */,
+			);
+			name = data;
 			sourceTree = "<group>";
 		};
 		591157921CF4011C00C31E3A = {
@@ -118,7 +154,6 @@
 				59A3D0131CF4E82500C4259F /* CoreGraphics.framework */,
 				59A3CFF11CF4E68100C4259F /* AppDelegate.h */,
 				59A3CFF21CF4E68100C4259F /* AppDelegate.mm */,
-				59A3CFF31CF4E68100C4259F /* data */,
 				59A3CFFC1CF4E68100C4259F /* main.mm */,
 				59A3CFFD1CF4E68100C4259F /* RunModel-Info.plist */,
 				59A3CFFE1CF4E68100C4259F /* RunModelViewController.h */,
@@ -126,6 +161,7 @@
 				59A3D0001CF4E68100C4259F /* RunModelViewController.xib */,
 				3520A9841E3C0120008457AA /* keyboard */,
 				5911579C1CF4011C00C31E3A /* Products */,
+				350656FF1E3C35670016F8CA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -136,16 +172,6 @@
 				3520A9831E3C0120008457AA /* keyboard.appex */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		59A3CFF31CF4E68100C4259F /* data */ = {
-			isa = PBXGroup;
-			children = (
-				3520A9791E3BEE0B008457AA /* graph.pb */,
-				3520A97A1E3BEE0B008457AA /* rnn.pbtxt */,
-				3520A97B1E3BEE0B008457AA /* vocab.pbtxt */,
-			);
-			path = data;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -231,6 +257,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35DBFA671E3FB8A800B445ED /* rnn.pbtxt in Resources */,
+				35DBFA661E3FB8A800B445ED /* graph.pb in Resources */,
+				35DBFA681E3FB8A800B445ED /* vocab.pbtxt in Resources */,
 				350656FD1E3C14990016F8CA /* Keyboard.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -240,9 +269,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				59A3D00C1CF4E68100C4259F /* RunModelViewController.xib in Resources */,
-				3520A97D1E3BEE0B008457AA /* rnn.pbtxt in Resources */,
-				3520A97E1E3BEE0B008457AA /* vocab.pbtxt in Resources */,
-				3520A97C1E3BEE0B008457AA /* graph.pb in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,7 +279,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3520A9871E3C0120008457AA /* KeyboardViewController.m in Sources */,
+				3520A9871E3C0120008457AA /* KeyboardViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,17 +308,36 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_DEBUG_INFORMATION_LEVEL = default;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = ZRQ35C78DB;
+				ENABLE_BITCODE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../..",
+					"$(SRCROOT)/../../contrib/makefile/downloads/protobuf/src/",
+					"$(SRCROOT)/../../contrib/makefile/downloads",
+					"$(SRCROOT)/../../contrib/makefile/gen/proto",
+					"$(SRCROOT)/../../contrib/makefile/downloads/eigen",
+				);
 				INFOPLIST_FILE = keyboard/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../../contrib/makefile/gen/protobuf_ios/lib",
+					"$(SRCROOT)/../../contrib/makefile/gen/lib",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-force_load",
+					"$(SRCROOT)/../../contrib/makefile/gen/lib/libtensorflow-core.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.devankuleindiren.lmkeyboard.keyboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
+				SKIP_INSTALL = NO;
+				STRIP_STYLE = "non-global";
 			};
 			name = Debug;
 		};
@@ -300,17 +345,36 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_DEBUG_INFORMATION_LEVEL = default;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = ZRQ35C78DB;
+				ENABLE_BITCODE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../..",
+					"$(SRCROOT)/../../contrib/makefile/downloads/protobuf/src/",
+					"$(SRCROOT)/../../contrib/makefile/downloads",
+					"$(SRCROOT)/../../contrib/makefile/gen/proto",
+					"$(SRCROOT)/../../contrib/makefile/downloads/eigen",
+				);
 				INFOPLIST_FILE = keyboard/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../../contrib/makefile/gen/protobuf_ios/lib",
+					"$(SRCROOT)/../../contrib/makefile/gen/lib",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-force_load",
+					"$(SRCROOT)/../../contrib/makefile/gen/lib/libtensorflow-core.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.devankuleindiren.lmkeyboard.keyboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
+				SKIP_INSTALL = NO;
+				STRIP_STYLE = "non-global";
 			};
 			name = Release;
 		};
@@ -413,7 +477,7 @@
 					"$(SRCROOT)/../../contrib/makefile/downloads/eigen",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RunModel-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../../contrib/makefile/gen/protobuf_ios/lib",
@@ -441,6 +505,7 @@
 			buildSettings = {
 				CLANG_DEBUG_INFORMATION_LEVEL = default;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = ZRQ35C78DB;
 				ENABLE_BITCODE = NO;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
@@ -453,13 +518,13 @@
 					"$(SRCROOT)/../../contrib/makefile/downloads/eigen",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RunModel-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../../contrib/makefile/gen/protobuf_ios/lib",
 					"$(SRCROOT)/../../contrib/makefile/gen/lib",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"-force_load",

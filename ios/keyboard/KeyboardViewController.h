@@ -7,19 +7,26 @@
 //
 
 #import <UIKit/UIKit.h>
+#include "tensorflow/Source/lm/rnn/rnn.h"
+#include "tensorflow/Source/util/char_trie.h"
 
 @interface KeyboardViewController : UIInputViewController {
-    IBOutlet UILabel *firstPrediction;
-    IBOutlet UILabel *secondPrediction;
-    IBOutlet UILabel *thirdPrediction;
-    
+    IBOutlet UIButton *firstPrediction;
+    IBOutlet UIButton *secondPrediction;
+    IBOutlet UIButton *thirdPrediction;
+    NSArray *predictionButtons;
     bool caps_on;
+    
+    RNN *rnn;
+    bool usePrevStateRNN;
+    CharTrie *charTrie;
 }
 
 - (void)insertString:(NSString *)s;
 
 - (IBAction)keyPress:(id)sender;
 - (IBAction)newLine:(id)sender;
+- (IBAction)predictWord:(id)sender;
 - (IBAction)caps:(id)sender;
 - (IBAction)backspace:(id)sender;
 - (IBAction)nextKeyboard:(id)sender;
