@@ -36,6 +36,27 @@
     [super viewDidLoad];
     
     caps_on = true;
+    usePrevStateRNN = false;
+    
+    predictionButtons = [[NSArray alloc] initWithObjects:firstPrediction, secondPrediction, thirdPrediction, nil];
+    
+    // Load RNN.
+    NSString* model_path = [[NSBundle mainBundle] pathForResource:@"graph" ofType:@"pb"];
+    NSRange range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
+    rnn = new RNN(std::string([[model_path substringToIndex: range.location] UTF8String]));
+    
+    std::list<std::pair<std::string, double>> probs;
+    rnn->ProbAllFollowing(std::list<std::string>({"<s>"}), probs);
+    charTrie = new CharTrie();
+    for (std::list<std::pair<std::string, double>>::const_iterator it = probs.begin(); it != probs.end(); ++it) {
+        if (!(it->first.compare("<unk>") == 0 ||
+              it->first.compare("N") == 0 ||
+              it->first.compare("<s>") == 0)) {
+            charTrie->Insert(it->first, it->second);
+        }
+    }
+    std::list<std::pair<std::string, double>> top3 = charTrie->GetMaxKWithPrefix("", 3);
+    [self setPredictionsWithTop3:&top3];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -56,28 +77,34 @@
 }
 
 -(IBAction)keyPress:(id)sender {
-    NSString* model_path = [[NSBundle mainBundle] pathForResource:@"graph" ofType:@"pb"];
-    NSRange range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
-    NSLog(@"%@", [model_path substringToIndex: range.location]);
-    
-    model_path = [[NSBundle mainBundle] pathForResource:@"rnn" ofType:@"pbtxt"];
-    range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
-    NSLog(@"%@", [model_path substringToIndex: range.location]);
-    
-    model_path = [[NSBundle mainBundle] pathForResource:@"vocab" ofType:@"pbtxt"];
-    range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
-    NSLog(@"%@", [model_path substringToIndex: range.location]);
-    
-    rnn = new RNN2(std::string([[model_path substringToIndex: range.location] UTF8String]));
-    
     if (![sender isKindOfClass:[UIButton class]]) {
         return;
     }
     [self insertString:[(UIButton *)sender currentTitle]];
+    NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
+    unsigned long num_tokens = [tokens count];
+    if (num_tokens > 1 && [[tokens objectAtIndex:(num_tokens - 2)] length] > 0 && [[tokens lastObject] length] == 0) {
+        [self newPredictions];
+    } else {
+        [self updatePredictions];
+    }
 }
 
 - (IBAction)newLine:(id)sender {
     [self insertString:@"\n"];
+}
+
+- (IBAction)predictWord:(id)sender {
+    if (![sender isKindOfClass:[UIButton class]]) {
+        return;
+    }
+    
+    NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
+    for (int i = 0; i < [[tokens lastObject] length];i++) {
+        [self.textDocumentProxy deleteBackward];
+    }
+    [self insertString:[NSString stringWithFormat:@"%@ ", [(UIButton *)sender currentTitle]]];
+    [self newPredictions];
 }
 
 - (IBAction)caps:(id)sender {
@@ -97,11 +124,66 @@
 }
 
 - (IBAction)backspace:(id)sender {
-    [self.textDocumentProxy deleteBackward];
+    NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
+    unsigned long num_tokens = [tokens count];
+    if (num_tokens > 1 && [[tokens objectAtIndex:(num_tokens - 2)] length] > 0 && [[tokens lastObject] length] == 0) {
+        usePrevStateRNN = false;
+        [self.textDocumentProxy deleteBackward];
+        [self newPredictions];
+    } else {
+        [self.textDocumentProxy deleteBackward];
+        [self updatePredictions];
+    }
 }
 
 - (IBAction)nextKeyboard:(id)sender {
     [self advanceToNextInputMode];
+}
+
+- (void)newPredictions {
+    std::list<std::pair<std::string, double>> probs;
+    std::list<std::string> seq;
+    
+    NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
+    unsigned long numTokens = [tokens count];
+    
+    if (numTokens <= 1) {
+        seq.push_back("<s>");
+    } else {
+        if (usePrevStateRNN) {
+            seq.push_back(std::string([[tokens objectAtIndex:(numTokens - 2)] UTF8String]));
+        } else {
+            for (id s in tokens) {
+                seq.push_back(std::string([s UTF8String]));
+            }
+        }
+    }
+    
+    rnn->ProbAllFollowing(seq, probs, usePrevStateRNN);
+    for (std::list<std::pair<std::string, double>>::const_iterator it = probs.begin(); it != probs.end(); ++it) {
+        charTrie->Update(it->first, it->second);
+    }
+    
+    std::list<std::pair<std::string, double>> top3 = charTrie->GetMaxKWithPrefix([[tokens lastObject] UTF8String], 3);
+    [self setPredictionsWithTop3:&top3];
+    
+    if (!usePrevStateRNN) {
+        usePrevStateRNN = true;
+    }
+}
+
+- (void)updatePredictions {
+    NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
+    std::list<std::pair<std::string, double>> top3 = charTrie->GetMaxKWithPrefix([[tokens lastObject] UTF8String], 3);
+    [self setPredictionsWithTop3:&top3];
+}
+
+- (void)setPredictionsWithTop3:(std::list<std::pair<std::string, double>> *)top3 {
+    for (id button in predictionButtons) {
+        if (top3->size() == 0) return;
+        [(UIButton *)button setTitle:[NSString stringWithCString:top3->front().first.c_str() encoding:[NSString defaultCStringEncoding]] forState:UIControlStateNormal];
+        top3->pop_front();
+    }
 }
 
 @end
