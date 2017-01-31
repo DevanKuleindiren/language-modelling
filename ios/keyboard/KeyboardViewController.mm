@@ -182,7 +182,11 @@
 
 - (void)updatePredictions {
     NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
-    std::list<std::pair<std::string, double>> top3 = charTrie->GetMaxKWithPrefix([[tokens lastObject] UTF8String], 3);
+    std::string prefix = "";
+    if ([tokens count] > 0) {
+        prefix = [[tokens lastObject] UTF8String];
+    }
+    std::list<std::pair<std::string, double>> top3 = charTrie->GetMaxKWithPrefix(prefix, 3);
     [self setPredictionsWithTop3:&top3];
 }
 
