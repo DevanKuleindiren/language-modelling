@@ -21,6 +21,14 @@
     [super updateViewConstraints];
     
     // Add custom view sizing constraints here
+    if (self.view.frame.size.width == 0 || self.view.frame.size.height == 0)
+        return;
+
+    CGFloat _expandedHeight = 252;
+
+    NSLayoutConstraint *_heightConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:0.0 constant: _expandedHeight];
+
+    [self.view addConstraint: _heightConstraint];
 }
 
 - (id) init {
