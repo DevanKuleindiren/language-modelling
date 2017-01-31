@@ -43,11 +43,20 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    caps_on = true;
     usePrevStateRNN = false;
-    
+
     predictionButtons = [[NSArray alloc] initWithObjects:firstPrediction, secondPrediction, thirdPrediction, nil];
     
+    // Initialise the shift button.
+    shiftButtonState = SHIFT;
+    UITapGestureRecognizer *shiftSingleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(shiftSingleTap)];
+    shiftSingleTap.numberOfTapsRequired = 1;
+    [shiftButton addGestureRecognizer:shiftSingleTap];
+
+    UITapGestureRecognizer *shiftDoubleTap = [[UITapGestureRecognizer alloc] initWithTarget:   self action:@selector(shiftDoubleTap)];
+    shiftDoubleTap.numberOfTapsRequired = 2;
+    [shiftButton addGestureRecognizer:shiftDoubleTap];
+
     // Load RNN.
     NSString* model_path = [[NSBundle mainBundle] pathForResource:@"graph" ofType:@"pb"];
     NSRange range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
@@ -90,11 +99,16 @@
     }
     [self insertString:[(UIButton *)sender currentTitle]];
     NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
-    unsigned long num_tokens = [tokens count];
-    if (num_tokens > 1 && [[tokens objectAtIndex:(num_tokens - 2)] length] > 0 && [[tokens lastObject] length] == 0) {
+    unsigned long numTokens = [tokens count];
+    if (numTokens > 1 && [[tokens objectAtIndex:(numTokens - 2)] length] > 0 && [[tokens lastObject] length] == 0) {
         [self newPredictions];
     } else {
         [self updatePredictions];
+    }
+    if (shiftButtonState == SHIFT && numTokens > 0 && [[tokens lastObject] length] == 1) {
+        [self switchAllKeys:false];
+        shiftButtonState = LOWER;
+        [shiftButton setBackgroundImage:[UIImage imageNamed:@"Lower.png"] forState:UIControlStateNormal];
     }
 }
 
@@ -115,13 +129,30 @@
     [self newPredictions];
 }
 
-- (IBAction)caps:(id)sender {
-    caps_on = !caps_on;
+- (void)shiftSingleTap {
+    if (shiftButtonState == LOWER) {
+        [self switchAllKeys:true];
+        shiftButtonState = SHIFT;
+        [shiftButton setBackgroundImage:[UIImage imageNamed:@"Shift.png"] forState:UIControlStateNormal];
+    } else {
+        [self switchAllKeys:false];
+        shiftButtonState = LOWER;
+        [shiftButton setBackgroundImage:[UIImage imageNamed:@"Lower.png"] forState:UIControlStateNormal];
+    }
+}
+
+- (void)shiftDoubleTap {
+    [self switchAllKeys:true];
+    shiftButtonState = UPPER;
+    [shiftButton setBackgroundImage:[UIImage imageNamed:@"Upper.png"] forState:UIControlStateNormal];
+}
+
+- (void)switchAllKeys:(bool)uppercase {
     for(UIView *v in [self.view subviews]) {
         if ([v isKindOfClass:[UIButton class]]) {
             NSString *label = [(UIButton *)v currentTitle];
             if (label.length == 1) {
-                if (caps_on) {
+                if (uppercase) {
                     [(UIButton *)v setTitle:[label uppercaseString] forState:UIControlStateNormal];
                 } else {
                     [(UIButton *)v setTitle:[label lowercaseString] forState:UIControlStateNormal];
@@ -130,6 +161,7 @@
         }
     }
 }
+
 
 - (IBAction)backspace:(id)sender {
     NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];

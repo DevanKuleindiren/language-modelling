@@ -14,8 +14,14 @@
     IBOutlet UIButton *firstPrediction;
     IBOutlet UIButton *secondPrediction;
     IBOutlet UIButton *thirdPrediction;
+    IBOutlet UIButton *shiftButton;
     NSArray *predictionButtons;
-    bool caps_on;
+    enum ShiftState {
+        LOWER,
+        SHIFT,
+        UPPER
+    };
+    ShiftState shiftButtonState;
     
     RNN *rnn;
     bool usePrevStateRNN;
@@ -27,7 +33,6 @@
 - (IBAction)keyPress:(id)sender;
 - (IBAction)newLine:(id)sender;
 - (IBAction)predictWord:(id)sender;
-- (IBAction)caps:(id)sender;
 - (IBAction)backspace:(id)sender;
 - (IBAction)nextKeyboard:(id)sender;
 

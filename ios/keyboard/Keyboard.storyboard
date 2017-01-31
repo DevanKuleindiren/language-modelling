@@ -176,17 +176,14 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YGL-n2-2Jn">
-                                <rect key="frame" x="6" y="152" width="48" height="42"/>
+                                <rect key="frame" x="9" y="152" width="42" height="42"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.40000000600000002" green="0.40000000600000002" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                <state key="normal" title="CAPS">
+                                <state key="normal" backgroundImage="Shift.png">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="titleShadowColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
-                                <connections>
-                                    <action selector="caps:" destination="KY6-Gm-ZQI" eventType="touchUpInside" id="G6D-W4-ymp"/>
-                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="V3Q-pN-H2o">
                                 <rect key="frame" x="283" y="204" width="30" height="42"/>
@@ -476,6 +473,7 @@
                     <connections>
                         <outlet property="firstPrediction" destination="DSg-Zb-eJh" id="wtE-4n-tDH"/>
                         <outlet property="secondPrediction" destination="he6-Cv-Kat" id="7zZ-C9-Idx"/>
+                        <outlet property="shiftButton" destination="YGL-n2-2Jn" id="NA5-bB-Ngz"/>
                         <outlet property="thirdPrediction" destination="o1D-4S-FPy" id="jKd-LK-8Zl"/>
                     </connections>
                 </viewController>
@@ -484,4 +482,7 @@
             <point key="canvasLocation" x="-146.40000000000001" y="45.877061469265371"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Shift.png" width="500" height="500"/>
+    </resources>
 </document>
