@@ -74,6 +74,14 @@
     }
     std::list<std::pair<std::string, double>> top3 = charTrie->GetMaxKWithPrefix("", 3);
     [self setPredictionsWithTop3:&top3];
+
+    // Round edges on all buttons.
+    for(UIView *v in [self.view subviews]) {
+        if ([v isKindOfClass:[UIButton class]]) {
+            [[(UIButton *)v layer] setCornerRadius:5];
+            [(UIButton *)v setClipsToBounds:true];
+        }
+    }
 }
 
 - (void)didReceiveMemoryWarning {

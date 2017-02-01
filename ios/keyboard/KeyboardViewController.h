@@ -6,6 +6,7 @@
 //  Copyright © 2017 Google. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 #include "tensorflow/Source/lm/rnn/rnn.h"
 #include "tensorflow/Source/util/char_trie.h"
