@@ -1,0 +1,4904 @@
+min_frequency: 1
+item {
+  word: "<unk>"
+}
+item {
+  id: 1
+  word: "<s>"
+}
+item {
+  id: 2
+  word: "aer"
+}
+item {
+  id: 3
+  word: "banknote"
+}
+item {
+  id: 4
+  word: "berlitz"
+}
+item {
+  id: 5
+  word: "calloway"
+}
+item {
+  id: 6
+  word: "centrust"
+}
+item {
+  id: 7
+  word: "cluett"
+}
+item {
+  id: 8
+  word: "fromstein"
+}
+item {
+  id: 9
+  word: "gitano"
+}
+item {
+  id: 10
+  word: "guterman"
+}
+item {
+  id: 11
+  word: "hydro-quebec"
+}
+item {
+  id: 12
+  word: "ipo"
+}
+item {
+  id: 13
+  word: "kia"
+}
+item {
+  id: 14
+  word: "memotec"
+}
+item {
+  id: 15
+  word: "mlx"
+}
+item {
+  id: 16
+  word: "nahb"
+}
+item {
+  id: 17
+  word: "punts"
+}
+item {
+  id: 18
+  word: "rake"
+}
+item {
+  id: 19
+  word: "regatta"
+}
+item {
+  id: 20
+  word: "rubens"
+}
+item {
+  id: 21
+  word: "sim"
+}
+item {
+  id: 22
+  word: "snack-food"
+}
+item {
+  id: 23
+  word: "ssangyong"
+}
+item {
+  id: 24
+  word: "swapo"
+}
+item {
+  id: 25
+  word: "wachter"
+}
+item {
+  id: 26
+  word: "pierre"
+}
+item {
+  id: 27
+  word: "N"
+}
+item {
+  id: 28
+  word: "years"
+}
+item {
+  id: 29
+  word: "old"
+}
+item {
+  id: 30
+  word: "will"
+}
+item {
+  id: 31
+  word: "join"
+}
+item {
+  id: 32
+  word: "the"
+}
+item {
+  id: 33
+  word: "board"
+}
+item {
+  id: 34
+  word: "as"
+}
+item {
+  id: 35
+  word: "a"
+}
+item {
+  id: 36
+  word: "nonexecutive"
+}
+item {
+  id: 37
+  word: "director"
+}
+item {
+  id: 38
+  word: "nov."
+}
+item {
+  id: 39
+  word: "mr."
+}
+item {
+  id: 40
+  word: "is"
+}
+item {
+  id: 41
+  word: "chairman"
+}
+item {
+  id: 42
+  word: "of"
+}
+item {
+  id: 43
+  word: "n.v."
+}
+item {
+  id: 44
+  word: "dutch"
+}
+item {
+  id: 45
+  word: "publishing"
+}
+item {
+  id: 46
+  word: "group"
+}
+item {
+  id: 47
+  word: "rudolph"
+}
+item {
+  id: 48
+  word: "and"
+}
+item {
+  id: 49
+  word: "former"
+}
+item {
+  id: 50
+  word: "consolidated"
+}
+item {
+  id: 51
+  word: "gold"
+}
+item {
+  id: 52
+  word: "fields"
+}
+item {
+  id: 53
+  word: "plc"
+}
+item {
+  id: 54
+  word: "was"
+}
+item {
+  id: 55
+  word: "named"
+}
+item {
+  id: 56
+  word: "this"
+}
+item {
+  id: 57
+  word: "british"
+}
+item {
+  id: 58
+  word: "industrial"
+}
+item {
+  id: 59
+  word: "conglomerate"
+}
+item {
+  id: 60
+  word: "form"
+}
+item {
+  id: 61
+  word: "asbestos"
+}
+item {
+  id: 62
+  word: "once"
+}
+item {
+  id: 63
+  word: "used"
+}
+item {
+  id: 64
+  word: "to"
+}
+item {
+  id: 65
+  word: "make"
+}
+item {
+  id: 66
+  word: "kent"
+}
+item {
+  id: 67
+  word: "cigarette"
+}
+item {
+  id: 68
+  word: "filters"
+}
+item {
+  id: 69
+  word: "has"
+}
+item {
+  id: 70
+  word: "caused"
+}
+item {
+  id: 71
+  word: "high"
+}
+item {
+  id: 72
+  word: "percentage"
+}
+item {
+  id: 73
+  word: "cancer"
+}
+item {
+  id: 74
+  word: "deaths"
+}
+item {
+  id: 75
+  word: "among"
+}
+item {
+  id: 76
+  word: "workers"
+}
+item {
+  id: 77
+  word: "exposed"
+}
+item {
+  id: 78
+  word: "it"
+}
+item {
+  id: 79
+  word: "more"
+}
+item {
+  id: 80
+  word: "than"
+}
+item {
+  id: 81
+  word: "ago"
+}
+item {
+  id: 82
+  word: "researchers"
+}
+item {
+  id: 83
+  word: "reported"
+}
+item {
+  id: 84
+  word: "fiber"
+}
+item {
+  id: 85
+  word: "unusually"
+}
+item {
+  id: 86
+  word: "enters"
+}
+item {
+  id: 87
+  word: "with"
+}
+item {
+  id: 88
+  word: "even"
+}
+item {
+  id: 89
+  word: "brief"
+}
+item {
+  id: 90
+  word: "exposures"
+}
+item {
+  id: 91
+  word: "causing"
+}
+item {
+  id: 92
+  word: "symptoms"
+}
+item {
+  id: 93
+  word: "that"
+}
+item {
+  id: 94
+  word: "show"
+}
+item {
+  id: 95
+  word: "up"
+}
+item {
+  id: 96
+  word: "decades"
+}
+item {
+  id: 97
+  word: "later"
+}
+item {
+  id: 98
+  word: "said"
+}
+item {
+  id: 99
+  word: "inc."
+}
+item {
+  id: 100
+  word: "unit"
+}
+item {
+  id: 101
+  word: "new"
+}
+item {
+  id: 102
+  word: "york-based"
+}
+item {
+  id: 103
+  word: "corp."
+}
+item {
+  id: 104
+  word: "makes"
+}
+item {
+  id: 105
+  word: "cigarettes"
+}
+item {
+  id: 106
+  word: "stopped"
+}
+item {
+  id: 107
+  word: "using"
+}
+item {
+  id: 108
+  word: "in"
+}
+item {
+  id: 109
+  word: "its"
+}
+item {
+  id: 110
+  word: "although"
+}
+item {
+  id: 111
+  word: "preliminary"
+}
+item {
+  id: 112
+  word: "findings"
+}
+item {
+  id: 113
+  word: "were"
+}
+item {
+  id: 114
+  word: "year"
+}
+item {
+  id: 115
+  word: "latest"
+}
+item {
+  id: 116
+  word: "results"
+}
+item {
+  id: 117
+  word: "appear"
+}
+item {
+  id: 118
+  word: "today"
+}
+item {
+  id: 119
+  word: "\'s"
+}
+item {
+  id: 120
+  word: "england"
+}
+item {
+  id: 121
+  word: "journal"
+}
+item {
+  id: 122
+  word: "medicine"
+}
+item {
+  id: 123
+  word: "forum"
+}
+item {
+  id: 124
+  word: "likely"
+}
+item {
+  id: 125
+  word: "bring"
+}
+item {
+  id: 126
+  word: "attention"
+}
+item {
+  id: 127
+  word: "problem"
+}
+item {
+  id: 128
+  word: "an"
+}
+item {
+  id: 129
+  word: "story"
+}
+item {
+  id: 130
+  word: "we"
+}
+item {
+  id: 131
+  word: "\'re"
+}
+item {
+  id: 132
+  word: "talking"
+}
+item {
+  id: 133
+  word: "about"
+}
+item {
+  id: 134
+  word: "before"
+}
+item {
+  id: 135
+  word: "anyone"
+}
+item {
+  id: 136
+  word: "heard"
+}
+item {
+  id: 137
+  word: "having"
+}
+item {
+  id: 138
+  word: "any"
+}
+item {
+  id: 139
+  word: "questionable"
+}
+item {
+  id: 140
+  word: "properties"
+}
+item {
+  id: 141
+  word: "there"
+}
+item {
+  id: 142
+  word: "no"
+}
+item {
+  id: 143
+  word: "our"
+}
+item {
+  id: 144
+  word: "products"
+}
+item {
+  id: 145
+  word: "now"
+}
+item {
+  id: 146
+  word: "neither"
+}
+item {
+  id: 147
+  word: "nor"
+}
+item {
+  id: 148
+  word: "who"
+}
+item {
+  id: 149
+  word: "studied"
+}
+item {
+  id: 150
+  word: "aware"
+}
+item {
+  id: 151
+  word: "research"
+}
+item {
+  id: 152
+  word: "on"
+}
+item {
+  id: 153
+  word: "smokers"
+}
+item {
+  id: 154
+  word: "have"
+}
+item {
+  id: 155
+  word: "useful"
+}
+item {
+  id: 156
+  word: "information"
+}
+item {
+  id: 157
+  word: "whether"
+}
+item {
+  id: 158
+  word: "users"
+}
+item {
+  id: 159
+  word: "are"
+}
+item {
+  id: 160
+  word: "at"
+}
+item {
+  id: 161
+  word: "risk"
+}
+item {
+  id: 162
+  word: "james"
+}
+item {
+  id: 163
+  word: "a."
+}
+item {
+  id: 164
+  word: "boston"
+}
+item {
+  id: 165
+  word: "institute"
+}
+item {
+  id: 166
+  word: "dr."
+}
+item {
+  id: 167
+  word: "led"
+}
+item {
+  id: 168
+  word: "team"
+}
+item {
+  id: 169
+  word: "from"
+}
+item {
+  id: 170
+  word: "national"
+}
+item {
+  id: 171
+  word: "medical"
+}
+item {
+  id: 172
+  word: "schools"
+}
+item {
+  id: 173
+  word: "harvard"
+}
+item {
+  id: 174
+  word: "university"
+}
+item {
+  id: 175
+  word: "spokeswoman"
+}
+item {
+  id: 176
+  word: "very"
+}
+item {
+  id: 177
+  word: "modest"
+}
+item {
+  id: 178
+  word: "amounts"
+}
+item {
+  id: 179
+  word: "making"
+}
+item {
+  id: 180
+  word: "paper"
+}
+item {
+  id: 181
+  word: "for"
+}
+item {
+  id: 182
+  word: "early"
+}
+item {
+  id: 183
+  word: "1950s"
+}
+item {
+  id: 184
+  word: "replaced"
+}
+item {
+  id: 185
+  word: "different"
+}
+item {
+  id: 186
+  word: "type"
+}
+item {
+  id: 187
+  word: "billion"
+}
+item {
+  id: 188
+  word: "sold"
+}
+item {
+  id: 189
+  word: "company"
+}
+item {
+  id: 190
+  word: "men"
+}
+item {
+  id: 191
+  word: "worked"
+}
+item {
+  id: 192
+  word: "closely"
+}
+item {
+  id: 193
+  word: "substance"
+}
+item {
+  id: 194
+  word: "died"
+}
+item {
+  id: 195
+  word: "three"
+}
+item {
+  id: 196
+  word: "times"
+}
+item {
+  id: 197
+  word: "expected"
+}
+item {
+  id: 198
+  word: "number"
+}
+item {
+  id: 199
+  word: "four"
+}
+item {
+  id: 200
+  word: "five"
+}
+item {
+  id: 201
+  word: "surviving"
+}
+item {
+  id: 202
+  word: "diseases"
+}
+item {
+  id: 203
+  word: "including"
+}
+item {
+  id: 204
+  word: "recently"
+}
+item {
+  id: 205
+  word: "total"
+}
+item {
+  id: 206
+  word: "malignant"
+}
+item {
+  id: 207
+  word: "lung"
+}
+item {
+  id: 208
+  word: "far"
+}
+item {
+  id: 209
+  word: "higher"
+}
+item {
+  id: 210
+  word: "rate"
+}
+item {
+  id: 211
+  word: "striking"
+}
+item {
+  id: 212
+  word: "finding"
+}
+item {
+  id: 213
+  word: "those"
+}
+item {
+  id: 214
+  word: "us"
+}
+item {
+  id: 215
+  word: "study"
+}
+item {
+  id: 216
+  word: "west"
+}
+item {
+  id: 217
+  word: "mass."
+}
+item {
+  id: 218
+  word: "factory"
+}
+item {
+  id: 219
+  word: "appears"
+}
+item {
+  id: 220
+  word: "be"
+}
+item {
+  id: 221
+  word: "highest"
+}
+item {
+  id: 222
+  word: "western"
+}
+item {
+  id: 223
+  word: "industrialized"
+}
+item {
+  id: 224
+  word: "countries"
+}
+item {
+  id: 225
+  word: "he"
+}
+item {
+  id: 226
+  word: "plant"
+}
+item {
+  id: 227
+  word: "which"
+}
+item {
+  id: 228
+  word: "owned"
+}
+item {
+  id: 229
+  word: "by"
+}
+item {
+  id: 230
+  word: "&"
+}
+item {
+  id: 231
+  word: "co."
+}
+item {
+  id: 232
+  word: "under"
+}
+item {
+  id: 233
+  word: "contract"
+}
+item {
+  id: 234
+  word: "probably"
+}
+item {
+  id: 235
+  word: "support"
+}
+item {
+  id: 236
+  word: "argue"
+}
+item {
+  id: 237
+  word: "u.s."
+}
+item {
+  id: 238
+  word: "should"
+}
+item {
+  id: 239
+  word: "regulate"
+}
+item {
+  id: 240
+  word: "class"
+}
+item {
+  id: 241
+  word: "common"
+}
+item {
+  id: 242
+  word: "kind"
+}
+item {
+  id: 243
+  word: "found"
+}
+item {
+  id: 244
+  word: "most"
+}
+item {
+  id: 245
+  word: "other"
+}
+item {
+  id: 246
+  word: "buildings"
+}
+item {
+  id: 247
+  word: "one"
+}
+item {
+  id: 248
+  word: "few"
+}
+item {
+  id: 249
+  word: "nations"
+}
+item {
+  id: 250
+  word: "does"
+}
+item {
+  id: 251
+  word: "n\'t"
+}
+item {
+  id: 252
+  word: "standard"
+}
+item {
+  id: 253
+  word: "regulation"
+}
+item {
+  id: 254
+  word: "smooth"
+}
+item {
+  id: 255
+  word: "fibers"
+}
+item {
+  id: 256
+  word: "such"
+}
+item {
+  id: 257
+  word: "classified"
+}
+item {
+  id: 258
+  word: "according"
+}
+item {
+  id: 259
+  word: "t."
+}
+item {
+  id: 260
+  word: "professor"
+}
+item {
+  id: 261
+  word: "vermont"
+}
+item {
+  id: 262
+  word: "college"
+}
+item {
+  id: 263
+  word: "easily"
+}
+item {
+  id: 264
+  word: "rejected"
+}
+item {
+  id: 265
+  word: "body"
+}
+item {
+  id: 266
+  word: "explained"
+}
+item {
+  id: 267
+  word: "july"
+}
+item {
+  id: 268
+  word: "environmental"
+}
+item {
+  id: 269
+  word: "protection"
+}
+item {
+  id: 270
+  word: "agency"
+}
+item {
+  id: 271
+  word: "imposed"
+}
+item {
+  id: 272
+  word: "gradual"
+}
+item {
+  id: 273
+  word: "ban"
+}
+item {
+  id: 274
+  word: "virtually"
+}
+item {
+  id: 275
+  word: "all"
+}
+item {
+  id: 276
+  word: "uses"
+}
+item {
+  id: 277
+  word: "almost"
+}
+item {
+  id: 278
+  word: "remaining"
+}
+item {
+  id: 279
+  word: "outlawed"
+}
+item {
+  id: 280
+  word: "made"
+}
+item {
+  id: 281
+  word: "areas"
+}
+item {
+  id: 282
+  word: "particularly"
+}
+item {
+  id: 283
+  word: "dusty"
+}
+item {
+  id: 284
+  word: "where"
+}
+item {
+  id: 285
+  word: "dumped"
+}
+item {
+  id: 286
+  word: "large"
+}
+item {
+  id: 287
+  word: "imported"
+}
+item {
+  id: 288
+  word: "material"
+}
+item {
+  id: 289
+  word: "into"
+}
+item {
+  id: 290
+  word: "huge"
+}
+item {
+  id: 291
+  word: "poured"
+}
+item {
+  id: 292
+  word: "cotton"
+}
+item {
+  id: 293
+  word: "mixed"
+}
+item {
+  id: 294
+  word: "dry"
+}
+item {
+  id: 295
+  word: "process"
+}
+item {
+  id: 296
+  word: "described"
+}
+item {
+  id: 297
+  word: "clouds"
+}
+item {
+  id: 298
+  word: "blue"
+}
+item {
+  id: 299
+  word: "dust"
+}
+item {
+  id: 300
+  word: "hung"
+}
+item {
+  id: 301
+  word: "over"
+}
+item {
+  id: 302
+  word: "parts"
+}
+item {
+  id: 303
+  word: "though"
+}
+item {
+  id: 304
+  word: "fans"
+}
+item {
+  id: 305
+  word: "area"
+}
+item {
+  id: 306
+  word: "question"
+}
+item {
+  id: 307
+  word: "some"
+}
+item {
+  id: 308
+  word: "managers"
+}
+item {
+  id: 309
+  word: "contracted"
+}
+item {
+  id: 310
+  word: "phillips"
+}
+item {
+  id: 311
+  word: "vice"
+}
+item {
+  id: 312
+  word: "president"
+}
+item {
+  id: 313
+  word: "human"
+}
+item {
+  id: 314
+  word: "resources"
+}
+item {
+  id: 315
+  word: "but"
+}
+item {
+  id: 316
+  word: "you"
+}
+item {
+  id: 317
+  word: "recognize"
+}
+item {
+  id: 318
+  word: "these"
+}
+item {
+  id: 319
+  word: "events"
+}
+item {
+  id: 320
+  word: "took"
+}
+item {
+  id: 321
+  word: "place"
+}
+item {
+  id: 322
+  word: "bearing"
+}
+item {
+  id: 323
+  word: "work"
+}
+item {
+  id: 324
+  word: "force"
+}
+item {
+  id: 325
+  word: "yields"
+}
+item {
+  id: 326
+  word: "money-market"
+}
+item {
+  id: 327
+  word: "mutual"
+}
+item {
+  id: 328
+  word: "funds"
+}
+item {
+  id: 329
+  word: "continued"
+}
+item {
+  id: 330
+  word: "slide"
+}
+item {
+  id: 331
+  word: "amid"
+}
+item {
+  id: 332
+  word: "signs"
+}
+item {
+  id: 333
+  word: "portfolio"
+}
+item {
+  id: 334
+  word: "expect"
+}
+item {
+  id: 335
+  word: "further"
+}
+item {
+  id: 336
+  word: "declines"
+}
+item {
+  id: 337
+  word: "interest"
+}
+item {
+  id: 338
+  word: "rates"
+}
+item {
+  id: 339
+  word: "average"
+}
+item {
+  id: 340
+  word: "seven-day"
+}
+item {
+  id: 341
+  word: "compound"
+}
+item {
+  id: 342
+  word: "yield"
+}
+item {
+  id: 343
+  word: "taxable"
+}
+item {
+  id: 344
+  word: "tracked"
+}
+item {
+  id: 345
+  word: "money"
+}
+item {
+  id: 346
+  word: "fund"
+}
+item {
+  id: 347
+  word: "report"
+}
+item {
+  id: 348
+  word: "eased"
+}
+item {
+  id: 349
+  word: "fraction"
+}
+item {
+  id: 350
+  word: "point"
+}
+item {
+  id: 351
+  word: "week"
+}
+item {
+  id: 352
+  word: "ended"
+}
+item {
+  id: 353
+  word: "tuesday"
+}
+item {
+  id: 354
+  word: "assume"
+}
+item {
+  id: 355
+  word: "reinvestment"
+}
+item {
+  id: 356
+  word: "dividends"
+}
+item {
+  id: 357
+  word: "current"
+}
+item {
+  id: 358
+  word: "continues"
+}
+item {
+  id: 359
+  word: "maturity"
+}
+item {
+  id: 360
+  word: "\'"
+}
+item {
+  id: 361
+  word: "investments"
+}
+item {
+  id: 362
+  word: "day"
+}
+item {
+  id: 363
+  word: "days"
+}
+item {
+  id: 364
+  word: "longest"
+}
+item {
+  id: 365
+  word: "since"
+}
+item {
+  id: 366
+  word: "august"
+}
+item {
+  id: 367
+  word: "donoghue"
+}
+item {
+  id: 368
+  word: "longer"
+}
+item {
+  id: 369
+  word: "maturities"
+}
+item {
+  id: 370
+  word: "thought"
+}
+item {
+  id: 371
+  word: "indicate"
+}
+item {
+  id: 372
+  word: "declining"
+}
+item {
+  id: 373
+  word: "because"
+}
+item {
+  id: 374
+  word: "they"
+}
+item {
+  id: 375
+  word: "permit"
+}
+item {
+  id: 376
+  word: "retain"
+}
+item {
+  id: 377
+  word: "relatively"
+}
+item {
+  id: 378
+  word: "period"
+}
+item {
+  id: 379
+  word: "shorter"
+}
+item {
+  id: 380
+  word: "considered"
+}
+item {
+  id: 381
+  word: "sign"
+}
+item {
+  id: 382
+  word: "rising"
+}
+item {
+  id: 383
+  word: "can"
+}
+item {
+  id: 384
+  word: "capture"
+}
+item {
+  id: 385
+  word: "sooner"
+}
+item {
+  id: 386
+  word: "open"
+}
+item {
+  id: 387
+  word: "only"
+}
+item {
+  id: 388
+  word: "institutions"
+}
+item {
+  id: 389
+  word: "stronger"
+}
+item {
+  id: 390
+  word: "indicator"
+}
+item {
+  id: 391
+  word: "watch"
+}
+item {
+  id: 392
+  word: "market"
+}
+item {
+  id: 393
+  word: "reached"
+}
+item {
+  id: 394
+  word: "nevertheless"
+}
+item {
+  id: 395
+  word: "editor"
+}
+item {
+  id: 396
+  word: "may"
+}
+item {
+  id: 397
+  word: "again"
+}
+item {
+  id: 398
+  word: "down"
+}
+item {
+  id: 399
+  word: "recent"
+}
+item {
+  id: 400
+  word: "rises"
+}
+item {
+  id: 401
+  word: "short-term"
+}
+item {
+  id: 402
+  word: "six-month"
+}
+item {
+  id: 403
+  word: "treasury"
+}
+item {
+  id: 404
+  word: "bills"
+}
+item {
+  id: 405
+  word: "monday"
+}
+item {
+  id: 406
+  word: "auction"
+}
+item {
+  id: 407
+  word: "example"
+}
+item {
+  id: 408
+  word: "rose"
+}
+item {
+  id: 409
+  word: "despite"
+}
+item {
+  id: 410
+  word: "investors"
+}
+item {
+  id: 411
+  word: "continue"
+}
+item {
+  id: 412
+  word: "pour"
+}
+item {
+  id: 413
+  word: "cash"
+}
+item {
+  id: 414
+  word: "assets"
+}
+item {
+  id: 415
+  word: "grew"
+}
+item {
+  id: 416
+  word: "$"
+}
+item {
+  id: 417
+  word: "during"
+}
+item {
+  id: 418
+  word: "typically"
+}
+item {
+  id: 419
+  word: "money-fund"
+}
+item {
+  id: 420
+  word: "beat"
+}
+item {
+  id: 421
+  word: "comparable"
+}
+item {
+  id: 422
+  word: "vary"
+}
+item {
+  id: 423
+  word: "go"
+}
+item {
+  id: 424
+  word: "after"
+}
+item {
+  id: 425
+  word: "top"
+}
+item {
+  id: 426
+  word: "currently"
+}
+item {
+  id: 427
+  word: "yielding"
+}
+item {
+  id: 428
+  word: "well"
+}
+item {
+  id: 429
+  word: "dreyfus"
+}
+item {
+  id: 430
+  word: "world-wide"
+}
+item {
+  id: 431
+  word: "dollar"
+}
+item {
+  id: 432
+  word: "had"
+}
+item {
+  id: 433
+  word: "earlier"
+}
+item {
+  id: 434
+  word: "invests"
+}
+item {
+  id: 435
+  word: "heavily"
+}
+item {
+  id: 436
+  word: "dollar-denominated"
+}
+item {
+  id: 437
+  word: "securities"
+}
+item {
+  id: 438
+  word: "overseas"
+}
+item {
+  id: 439
+  word: "management"
+}
+item {
+  id: 440
+  word: "fees"
+}
+item {
+  id: 441
+  word: "boosts"
+}
+item {
+  id: 442
+  word: "simple"
+}
+item {
+  id: 443
+  word: "30-day"
+}
+item {
+  id: 444
+  word: "fell"
+}
+item {
+  id: 445
+  word: "slid"
+}
+item {
+  id: 446
+  word: "j.p."
+}
+item {
+  id: 447
+  word: "grace"
+}
+item {
+  id: 448
+  word: "holds"
+}
+item {
+  id: 449
+  word: "elected"
+}
+item {
+  id: 450
+  word: "succeeds"
+}
+item {
+  id: 451
+  word: "d."
+}
+item {
+  id: 452
+  word: "formerly"
+}
+item {
+  id: 453
+  word: "resigned"
+}
+item {
+  id: 454
+  word: "energy"
+}
+item {
+  id: 455
+  word: "seven"
+}
+item {
+  id: 456
+  word: "seats"
+}
+item {
+  id: 457
+  word: "pacific"
+}
+item {
+  id: 458
+  word: "first"
+}
+item {
+  id: 459
+  word: "financial"
+}
+item {
+  id: 460
+  word: "shareholders"
+}
+item {
+  id: 461
+  word: "approved"
+}
+item {
+  id: 462
+  word: "acquisition"
+}
+item {
+  id: 463
+  word: "royal"
+}
+item {
+  id: 464
+  word: "ltd."
+}
+item {
+  id: 465
+  word: "toronto"
+}
+item {
+  id: 466
+  word: "share"
+}
+item {
+  id: 467
+  word: "or"
+}
+item {
+  id: 468
+  word: "million"
+}
+item {
+  id: 469
+  word: "thrift"
+}
+item {
+  id: 470
+  word: "holding"
+}
+item {
+  id: 471
+  word: "expects"
+}
+item {
+  id: 472
+  word: "obtain"
+}
+item {
+  id: 473
+  word: "regulatory"
+}
+item {
+  id: 474
+  word: "approval"
+}
+item {
+  id: 475
+  word: "complete"
+}
+item {
+  id: 476
+  word: "transaction"
+}
+item {
+  id: 477
+  word: "year-end"
+}
+item {
+  id: 478
+  word: "international"
+}
+item {
+  id: 479
+  word: "completed"
+}
+item {
+  id: 480
+  word: "sale"
+}
+item {
+  id: 481
+  word: "controls"
+}
+item {
+  id: 482
+  word: "operations"
+}
+item {
+  id: 483
+  word: "s.p"
+}
+item {
+  id: 484
+  word: "italian"
+}
+item {
+  id: 485
+  word: "state-owned"
+}
+item {
+  id: 486
+  word: "interests"
+}
+item {
+  id: 487
+  word: "mechanical"
+}
+item {
+  id: 488
+  word: "engineering"
+}
+item {
+  id: 489
+  word: "industry"
+}
+item {
+  id: 490
+  word: "based"
+}
+item {
+  id: 491
+  word: "ohio"
+}
+item {
+  id: 492
+  word: "computerized"
+}
+item {
+  id: 493
+  word: "systems"
+}
+item {
+  id: 494
+  word: "employs"
+}
+item {
+  id: 495
+  word: "people"
+}
+item {
+  id: 496
+  word: "annual"
+}
+item {
+  id: 497
+  word: "revenue"
+}
+item {
+  id: 498
+  word: "federal"
+}
+item {
+  id: 499
+  word: "government"
+}
+item {
+  id: 500
+  word: "suspended"
+}
+item {
+  id: 501
+  word: "sales"
+}
+item {
+  id: 502
+  word: "savings"
+}
+item {
+  id: 503
+  word: "bonds"
+}
+item {
+  id: 504
+  word: "congress"
+}
+item {
+  id: 505
+  word: "lifted"
+}
+item {
+  id: 506
+  word: "ceiling"
+}
+item {
+  id: 507
+  word: "debt"
+}
+item {
+  id: 508
+  word: "until"
+}
+item {
+  id: 509
+  word: "acts"
+}
+item {
+  id: 510
+  word: "authority"
+}
+item {
+  id: 511
+  word: "issue"
+}
+item {
+  id: 512
+  word: "obligations"
+}
+item {
+  id: 513
+  word: "borrowing"
+}
+item {
+  id: 514
+  word: "dropped"
+}
+item {
+  id: 515
+  word: "midnight"
+}
+item {
+  id: 516
+  word: "trillion"
+}
+item {
+  id: 517
+  word: "legislation"
+}
+item {
+  id: 518
+  word: "lift"
+}
+item {
+  id: 519
+  word: "fight"
+}
+item {
+  id: 520
+  word: "cutting"
+}
+item {
+  id: 521
+  word: "capital-gains"
+}
+item {
+  id: 522
+  word: "taxes"
+}
+item {
+  id: 523
+  word: "house"
+}
+item {
+  id: 524
+  word: "voted"
+}
+item {
+  id: 525
+  word: "raise"
+}
+item {
+  id: 526
+  word: "senate"
+}
+item {
+  id: 527
+  word: "act"
+}
+item {
+  id: 528
+  word: "next"
+}
+item {
+  id: 529
+  word: "earliest"
+}
+item {
+  id: 530
+  word: "default"
+}
+item {
+  id: 531
+  word: "if"
+}
+item {
+  id: 532
+  word: "then"
+}
+item {
+  id: 533
+  word: "clark"
+}
+item {
+  id: 534
+  word: "j."
+}
+item {
+  id: 535
+  word: "senior"
+}
+item {
+  id: 536
+  word: "general"
+}
+item {
+  id: 537
+  word: "manager"
+}
+item {
+  id: 538
+  word: "marketing"
+}
+item {
+  id: 539
+  word: "arm"
+}
+item {
+  id: 540
+  word: "japanese"
+}
+item {
+  id: 541
+  word: "auto"
+}
+item {
+  id: 542
+  word: "maker"
+}
+item {
+  id: 543
+  word: "mazda"
+}
+item {
+  id: 544
+  word: "motor"
+}
+item {
+  id: 545
+  word: "corp"
+}
+item {
+  id: 546
+  word: "position"
+}
+item {
+  id: 547
+  word: "oversee"
+}
+item {
+  id: 548
+  word: "service"
+}
+item {
+  id: 549
+  word: "previously"
+}
+item {
+  id: 550
+  word: "chrysler"
+}
+item {
+  id: 551
+  word: "division"
+}
+item {
+  id: 552
+  word: "been"
+}
+item {
+  id: 553
+  word: "executive"
+}
+item {
+  id: 554
+  word: "when"
+}
+item {
+  id: 555
+  word: "time"
+}
+item {
+  id: 556
+  word: "their"
+}
+item {
+  id: 557
+  word: "nation"
+}
+item {
+  id: 558
+  word: "manufacturing"
+}
+item {
+  id: 559
+  word: "jet"
+}
+item {
+  id: 560
+  word: "off"
+}
+item {
+  id: 561
+  word: "resort"
+}
+item {
+  id: 562
+  word: "towns"
+}
+item {
+  id: 563
+  word: "like"
+}
+item {
+  id: 564
+  word: "hot"
+}
+item {
+  id: 565
+  word: "springs"
+}
+item {
+  id: 566
+  word: "not"
+}
+item {
+  id: 567
+  word: "association"
+}
+item {
+  id: 568
+  word: "manufacturers"
+}
+item {
+  id: 569
+  word: "settled"
+}
+item {
+  id: 570
+  word: "capital"
+}
+item {
+  id: 571
+  word: "indianapolis"
+}
+item {
+  id: 572
+  word: "fall"
+}
+item {
+  id: 573
+  word: "meeting"
+}
+item {
+  id: 574
+  word: "city"
+}
+item {
+  id: 575
+  word: "decided"
+}
+item {
+  id: 576
+  word: "treat"
+}
+item {
+  id: 577
+  word: "guests"
+}
+item {
+  id: 578
+  word: "royalty"
+}
+item {
+  id: 579
+  word: "rock"
+}
+item {
+  id: 580
+  word: "stars"
+}
+item {
+  id: 581
+  word: "owners"
+}
+item {
+  id: 582
+  word: "idea"
+}
+item {
+  id: 583
+  word: "course"
+}
+item {
+  id: 584
+  word: "prove"
+}
+item {
+  id: 585
+  word: "corporate"
+}
+item {
+  id: 586
+  word: "decision"
+}
+item {
+  id: 587
+  word: "makers"
+}
+item {
+  id: 588
+  word: "buckle"
+}
+item {
+  id: 589
+  word: "belt"
+}
+item {
+  id: 590
+  word: "so"
+}
+item {
+  id: 591
+  word: "good"
+}
+item {
+  id: 592
+  word: "expand"
+}
+item {
+  id: 593
+  word: "receiving"
+}
+item {
+  id: 594
+  word: "end"
+}
+item {
+  id: 595
+  word: "message"
+}
+item {
+  id: 596
+  word: "officials"
+}
+item {
+  id: 597
+  word: "giants"
+}
+item {
+  id: 598
+  word: "du"
+}
+item {
+  id: 599
+  word: "pont"
+}
+item {
+  id: 600
+  word: "along"
+}
+item {
+  id: 601
+  word: "lesser"
+}
+item {
+  id: 602
+  word: "steel"
+}
+item {
+  id: 603
+  word: "valley"
+}
+item {
+  id: 604
+  word: "queen"
+}
+item {
+  id: 605
+  word: "executives"
+}
+item {
+  id: 606
+  word: "joined"
+}
+item {
+  id: 607
+  word: "mayor"
+}
+item {
+  id: 608
+  word: "william"
+}
+item {
+  id: 609
+  word: "h."
+}
+item {
+  id: 610
+  word: "iii"
+}
+item {
+  id: 611
+  word: "evening"
+}
+item {
+  id: 612
+  word: "guest"
+}
+item {
+  id: 613
+  word: "victor"
+}
+item {
+  id: 614
+  word: "champagne"
+}
+item {
+  id: 615
+  word: "followed"
+}
+item {
+  id: 616
+  word: "morning"
+}
+item {
+  id: 617
+  word: "police"
+}
+item {
+  id: 618
+  word: "wives"
+}
+item {
+  id: 619
+  word: "traffic"
+}
+item {
+  id: 620
+  word: "red"
+}
+item {
+  id: 621
+  word: "lights"
+}
+item {
+  id: 622
+  word: "governor"
+}
+item {
+  id: 623
+  word: "could"
+}
+item {
+  id: 624
+  word: "welcomed"
+}
+item {
+  id: 625
+  word: "special"
+}
+item {
+  id: 626
+  word: "buffet"
+}
+item {
+  id: 627
+  word: "breakfast"
+}
+item {
+  id: 628
+  word: "held"
+}
+item {
+  id: 629
+  word: "museum"
+}
+item {
+  id: 630
+  word: "food"
+}
+item {
+  id: 631
+  word: "drinks"
+}
+item {
+  id: 632
+  word: "banned"
+}
+item {
+  id: 633
+  word: "everyday"
+}
+item {
+  id: 634
+  word: "visitors"
+}
+item {
+  id: 635
+  word: "honor"
+}
+item {
+  id: 636
+  word: "out"
+}
+item {
+  id: 637
+  word: "drivers"
+}
+item {
+  id: 638
+  word: "crews"
+}
+item {
+  id: 639
+  word: "official"
+}
+item {
+  id: 640
+  word: "announcer"
+}
+item {
+  id: 641
+  word: "exhibition"
+}
+item {
+  id: 642
+  word: "race"
+}
+item {
+  id: 643
+  word: "fortune"
+}
+item {
+  id: 644
+  word: "cars"
+}
+item {
+  id: 645
+  word: "pointed"
+}
+item {
+  id: 646
+  word: "still"
+}
+item {
+  id: 647
+  word: "space"
+}
+item {
+  id: 648
+  word: "machines"
+}
+item {
+  id: 649
+  word: "another"
+}
+item {
+  id: 650
+  word: "sponsor"
+}
+item {
+  id: 651
+  word: "name"
+}
+item {
+  id: 652
+  word: "two"
+}
+item {
+  id: 653
+  word: "back"
+}
+item {
+  id: 654
+  word: "downtown"
+}
+item {
+  id: 655
+  word: "squeezed"
+}
+item {
+  id: 656
+  word: "meetings"
+}
+item {
+  id: 657
+  word: "hotel"
+}
+item {
+  id: 658
+  word: "buses"
+}
+item {
+  id: 659
+  word: "dinner"
+}
+item {
+  id: 660
+  word: "block"
+}
+item {
+  id: 661
+  word: "away"
+}
+item {
+  id: 662
+  word: "indiana"
+}
+item {
+  id: 663
+  word: "nine"
+}
+item {
+  id: 664
+  word: "hottest"
+}
+item {
+  id: 665
+  word: "chefs"
+}
+item {
+  id: 666
+  word: "town"
+}
+item {
+  id: 667
+  word: "fed"
+}
+item {
+  id: 668
+  word: "them"
+}
+item {
+  id: 669
+  word: "knowing"
+}
+item {
+  id: 670
+  word: "free"
+}
+item {
+  id: 671
+  word: "eat"
+}
+item {
+  id: 672
+  word: "gave"
+}
+item {
+  id: 673
+  word: "standing"
+}
+item {
+  id: 674
+  word: "say"
+}
+item {
+  id: 675
+  word: "treatment"
+}
+item {
+  id: 676
+  word: "return"
+}
+item {
+  id: 677
+  word: "future"
+}
+item {
+  id: 678
+  word: "looking"
+}
+item {
+  id: 679
+  word: "forward"
+}
+item {
+  id: 680
+  word: "winter"
+}
+item {
+  id: 681
+  word: "february"
+}
+item {
+  id: 682
+  word: "south"
+}
+item {
+  id: 683
+  word: "korea"
+}
+item {
+  id: 684
+  word: "registered"
+}
+item {
+  id: 685
+  word: "trade"
+}
+item {
+  id: 686
+  word: "deficit"
+}
+item {
+  id: 687
+  word: "october"
+}
+item {
+  id: 688
+  word: "reflecting"
+}
+item {
+  id: 689
+  word: "country"
+}
+item {
+  id: 690
+  word: "economic"
+}
+item {
+  id: 691
+  word: "figures"
+}
+item {
+  id: 692
+  word: "released"
+}
+item {
+  id: 693
+  word: "wednesday"
+}
+item {
+  id: 694
+  word: "ministry"
+}
+item {
+  id: 695
+  word: "showed"
+}
+item {
+  id: 696
+  word: "fifth"
+}
+item {
+  id: 697
+  word: "monthly"
+}
+item {
+  id: 698
+  word: "setback"
+}
+item {
+  id: 699
+  word: "casting"
+}
+item {
+  id: 700
+  word: "cloud"
+}
+item {
+  id: 701
+  word: "economy"
+}
+item {
+  id: 702
+  word: "exports"
+}
+item {
+  id: 703
+  word: "stood"
+}
+item {
+  id: 704
+  word: "mere"
+}
+item {
+  id: 705
+  word: "increase"
+}
+item {
+  id: 706
+  word: "while"
+}
+item {
+  id: 707
+  word: "imports"
+}
+item {
+  id: 708
+  word: "increased"
+}
+item {
+  id: 709
+  word: "sharply"
+}
+item {
+  id: 710
+  word: "last"
+}
+item {
+  id: 711
+  word: "boom"
+}
+item {
+  id: 712
+  word: "began"
+}
+item {
+  id: 713
+  word: "prolonged"
+}
+item {
+  id: 714
+  word: "labor"
+}
+item {
+  id: 715
+  word: "disputes"
+}
+item {
+  id: 716
+  word: "conflicts"
+}
+item {
+  id: 717
+  word: "sluggish"
+}
+item {
+  id: 718
+  word: "would"
+}
+item {
+  id: 719
+  word: "remain"
+}
+item {
+  id: 720
+  word: "target"
+}
+item {
+  id: 721
+  word: "gloomy"
+}
+item {
+  id: 722
+  word: "forecast"
+}
+item {
+  id: 723
+  word: "recorded"
+}
+item {
+  id: 724
+  word: "surplus"
+}
+item {
+  id: 725
+  word: "january"
+}
+item {
+  id: 726
+  word: "accumulated"
+}
+item {
+  id: 727
+  word: "same"
+}
+item {
+  id: 728
+  word: "newsweek"
+}
+item {
+  id: 729
+  word: "trying"
+}
+item {
+  id: 730
+  word: "keep"
+}
+item {
+  id: 731
+  word: "pace"
+}
+item {
+  id: 732
+  word: "rival"
+}
+item {
+  id: 733
+  word: "magazine"
+}
+item {
+  id: 734
+  word: "announced"
+}
+item {
+  id: 735
+  word: "advertising"
+}
+item {
+  id: 736
+  word: "introduce"
+}
+item {
+  id: 737
+  word: "incentive"
+}
+item {
+  id: 738
+  word: "plan"
+}
+item {
+  id: 739
+  word: "advertisers"
+}
+item {
+  id: 740
+  word: "ad"
+}
+item {
+  id: 741
+  word: "washington"
+}
+item {
+  id: 742
+  word: "post"
+}
+item {
+  id: 743
+  word: "second"
+}
+item {
+  id: 744
+  word: "offered"
+}
+item {
+  id: 745
+  word: "plans"
+}
+item {
+  id: 746
+  word: "give"
+}
+item {
+  id: 747
+  word: "discounts"
+}
+item {
+  id: 748
+  word: "maintaining"
+}
+item {
+  id: 749
+  word: "increasing"
+}
+item {
+  id: 750
+  word: "spending"
+}
+item {
+  id: 751
+  word: "become"
+}
+item {
+  id: 752
+  word: "permanent"
+}
+item {
+  id: 753
+  word: "news"
+}
+item {
+  id: 754
+  word: "underscore"
+}
+item {
+  id: 755
+  word: "fierce"
+}
+item {
+  id: 756
+  word: "competition"
+}
+item {
+  id: 757
+  word: "between"
+}
+item {
+  id: 758
+  word: "warner"
+}
+item {
+  id: 759
+  word: "b."
+}
+item {
+  id: 760
+  word: "world"
+}
+item {
+  id: 761
+  word: "alan"
+}
+item {
+  id: 762
+  word: "full"
+}
+item {
+  id: 763
+  word: "page"
+}
+item {
+  id: 764
+  word: "cost"
+}
+item {
+  id: 765
+  word: "mid-october"
+}
+item {
+  id: 766
+  word: "lowered"
+}
+item {
+  id: 767
+  word: "guaranteed"
+}
+item {
+  id: 768
+  word: "circulation"
+}
+item {
+  id: 769
+  word: "base"
+}
+item {
+  id: 770
+  word: "lower"
+}
+item {
+  id: 771
+  word: "effectively"
+}
+item {
+  id: 772
+  word: "per"
+}
+item {
+  id: 773
+  word: "subscriber"
+}
+item {
+  id: 774
+  word: "costs"
+}
+item {
+  id: 775
+  word: "yet"
+}
+item {
+  id: 776
+  word: "announce"
+}
+item {
+  id: 777
+  word: "credit"
+}
+item {
+  id: 778
+  word: "credits"
+}
+item {
+  id: 779
+  word: "renewal"
+}
+item {
+  id: 780
+  word: "reward"
+}
+item {
+  id: 781
+  word: "bonuses"
+}
+item {
+  id: 782
+  word: "meet"
+}
+item {
+  id: 783
+  word: "exceed"
+}
+item {
+  id: 784
+  word: "long"
+}
+item {
+  id: 785
+  word: "spent"
+}
+item {
+  id: 786
+  word: "attempt"
+}
+item {
+  id: 787
+  word: "shore"
+}
+item {
+  id: 788
+  word: "decline"
+}
+item {
+  id: 789
+  word: "pages"
+}
+item {
+  id: 790
+  word: "months"
+}
+item {
+  id: 791
+  word: "totaled"
+}
+item {
+  id: 792
+  word: "drop"
+}
+item {
+  id: 793
+  word: "publishers"
+}
+item {
+  id: 794
+  word: "bureau"
+}
+item {
+  id: 795
+  word: "what"
+}
+item {
+  id: 796
+  word: "matters"
+}
+item {
+  id: 797
+  word: "paying"
+}
+item {
+  id: 798
+  word: "department"
+}
+item {
+  id: 799
+  word: "doing"
+}
+item {
+  id: 800
+  word: "fine"
+}
+item {
+  id: 801
+  word: "both"
+}
+item {
+  id: 802
+  word: "gaining"
+}
+item {
+  id: 803
+  word: "without"
+}
+item {
+  id: 804
+  word: "heavy"
+}
+item {
+  id: 805
+  word: "use"
+}
+item {
+  id: 806
+  word: "electronic"
+}
+item {
+  id: 807
+  word: "subscribers"
+}
+item {
+  id: 808
+  word: "telephones"
+}
+item {
+  id: 809
+  word: "watches"
+}
+item {
+  id: 810
+  word: "however"
+}
+item {
+  id: 811
+  word: "none"
+}
+item {
+  id: 812
+  word: "big"
+}
+item {
+  id: 813
+  word: "gains"
+}
+item {
+  id: 814
+  word: "audit"
+}
+item {
+  id: 815
+  word: "largest"
+}
+item {
+  id: 816
+  word: "decrease"
+}
+item {
+  id: 817
+  word: "six"
+}
+item {
+  id: 818
+  word: "flat"
+}
+item {
+  id: 819
+  word: "electric"
+}
+item {
+  id: 820
+  word: "system"
+}
+item {
+  id: 821
+  word: "bowed"
+}
+item {
+  id: 822
+  word: "bidding"
+}
+item {
+  id: 823
+  word: "public"
+}
+item {
+  id: 824
+  word: "hampshire"
+}
+item {
+  id: 825
+  word: "saying"
+}
+item {
+  id: 826
+  word: "risks"
+}
+item {
+  id: 827
+  word: "too"
+}
+item {
+  id: 828
+  word: "potential"
+}
+item {
+  id: 829
+  word: "justify"
+}
+item {
+  id: 830
+  word: "offer"
+}
+item {
+  id: 831
+  word: "move"
+}
+item {
+  id: 832
+  word: "leaves"
+}
+item {
+  id: 833
+  word: "united"
+}
+item {
+  id: 834
+  word: "illuminating"
+}
+item {
+  id: 835
+  word: "northeast"
+}
+item {
+  id: 836
+  word: "utilities"
+}
+item {
+  id: 837
+  word: "outside"
+}
+item {
+  id: 838
+  word: "bidders"
+}
+item {
+  id: 839
+  word: "ps"
+}
+item {
+  id: 840
+  word: "also"
+}
+item {
+  id: 841
+  word: "proposed"
+}
+item {
+  id: 842
+  word: "internal"
+}
+item {
+  id: 843
+  word: "reorganization"
+}
+item {
+  id: 844
+  word: "chapter"
+}
+item {
+  id: 845
+  word: "bankruptcy"
+}
+item {
+  id: 846
+  word: "proceedings"
+}
+item {
+  id: 847
+  word: "independent"
+}
+item {
+  id: 848
+  word: "acquire"
+}
+item {
+  id: 849
+  word: "below"
+}
+item {
+  id: 850
+  word: "value"
+}
+item {
+  id: 851
+  word: "places"
+}
+item {
+  id: 852
+  word: "bid"
+}
+item {
+  id: 853
+  word: "says"
+}
+item {
+  id: 854
+  word: "worth"
+}
+item {
+  id: 855
+  word: "haven"
+}
+item {
+  id: 856
+  word: "conn."
+}
+item {
+  id: 857
+  word: "hartford"
+}
+item {
+  id: 858
+  word: "conn"
+}
+item {
+  id: 859
+  word: "n.h."
+}
+item {
+  id: 860
+  word: "values"
+}
+item {
+  id: 861
+  word: "john"
+}
+item {
+  id: 862
+  word: "rowe"
+}
+item {
+  id: 863
+  word: "chief"
+}
+item {
+  id: 864
+  word: "officer"
+}
+item {
+  id: 865
+  word: "equity"
+}
+item {
+  id: 866
+  word: "suffer"
+}
+item {
+  id: 867
+  word: "forecasts"
+}
+item {
+  id: 868
+  word: "related"
+}
+item {
+  id: 869
+  word: "growth"
+}
+item {
+  id: 870
+  word: "electricity"
+}
+item {
+  id: 871
+  word: "demand"
+}
+item {
+  id: 872
+  word: "improved"
+}
+item {
+  id: 873
+  word: "operating"
+}
+item {
+  id: 874
+  word: "did"
+}
+item {
+  id: 875
+  word: "come"
+}
+item {
+  id: 876
+  word: "true"
+}
+item {
+  id: 877
+  word: "raising"
+}
+item {
+  id: 878
+  word: "seemed"
+}
+item {
+  id: 879
+  word: "substantial"
+}
+item {
+  id: 880
+  word: "persistent"
+}
+item {
+  id: 881
+  word: "rewards"
+}
+item {
+  id: 882
+  word: "way"
+}
+item {
+  id: 883
+  word: "got"
+}
+item {
+  id: 884
+  word: "hard"
+}
+item {
+  id: 885
+  word: "take"
+}
+item {
+  id: 886
+  word: "added"
+}
+item {
+  id: 887
+  word: "noted"
+}
+item {
+  id: 888
+  word: "political"
+}
+item {
+  id: 889
+  word: "concerns"
+}
+item {
+  id: 890
+  word: "worried"
+}
+item {
+  id: 891
+  word: "matter"
+}
+item {
+  id: 892
+  word: "owns"
+}
+item {
+  id: 893
+  word: "emerges"
+}
+item {
+  id: 894
+  word: "attracts"
+}
+item {
+  id: 895
+  word: "just"
+}
+item {
+  id: 896
+  word: "factors"
+}
+item {
+  id: 897
+  word: "withdraw"
+}
+item {
+  id: 898
+  word: "wilbur"
+}
+item {
+  id: 899
+  word: "ross"
+}
+item {
+  id: 900
+  word: "jr."
+}
+item {
+  id: 901
+  word: "rothschild"
+}
+item {
+  id: 902
+  word: "adviser"
+}
+item {
+  id: 903
+  word: "troubled"
+}
+item {
+  id: 904
+  word: "holders"
+}
+item {
+  id: 905
+  word: "withdrawal"
+}
+item {
+  id: 906
+  word: "might"
+}
+item {
+  id: 907
+  word: "speed"
+}
+item {
+  id: 908
+  word: "fact"
+}
+item {
+  id: 909
+  word: "increases"
+}
+item {
+  id: 910
+  word: "against"
+}
+item {
+  id: 911
+  word: "around"
+}
+item {
+  id: 912
+  word: "complicated"
+}
+item {
+  id: 913
+  word: "negotiations"
+}
+item {
+  id: 914
+  word: "state"
+}
+item {
+  id: 915
+  word: "asserted"
+}
+item {
+  id: 916
+  word: "field"
+}
+item {
+  id: 917
+  word: "less"
+}
+item {
+  id: 918
+  word: "separately"
+}
+item {
+  id: 919
+  word: "commission"
+}
+item {
+  id: 920
+  word: "turned"
+}
+item {
+  id: 921
+  word: "request"
+}
+item {
+  id: 922
+  word: "seeking"
+}
+item {
+  id: 923
+  word: "possible"
+}
+item {
+  id: 924
+  word: "purchase"
+}
+item {
+  id: 925
+  word: "hopes"
+}
+item {
+  id: 926
+  word: "review"
+}
+item {
+  id: 927
+  word: "ferc"
+}
+item {
+  id: 928
+  word: "summer"
+}
+item {
+  id: 929
+  word: "court"
+}
+item {
+  id: 930
+  word: "shares"
+}
+item {
+  id: 931
+  word: "closed"
+}
+item {
+  id: 932
+  word: "yesterday"
+}
+item {
+  id: 933
+  word: "cents"
+}
+item {
+  id: 934
+  word: "york"
+}
+item {
+  id: 935
+  word: "stock"
+}
+item {
+  id: 936
+  word: "exchange"
+}
+item {
+  id: 937
+  word: "composite"
+}
+item {
+  id: 938
+  word: "trading"
+}
+item {
+  id: 939
+  word: "norman"
+}
+item {
+  id: 940
+  word: "toys"
+}
+item {
+  id: 941
+  word: "r"
+}
+item {
+  id: 942
+  word: "frederick"
+}
+item {
+  id: 943
+  word: "banking"
+}
+item {
+  id: 944
+  word: "directors"
+}
+item {
+  id: 945
+  word: "consumer"
+}
+item {
+  id: 946
+  word: "electronics"
+}
+item {
+  id: 947
+  word: "appliances"
+}
+item {
+  id: 948
+  word: "retailing"
+}
+item {
+  id: 949
+  word: "chain"
+}
+item {
+  id: 950
+  word: "succeed"
+}
+item {
+  id: 951
+  word: "daniel"
+}
+item {
+  id: 952
+  word: "m."
+}
+item {
+  id: 953
+  word: "retired"
+}
+item {
+  id: 954
+  word: "circuit"
+}
+item {
+  id: 955
+  word: "robert"
+}
+item {
+  id: 956
+  word: "r."
+}
+item {
+  id: 957
+  word: "undersecretary"
+}
+item {
+  id: 958
+  word: "commonwealth"
+}
+item {
+  id: 959
+  word: "edison"
+}
+item {
+  id: 960
+  word: "ordered"
+}
+item {
+  id: 961
+  word: "refund"
+}
+item {
+  id: 962
+  word: "illegal"
+}
+item {
+  id: 963
+  word: "collected"
+}
+item {
+  id: 964
+  word: "overruns"
+}
+item {
+  id: 965
+  word: "nuclear"
+}
+item {
+  id: 966
+  word: "power"
+}
+item {
+  id: 967
+  word: "illinois"
+}
+item {
+  id: 968
+  word: "commerce"
+}
+item {
+  id: 969
+  word: "groups"
+}
+item {
+  id: 970
+  word: "ever"
+}
+item {
+  id: 971
+  word: "required"
+}
+item {
+  id: 972
+  word: "local"
+}
+item {
+  id: 973
+  word: "utility"
+}
+item {
+  id: 974
+  word: "judge"
+}
+item {
+  id: 975
+  word: "richard"
+}
+item {
+  id: 976
+  word: "curry"
+}
+item {
+  id: 977
+  word: "refunds"
+}
+item {
+  id: 978
+  word: "each"
+}
+item {
+  id: 979
+  word: "customers"
+}
+item {
+  id: 980
+  word: "received"
+}
+item {
+  id: 981
+  word: "april"
+}
+item {
+  id: 982
+  word: "moved"
+}
+item {
+  id: 983
+  word: "begin"
+}
+item {
+  id: 984
+  word: "feb."
+}
+item {
+  id: 985
+  word: "appeals"
+}
+item {
+  id: 986
+  word: "attempts"
+}
+item {
+  id: 987
+  word: "his"
+}
+item {
+  id: 988
+  word: "order"
+}
+item {
+  id: 989
+  word: "pool"
+}
+item {
+  id: 990
+  word: "through"
+}
+item {
+  id: 991
+  word: "round"
+}
+item {
+  id: 992
+  word: "already"
+}
+item {
+  id: 993
+  word: "appealing"
+}
+item {
+  id: 994
+  word: "underlying"
+}
+item {
+  id: 995
+  word: "considering"
+}
+item {
+  id: 996
+  word: "exact"
+}
+item {
+  id: 997
+  word: "amount"
+}
+item {
+  id: 998
+  word: "determined"
+}
+item {
+  id: 999
+  word: "actual"
+}
+item {
+  id: 1000
+  word: "dec."
+}
+item {
+  id: 1001
+  word: "ruling"
+}
+item {
+  id: 1002
+  word: "slash"
+}
+item {
+  id: 1003
+  word: "earnings"
+}
+item {
+  id: 1004
+  word: "spokesman"
+}
+item {
+  id: 1005
+  word: "tracking"
+}
+item {
+  id: 1006
+  word: "whose"
+}
+item {
+  id: 1007
+  word: "addresses"
+}
+item {
+  id: 1008
+  word: "changed"
+}
+item {
+  id: 1009
+  word: "past"
+}
+item {
+  id: 1010
+  word: "administrative"
+}
+item {
+  id: 1011
+  word: "nightmare"
+}
+item {
+  id: 1012
+  word: "near"
+}
+item {
+  id: 1013
+  word: "ill."
+}
+item {
+  id: 1014
+  word: "disputed"
+}
+item {
+  id: 1015
+  word: "pay"
+}
+item {
+  id: 1016
+  word: "courts"
+}
+item {
+  id: 1017
+  word: "upheld"
+}
+item {
+  id: 1018
+  word: "challenge"
+}
+item {
+  id: 1019
+  word: "supreme"
+}
+item {
+  id: 1020
+  word: "construction"
+}
+item {
+  id: 1021
+  word: "expenses"
+}
+item {
+  id: 1022
+  word: "collecting"
+}
+item {
+  id: 1023
+  word: "subject"
+}
+item {
+  id: 1024
+  word: "ruled"
+}
+item {
+  id: 1025
+  word: "plus"
+}
+item {
+  id: 1026
+  word: "additional"
+}
+item {
+  id: 1027
+  word: "calculations"
+}
+item {
+  id: 1028
+  word: "month"
+}
+item {
+  id: 1029
+  word: "set"
+}
+item {
+  id: 1030
+  word: "faces"
+}
+item {
+  id: 1031
+  word: "appellate"
+}
+item {
+  id: 1032
+  word: "estimated"
+}
+item {
+  id: 1033
+  word: "hope"
+}
+item {
+  id: 1034
+  word: "precedent"
+}
+item {
+  id: 1035
+  word: "case"
+}
+item {
+  id: 1036
+  word: "involving"
+}
+item {
+  id: 1037
+  word: "rule"
+}
+item {
+  id: 1038
+  word: "poor"
+}
+item {
+  id: 1039
+  word: "performance"
+}
+item {
+  id: 1040
+  word: "i"
+}
+item {
+  id: 1041
+  word: "japan"
+}
+item {
+  id: 1042
+  word: "domestic"
+}
+item {
+  id: 1043
+  word: "trucks"
+}
+item {
+  id: 1044
+  word: "units"
+}
+item {
+  id: 1045
+  word: "record"
+}
+item {
+  id: 1046
+  word: "automobile"
+}
+item {
+  id: 1047
+  word: "dealers"
+}
+item {
+  id: 1048
+  word: "strong"
+}
+item {
+  id: 1049
+  word: "year-to-year"
+}
+item {
+  id: 1050
+  word: "september"
+}
+item {
+  id: 1051
+  word: "setting"
+}
+item {
+  id: 1052
+  word: "records"
+}
+item {
+  id: 1053
+  word: "every"
+}
+item {
+  id: 1054
+  word: "march"
+}
+item {
+  id: 1055
+  word: "compared"
+}
+item {
+  id: 1056
+  word: "previous"
+}
+item {
+  id: 1057
+  word: "inched"
+}
+item {
+  id: 1058
+  word: "passenger"
+}
+item {
+  id: 1059
+  word: "medium-sized"
+}
+item {
+  id: 1060
+  word: "benefited"
+}
+item {
+  id: 1061
+  word: "price"
+}
+item {
+  id: 1062
+  word: "reductions"
+}
+item {
+  id: 1063
+  word: "arising"
+}
+item {
+  id: 1064
+  word: "introduction"
+}
+item {
+  id: 1065
+  word: "consumption"
+}
+item {
+  id: 1066
+  word: "tax"
+}
+item {
+  id: 1067
+  word: "doubled"
+}
+item {
+  id: 1068
+  word: "texas"
+}
+item {
+  id: 1069
+  word: "instruments"
+}
+item {
+  id: 1070
+  word: "opened"
+}
+item {
+  id: 1071
+  word: "manufacture"
+}
+item {
+  id: 1072
+  word: "control"
+}
+item {
+  id: 1073
+  word: "devices"
+}
+item {
+  id: 1074
+  word: "located"
+}
+item {
+  id: 1075
+  word: "miles"
+}
+item {
+  id: 1076
+  word: "seoul"
+}
+item {
+  id: 1077
+  word: "help"
+}
+item {
+  id: 1078
+  word: "diversifying"
+}
+item {
+  id: 1079
+  word: "produce"
+}
+item {
+  id: 1080
+  word: "vehicles"
+}
+item {
+  id: 1081
+  word: "household"
+}
+item {
+  id: 1082
+  word: "survival"
+}
+item {
+  id: 1083
+  word: "spinoff"
+}
+item {
+  id: 1084
+  word: "cray"
+}
+item {
+  id: 1085
+  word: "computer"
+}
+item {
+  id: 1086
+  word: "fledgling"
+}
+item {
+  id: 1087
+  word: "supercomputer"
+}
+item {
+  id: 1088
+  word: "business"
+}
+item {
+  id: 1089
+  word: "depend"
+}
+item {
+  id: 1090
+  word: "creativity"
+}
+item {
+  id: 1091
+  word: "designer"
+}
+item {
+  id: 1092
+  word: "seymour"
+}
+item {
+  id: 1093
+  word: "development"
+}
+item {
+  id: 1094
+  word: "initial"
+}
+item {
+  id: 1095
+  word: "machine"
+}
+item {
+  id: 1096
+  word: "tied"
+}
+item {
+  id: 1097
+  word: "directly"
+}
+item {
+  id: 1098
+  word: "balance"
+}
+item {
+  id: 1099
+  word: "sheet"
+}
+item {
+  id: 1100
+  word: "documents"
+}
+item {
+  id: 1101
+  word: "filed"
+}
+item {
+  id: 1102
+  word: "pending"
+}
+item {
+  id: 1103
+  word: "disclosed"
+}
+item {
+  id: 1104
+  word: "financing"
+}
+item {
+  id: 1105
+  word: "providing"
+}
+item {
+  id: 1106
+  word: "firm"
+}
+item {
+  id: 1107
+  word: "project"
+}
+item {
+  id: 1108
+  word: "heads"
+}
+item {
+  id: 1109
+  word: "scrapped"
+}
+item {
+  id: 1110
+  word: "working"
+}
+item {
+  id: 1111
+  word: "cray-3"
+}
+item {
+  id: 1112
+  word: "least"
+}
+item {
+  id: 1113
+  word: "fully"
+}
+item {
+  id: 1114
+  word: "operational"
+}
+item {
+  id: 1115
+  word: "prototype"
+}
+item {
+  id: 1116
+  word: "moreover"
+}
+item {
+  id: 1117
+  word: "orders"
+}
+item {
+  id: 1118
+  word: "several"
+}
+item {
+  id: 1119
+  word: "prospects"
+}
+item {
+  id: 1120
+  word: "many"
+}
+item {
+  id: 1121
+  word: "anticipated"
+}
+item {
+  id: 1122
+  word: "attached"
+}
+item {
+  id: 1123
+  word: "much"
+}
+item {
+  id: 1124
+  word: "choice"
+}
+item {
+  id: 1125
+  word: "gregory"
+}
+item {
+  id: 1126
+  word: "interview"
+}
+item {
+  id: 1127
+  word: "theory"
+}
+item {
+  id: 1128
+  word: "him"
+}
+item {
+  id: 1129
+  word: "want"
+}
+item {
+  id: 1130
+  word: "include"
+}
+item {
+  id: 1131
+  word: "anticipates"
+}
+item {
+  id: 1132
+  word: "perhaps"
+}
+item {
+  id: 1133
+  word: "beginning"
+}
+item {
+  id: 1134
+  word: "called"
+}
+item {
+  id: 1135
+  word: "scenario"
+}
+item {
+  id: 1136
+  word: "filing"
+}
+item {
+  id: 1137
+  word: "details"
+}
+item {
+  id: 1138
+  word: "jump"
+}
+item {
+  id: 1139
+  word: "close"
+}
+item {
+  id: 1140
+  word: "analysts"
+}
+item {
+  id: 1141
+  word: "link"
+}
+item {
+  id: 1142
+  word: "note"
+}
+item {
+  id: 1143
+  word: "presence"
+}
+item {
+  id: 1144
+  word: "complicate"
+}
+item {
+  id: 1145
+  word: "valuation"
+}
+item {
+  id: 1146
+  word: "investor"
+}
+item {
+  id: 1147
+  word: "gary"
+}
+item {
+  id: 1148
+  word: "p."
+}
+item {
+  id: 1149
+  word: "minneapolis"
+}
+item {
+  id: 1150
+  word: "concept"
+}
+item {
+  id: 1151
+  word: "either"
+}
+item {
+  id: 1152
+  word: "believe"
+}
+item {
+  id: 1153
+  word: "do"
+}
+item {
+  id: 1154
+  word: "besides"
+}
+item {
+  id: 1155
+  word: "age"
+}
+item {
+  id: 1156
+  word: "tricky"
+}
+item {
+  id: 1157
+  word: "chip"
+}
+item {
+  id: 1158
+  word: "technology"
+}
+item {
+  id: 1159
+  word: "sec"
+}
+item {
+  id: 1160
+  word: "describe"
+}
+item {
+  id: 1161
+  word: "chips"
+}
+item {
+  id: 1162
+  word: "being"
+}
+item {
+  id: 1163
+  word: "fragile"
+}
+item {
+  id: 1164
+  word: "minute"
+}
+item {
+  id: 1165
+  word: "require"
+}
+item {
+  id: 1166
+  word: "handling"
+}
+item {
+  id: 1167
+  word: "equipment"
+}
+item {
+  id: 1168
+  word: "addition"
+}
+item {
+  id: 1169
+  word: "contain"
+}
+item {
+  id: 1170
+  word: "processors"
+}
+item {
+  id: 1171
+  word: "twice"
+}
+item {
+  id: 1172
+  word: "face"
+}
+item {
+  id: 1173
+  word: "intense"
+}
+item {
+  id: 1174
+  word: "roll"
+}
+item {
+  id: 1175
+  word: "direct"
+}
+item {
+  id: 1176
+  word: "competitor"
+}
+item {
+  id: 1177
+  word: "compete"
+}
+item {
+  id: 1178
+  word: "hitachi"
+}
+item {
+  id: 1179
+  word: "nec"
+}
+item {
+  id: 1180
+  word: "fujitsu"
+}
+item {
+  id: 1181
+  word: "ltd"
+}
+item {
+  id: 1182
+  word: "believes"
+}
+item {
+  id: 1183
+  word: "fewer"
+}
+item {
+  id: 1184
+  word: "priced"
+}
+item {
+  id: 1185
+  word: "presumably"
+}
+item {
+  id: 1186
+  word: "range"
+}
+item {
+  id: 1187
+  word: "terms"
+}
+item {
+  id: 1188
+  word: "stockholders"
+}
+item {
+  id: 1189
+  word: "receive"
+}
+item {
+  id: 1190
+  word: "own"
+}
+item {
+  id: 1191
+  word: "distribution"
+}
+item {
+  id: 1192
+  word: "occur"
+}
+item {
+  id: 1193
+  word: "weeks"
+}
+item {
+  id: 1194
+  word: "instead"
+}
+item {
+  id: 1195
+  word: "companies"
+}
+item {
+  id: 1196
+  word: "leave"
+}
+item {
+  id: 1197
+  word: "marketplace"
+}
+item {
+  id: 1198
+  word: "decide"
+}
+item {
+  id: 1199
+  word: "applied"
+}
+item {
+  id: 1200
+  word: "nasdaq"
+}
+item {
+  id: 1201
+  word: "calculate"
+}
+item {
+  id: 1202
+  word: "book"
+}
+item {
+  id: 1203
+  word: "primarily"
+}
+item {
+  id: 1204
+  word: "drain"
+}
+item {
+  id: 1205
+  word: "sheets"
+}
+item {
+  id: 1206
+  word: "clearly"
+}
+item {
+  id: 1207
+  word: "why"
+}
+item {
+  id: 1208
+  word: "favored"
+}
+item {
+  id: 1209
+  word: "able"
+}
+item {
+  id: 1210
+  word: "profit"
+}
+item {
+  id: 1211
+  word: "half"
+}
+item {
+  id: 1212
+  word: "rather"
+}
+item {
+  id: 1213
+  word: "posted"
+}
+item {
+  id: 1214
+  word: "hand"
+}
+item {
+  id: 1215
+  word: "existed"
+}
+item {
+  id: 1216
+  word: "incurred"
+}
+item {
+  id: 1217
+  word: "loss"
+}
+item {
+  id: 1218
+  word: "comment"
+}
+item {
+  id: 1219
+  word: "colorado"
+}
+item {
+  id: 1220
+  word: "colo."
+}
+item {
+  id: 1221
+  word: "contractor"
+}
+item {
+  id: 1222
+  word: "arrangement"
+}
+item {
+  id: 1223
+  word: "regarded"
+}
+item {
+  id: 1224
+  word: "father"
+}
+item {
+  id: 1225
+  word: "paid"
+}
