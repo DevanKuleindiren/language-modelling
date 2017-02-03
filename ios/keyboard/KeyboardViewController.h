@@ -16,6 +16,8 @@
     IBOutlet UIButton *secondPrediction;
     IBOutlet UIButton *thirdPrediction;
     IBOutlet UIButton *shiftButton;
+    IBOutlet UIButton *symbolButton;
+    IBOutlet UIButton *padButton;
     NSArray *predictionButtons;
     enum ShiftState {
         LOWER,
@@ -23,7 +25,18 @@
         UPPER
     };
     ShiftState shiftButtonState;
-    
+
+    enum PadState {
+        LETTERS,
+        NUMBERS,
+        SYMBOLS,
+    };
+    PadState padState;
+    NSDictionary *symbolPairs1;
+    NSDictionary *symbolPairs2;
+    IBOutlet UIView *keyPad;
+    IBOutlet UIView *numberPad;
+
     RNN *rnn;
     bool usePrevStateRNN;
     CharTrie *charTrie;
@@ -35,6 +48,8 @@
 - (IBAction)newLine:(id)sender;
 - (IBAction)predictWord:(id)sender;
 - (IBAction)backspace:(id)sender;
+- (IBAction)switchPad:(id)sender;
+- (IBAction)switchSymbols:(id)sender;
 - (IBAction)nextKeyboard:(id)sender;
 
 @end

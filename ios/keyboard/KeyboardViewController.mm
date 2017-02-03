@@ -57,6 +57,63 @@
     shiftDoubleTap.numberOfTapsRequired = 2;
     [shiftButton addGestureRecognizer:shiftDoubleTap];
 
+    // Key pad state is initially showing the letters.
+    padState = LETTERS;
+    symbolPairs1 = @{
+                     @"1" : @"[",
+                     @"2" : @"]",
+                     @"3" : @"{",
+                     @"4" : @"}",
+                     @"5" : @"#",
+                     @"6" : @"%",
+                     @"7" : @"^",
+                     @"8" : @"*",
+                     @"9" : @"+",
+                     @"0" : @"=",
+                     @"-" : @"_",
+                     @"/" : @"\\",
+                     @":" : @"|",
+                     @";" : @"~",
+                     @"(" : @"<",
+                     @")" : @">",
+                     @"£" : @"€",
+                     @"&" : @"$",
+                     @"@" : @"¥",
+                     @"\"" : @"•",
+                     @"." : @".",
+                     @"," : @",",
+                     @"?" : @"?",
+                     @"!" : @"!",
+                     @"'" : @"'",
+                     };
+    symbolPairs2 = @{
+                     @"[" : @"1",
+                     @"]" : @"2",
+                     @"{" : @"3",
+                     @"}" : @"4",
+                     @"#" : @"5",
+                     @"%" : @"6",
+                     @"^" : @"7",
+                     @"*" : @"8",
+                     @"+" : @"9",
+                     @"=" : @"0",
+                     @"_" : @"-",
+                     @"\\" : @"/",
+                     @"|" : @":",
+                     @"~" : @";",
+                     @"<" : @"(",
+                     @">" : @")",
+                     @"€" : @"£",
+                     @"$" : @"&",
+                     @"¥" : @"@",
+                     @"•" : @"\"",
+                     @"." : @".",
+                     @"," : @",",
+                     @"?" : @"?",
+                     @"!" : @"!",
+                     @"'" : @"'",
+                     };
+
     // Load RNN.
     NSString* model_path = [[NSBundle mainBundle] pathForResource:@"graph" ofType:@"pb"];
     NSRange range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
@@ -80,6 +137,13 @@
         if ([v isKindOfClass:[UIButton class]]) {
             [[(UIButton *)v layer] setCornerRadius:5];
             [(UIButton *)v setClipsToBounds:true];
+        } else if ([v isKindOfClass:[UIView class]]) {
+            for(UIView *v_sub in [(UIView *)v subviews]) {
+                if ([v_sub isKindOfClass:[UIButton class]]) {
+                    [[(UIButton *)v_sub layer] setCornerRadius:5];
+                    [(UIButton *)v_sub setClipsToBounds:true];
+                }
+            }
         }
     }
 }
@@ -156,7 +220,7 @@
 }
 
 - (void)switchAllKeys:(bool)uppercase {
-    for(UIView *v in [self.view subviews]) {
+    for(UIView *v in [keyPad subviews]) {
         if ([v isKindOfClass:[UIButton class]]) {
             NSString *label = [(UIButton *)v currentTitle];
             if (label.length == 1) {
@@ -170,7 +234,6 @@
     }
 }
 
-
 - (IBAction)backspace:(id)sender {
     NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
     unsigned long num_tokens = [tokens count];
@@ -181,6 +244,43 @@
     } else {
         [self.textDocumentProxy deleteBackward];
         [self updatePredictions];
+    }
+}
+
+- (IBAction)switchPad:(id)sender {
+    if (padState == LETTERS) {
+        [self.view bringSubviewToFront:numberPad];
+        [padButton setTitle:@"ABC" forState:UIControlStateNormal];
+        padState = NUMBERS;
+    } else {
+        [self.view bringSubviewToFront:keyPad];
+        [padButton setTitle:@"123" forState:UIControlStateNormal];
+        if (padState == SYMBOLS) {
+            [self switchSymbols:nil];
+        }
+        padState = LETTERS;
+    }
+}
+
+- (IBAction)switchSymbols:(id)sender {
+    if (padState == NUMBERS) {
+        for(UIView *v in [numberPad subviews]) {
+            if ([v isKindOfClass:[UIButton class]]) {
+                NSString *currentTitle = [(UIButton *)v currentTitle];
+                [(UIButton *)v setTitle:[symbolPairs1 objectForKey:currentTitle] forState:UIControlStateNormal];
+            }
+        }
+        [symbolButton setTitle:@"123" forState:UIControlStateNormal];
+        padState = SYMBOLS;
+    } else if (padState == SYMBOLS) {
+        for(UIView *v in [numberPad subviews]) {
+            if ([v isKindOfClass:[UIButton class]]) {
+                NSString *currentTitle = [(UIButton *)v currentTitle];
+                [(UIButton *)v setTitle:[symbolPairs2 objectForKey:currentTitle] forState:UIControlStateNormal];
+            }
+        }
+        [symbolButton setTitle:@"#+=" forState:UIControlStateNormal];
+        padState = NUMBERS;
     }
 }
 
