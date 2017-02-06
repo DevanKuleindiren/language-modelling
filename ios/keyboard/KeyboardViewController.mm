@@ -177,7 +177,7 @@
     } else {
         [self updatePredictions];
     }
-    if (shiftButtonState == SHIFT && numTokens > 0 && [[tokens lastObject] length] == 1) {
+    if (shiftButtonState == SHIFT) {
         [self switchAllKeys:false];
         shiftButtonState = LOWER;
         [shiftButton setBackgroundImage:[UIImage imageNamed:@"Lower.png"] forState:UIControlStateNormal];
