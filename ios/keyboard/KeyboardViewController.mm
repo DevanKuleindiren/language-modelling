@@ -295,15 +295,12 @@
     NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
     unsigned long numTokens = [tokens count];
     
-    if (numTokens <= 1) {
-        seq.push_back("<s>");
+    if (usePrevStateRNN) {
+        seq.push_back(std::string([[[tokens objectAtIndex:(numTokens - 2)] lowercaseString] UTF8String]));
     } else {
-        if (usePrevStateRNN) {
-            seq.push_back(std::string([[tokens objectAtIndex:(numTokens - 2)] UTF8String]));
-        } else {
-            for (id s in tokens) {
-                seq.push_back(std::string([s UTF8String]));
-            }
+        seq.push_back("<s>");
+        for (id s in tokens) {
+            seq.push_back(std::string([[s lowercaseString] UTF8String]));
         }
     }
     
@@ -324,7 +321,7 @@
     NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
     std::string prefix = "";
     if ([tokens count] > 0) {
-        prefix = [[tokens lastObject] UTF8String];
+        prefix = [[[tokens lastObject] lowercaseString] UTF8String];
     }
     std::list<std::pair<std::string, double>> top3 = charTrie->GetMaxKWithPrefix(prefix, 3);
     [self setPredictionsWithTop3:&top3];
