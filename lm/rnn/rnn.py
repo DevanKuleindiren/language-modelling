@@ -11,6 +11,7 @@ from tensorflow.Source.lm.rnn import rnn_pb2
 
 tf.flags.DEFINE_string("type", None, "The type of RNN you want to train (one of: rnn, gru, lstm).")
 tf.flags.DEFINE_string("training_data_path", None, "The file path of the training data.")
+tf.flags.DEFINE_string("test_data_path", None, "The file path of the test data.")
 tf.flags.DEFINE_string("save_path", None, "The directory path to save the model in.")
 tf.flags.DEFINE_string("size", None, "The size of the model (one of: small, large).")
 
@@ -215,7 +216,7 @@ class RNN:
     def assign_lr(self, session, lr_value):
         session.run(self._lr_update, feed_dict={self._new_lr: lr_value})
 
-    def run_epoch(self, sess, input_data):
+    def run_epoch(self, sess, input_data, is_training=True):
         start_time = time.time()
         costs = 0.0
         iters = 0
@@ -224,8 +225,9 @@ class RNN:
         fetches = {
             "cost": self._cost,
             "final_state": self._final_state,
-            "train_op": self._train_op,
         }
+        if is_training:
+            fetches["train_op"] = self._train_op
 
         for step, (x, t) in enumerate(reader.batch_producer(input_data, self._config.batch_size, self._config.num_steps)):
             feed_dict = {}
@@ -248,7 +250,7 @@ class RNN:
             costs += cost
             iters += self._config.num_steps
 
-            if step % (self._epoch_size // 10) == 10:
+            if is_training and step % (self._epoch_size // 10) == 10:
                 print("%.3f perplexity: %.3f speed: %.0f wps" %
                     (step * 1.0 / self._epoch_size, np.exp(costs / iters),
                      iters * self._config.batch_size / (time.time() - start_time)))
@@ -286,9 +288,9 @@ def main(_):
         infer_config.batch_size = 1
         infer_config.num_steps = 1
 
-        input_data, word_to_id = reader.raw_data(FLAGS.training_data_path, train_config.min_frequency)
+        train_data, word_to_id = reader.raw_data(FLAGS.training_data_path, train_config.min_frequency)
         id_to_word = dict(zip(word_to_id.values(), word_to_id.keys()))
-        epoch_size_scalar = ((len(input_data) // train_config.batch_size) - 1) // train_config.num_steps
+        epoch_size_scalar = ((len(train_data) // train_config.batch_size) - 1) // train_config.num_steps
 
         initialiser = tf.random_uniform_initializer(-train_config.init_scale, train_config.init_scale)
         vocab_size = len(word_to_id)
@@ -308,10 +310,16 @@ def main(_):
                 lr_decay = train_config.lr_decay ** max(i + 1 - train_config.max_epoch, 0.0)
                 training_model.assign_lr(sess, train_config.lr * lr_decay)
 
-                train_perplexity = training_model.run_epoch(sess, input_data)
+                train_perplexity = training_model.run_epoch(sess, train_data)
                 print "Epoch: %d, Train perplexity: %.3f" % (i + 1, train_perplexity)
 
             print "Trained in %d seconds." % (time.time() - start_time)
+
+            if FLAGS.test_data_path:
+                test_data, _ = reader.raw_data(FLAGS.test_data_path, train_config.min_frequency, word_to_id)
+                test_perplexity = training_model.run_epoch(sess, test_data, is_training=False)
+                print "Test perplexity: %.3f" % test_perplexity
+
             print "Saving model to %s" % FLAGS.save_path
 
             # Save checkpoint.

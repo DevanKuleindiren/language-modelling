@@ -26,8 +26,9 @@ def _word_to_id(file_name, min_frequency):
 
     return word_to_id
 
-def raw_data(file_name, min_frequency):
-    word_to_id = _word_to_id(file_name, min_frequency)
+def raw_data(file_name, min_frequency, word_to_id=None):
+    if not word_to_id:
+        word_to_id = _word_to_id(file_name, min_frequency)
     raw_words = _get_data(file_name)
     raw_ids = [word_to_id[word] for word in raw_words if word in word_to_id]
 
