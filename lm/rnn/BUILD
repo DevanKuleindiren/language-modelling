@@ -48,6 +48,7 @@ cc_library(
         "//tensorflow/core:tensorflow",
         "//tensorflow/Source/lm:lm",
         "//tensorflow/Source/lm:vocab",
+        "//tensorflow/Source/util:char_trie",
     ]
 )
 

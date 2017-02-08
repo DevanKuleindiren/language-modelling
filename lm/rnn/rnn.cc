@@ -106,6 +106,22 @@ void RNN::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std:
     }
 }
 
+void RNN::ProbAllFollowing (std::list<std::string> seq, CharTrie *char_trie) {
+    ProbAllFollowing(seq, char_trie, true);
+}
+
+void RNN::ProbAllFollowing (std::list<std::string> seq, CharTrie *char_trie, bool use_prev_state) {
+    std::list<size_t> seq_ids = WordsToIds(seq);
+
+    std::vector<tensorflow::Tensor> outputs;
+    RunInference(seq_ids, outputs, use_prev_state);
+    auto predictions = outputs[0].tensor<float, 2>();
+
+    for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
+        char_trie->Update(it->first, predictions(0, it->second));
+    }
+}
+
 void RNN::ResetState() {
     // Initialise the input state.
     std::vector<tensorflow::string> output_tensor_names;

@@ -14,6 +14,7 @@
 #include "tensorflow/Source/lm/lm.h"
 #include "tensorflow/Source/lm/vocab.h"
 #include "tensorflow/Source/lm/rnn/rnn.pb.h"
+#include "tensorflow/Source/util/char_trie.h"
 
 
 class RNN : public LM {
@@ -36,6 +37,8 @@ public:
     virtual double Prob(std::list<std::string>, bool);
     virtual void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &);
     virtual void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &, bool);
+    virtual void ProbAllFollowing (std::list<std::string>, CharTrie *);
+    virtual void ProbAllFollowing (std::list<std::string>, CharTrie *, bool);
 };
 
 #endif // rnn.h
