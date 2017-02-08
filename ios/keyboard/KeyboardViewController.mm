@@ -119,16 +119,15 @@
     NSRange range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
     rnn = new RNN(std::string([[model_path substringToIndex: range.location] UTF8String]));
     
-    std::list<std::pair<std::string, double>> probs;
-    rnn->ProbAllFollowing(std::list<std::string>({"<s>"}), probs);
     charTrie = new CharTrie();
-    for (std::list<std::pair<std::string, double>>::const_iterator it = probs.begin(); it != probs.end(); ++it) {
+    for (std::unordered_map<std::string, size_t>::const_iterator it = rnn->GetVocab()->begin(); it != rnn->GetVocab()->end(); ++it) {
         if (!(it->first.compare("<unk>") == 0 ||
               it->first.compare("N") == 0 ||
               it->first.compare("<s>") == 0)) {
-            charTrie->Insert(it->first, it->second);
+            charTrie->Insert(it->first, 0);
         }
     }
+    rnn->ProbAllFollowing(std::list<std::string>({"<s>"}), charTrie, false);
     std::list<std::pair<std::string, double>> top3 = charTrie->GetMaxKWithPrefix("", 3);
     [self setPredictionsWithTop3:&top3];
 
@@ -289,7 +288,6 @@
 }
 
 - (void)newPredictions {
-    std::list<std::pair<std::string, double>> probs;
     std::list<std::string> seq;
     
     NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
@@ -304,11 +302,7 @@
         }
     }
     
-    rnn->ProbAllFollowing(seq, probs, usePrevStateRNN);
-    for (std::list<std::pair<std::string, double>>::const_iterator it = probs.begin(); it != probs.end(); ++it) {
-        charTrie->Update(it->first, it->second);
-    }
-    
+    rnn->ProbAllFollowing(seq, charTrie, usePrevStateRNN);
     std::list<std::pair<std::string, double>> top3 = charTrie->GetMaxKWithPrefix([[tokens lastObject] UTF8String], 3);
     [self setPredictionsWithTop3:&top3];
     
