@@ -328,9 +328,36 @@
 }
 
 - (void)setPredictionsWithTop3:(std::list<std::pair<std::string, double>> *)top3 {
+    // Check if we're currently predicting words following a full stop.
+    bool camelCase = false;
+    if (shiftButtonState != UPPER) {
+        NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
+        if ([tokens count] <= 1) {
+            camelCase = true;
+        } else {
+            long i = [tokens count] - 2;
+            NSString *tmp = @"";
+            while (i >= 0 && [tmp length] == 0) {
+                tmp = [tokens objectAtIndex:i];
+                if ([tmp length] > 0) {
+                    if ([tmp characterAtIndex:[tmp length] - 1] == '.') {
+                        camelCase = true;
+                    }
+                }
+                i--;
+            }
+        }
+    }
+
     for (id button in predictionButtons) {
         if (top3->size() == 0) return;
-        [(UIButton *)button setTitle:[NSString stringWithCString:top3->front().first.c_str() encoding:[NSString defaultCStringEncoding]] forState:UIControlStateNormal];
+        NSString *title = [NSString stringWithCString:top3->front().first.c_str() encoding:[NSString defaultCStringEncoding]];
+        if (shiftButtonState == UPPER) {
+            title = [title uppercaseString];
+        } else if (camelCase) {
+            title = [title capitalizedString];
+        }
+        [(UIButton *)button setTitle:title forState:UIControlStateNormal];
         top3->pop_front();
     }
 }
