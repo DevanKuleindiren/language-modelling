@@ -116,13 +116,15 @@ int main(int argc, char* argv[]) {
         std::cout << "Prediction: ";
         std::list<std::pair<std::string, double>> next = GetNextK(lm, seq, 1);
         if (finish_the_sentence) {
+            int count = 0;
             for (std::list<std::string>::iterator it = seq.begin(); it != seq.end(); ++it) {
                 std::cout << *it << " ";
             }
-            while (next.front().first.compare("<s>") != 0) {
+            while (next.front().first.compare("<s>") != 0 && count < 30) {
                 seq.push_back(next.front().first);
                 std::cout << next.front().first << " ";
                 next = GetNextK(lm, seq, 1);
+                count++;
             }
             std::cout << "." << std::endl;
         } else {
