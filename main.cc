@@ -10,12 +10,13 @@
 
 void usage(char* const argv_0) {
     std::cerr << "Usage: " << argv_0;
-    std::cerr << " --model_path=PATH --type=TYPE --generate=GENR --finish_the_sentence=FNSH" << std::endl;
+    std::cerr << " --model_path=PATH --type=TYPE --generate=GENR --finish_the_sentence=FNSH --prob_only=PROB" << std::endl;
     std::cerr << "Where:" << std::endl;
     std::cerr << "    PATH is the path the directory containing the model protos." << std::endl;
     std::cerr << "    TYPE is the type of language model (one of: " << RNN_TYPE << " or " << NGRAM_TYPE << ")." << std::endl;
     std::cerr << "    GENR is the number of words to generate using the language model." << std::endl;
     std::cerr << "    FNSH is set if you want the LM to finish your sentence." << std::endl;
+    std::cerr << "    PROB is set if you want the LM to print P(w|context) rather than predict the next word." << std::endl;
 }
 
 std::list<std::pair<std::string, double>> GetNextK(LM *lm, std::list<std::string> seq, int k) {
@@ -48,12 +49,14 @@ int main(int argc, char* argv[]) {
     std::string type;
     int generate = 0;
     bool finish_the_sentence = false;
+    bool prob_only = false;
 
     const bool parse_result = tensorflow::ParseFlags(&argc, argv, {
         tensorflow::Flag("model_path", &model_path),
         tensorflow::Flag("type", &type),
         tensorflow::Flag("generate", &generate),
         tensorflow::Flag("finish_the_sentence", &finish_the_sentence),
+        tensorflow::Flag("prob_only", &prob_only),
     });
     if (!parse_result) {
         usage(argv[0]);
@@ -113,22 +116,33 @@ int main(int argc, char* argv[]) {
             context.erase(0, pos + 1);
         }
 
-        std::cout << "Prediction: ";
-        std::list<std::pair<std::string, double>> next = GetNextK(lm, seq, 1);
-        if (finish_the_sentence) {
-            int count = 0;
-            for (std::list<std::string>::iterator it = seq.begin(); it != seq.end(); ++it) {
-                std::cout << *it << " ";
+        if (prob_only) {
+            std::cout << "Prob = ";
+            double prob;
+            if (RNN* rnn = dynamic_cast<RNN*>(lm)) {
+                prob = rnn->Prob(seq, false);
+            } else {
+                prob = lm->Prob(seq);
             }
-            while (next.front().first.compare("<s>") != 0 && count < 30) {
-                seq.push_back(next.front().first);
-                std::cout << next.front().first << " ";
-                next = GetNextK(lm, seq, 1);
-                count++;
-            }
-            std::cout << "." << std::endl;
+            std::cout << prob << std::endl;
         } else {
-            std::cout << next.front().first << " (" << next.front().second  << ")"<< std::endl;
+            std::cout << "Prediction: ";
+            std::list<std::pair<std::string, double>> next = GetNextK(lm, seq, 1);
+            if (finish_the_sentence) {
+                int count = 0;
+                for (std::list<std::string>::iterator it = seq.begin(); it != seq.end(); ++it) {
+                    std::cout << *it << " ";
+                }
+                while (next.front().first.compare("<s>") != 0 && count < 30) {
+                    seq.push_back(next.front().first);
+                    std::cout << next.front().first << " ";
+                    next = GetNextK(lm, seq, 1);
+                    count++;
+                }
+                std::cout << "." << std::endl;
+            } else {
+                std::cout << next.front().first << " (" << next.front().second  << ")"<< std::endl;
+            }
         }
         std::cout << std::endl;
     }
