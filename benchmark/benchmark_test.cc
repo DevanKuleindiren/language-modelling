@@ -88,7 +88,7 @@ TEST(BenchmarkTest, AverageKeysSavedCalculation) {
         "then", "he", "saw", "a", "wealthy", "penguin"}));
     Benchmark *under_test = new Benchmark(lm);
 
-    ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, 1000), 46/19.0);
+    ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, 1000), 46/64.0);
 }
 
 TEST(BenchmarkTest, AverageKeysSavedEndToEnd) {
@@ -98,7 +98,7 @@ TEST(BenchmarkTest, AverageKeysSavedEndToEnd) {
     LM *ngram = new NGram(test_file_name, 2, 1);
     Benchmark *under_test = new Benchmark(ngram);
 
-    ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, 1000), 57/22.0);
+    ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, 1000), 57/58.0);
 }
 
 TEST(BenchmarkTest, GuessingEntropy) {

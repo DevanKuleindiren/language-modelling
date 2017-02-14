@@ -66,6 +66,7 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
     std::ifstream file_stream (file_name);
     FileReader *file_reader = new FileReader(file_stream);
     int num_words = 0;
+    double num_chars = 0;
     double keys_saved = 0;
     std::list<std::string> seq;
     std::string word;
@@ -83,6 +84,7 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
 
         if (seq.size() > (language_model->ContextSize()).first) {
             num_words++;
+            num_chars += seq.back().size();
 
             std::string to_predict = seq.back();
             seq.pop_back();
@@ -119,8 +121,8 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
         }
     }
 
-    if (num_words > 0) {
-        return (keys_saved / num_words);
+    if (num_chars > 0) {
+        return (keys_saved / num_chars);
     } else {
         return 0;
     }
