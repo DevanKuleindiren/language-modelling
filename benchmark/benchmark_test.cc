@@ -5,7 +5,9 @@
 
 
 class ConstantLanguageModelMock : public LM {
+    double prob;
 public:
+    ConstantLanguageModelMock(double prob) : prob(prob) {}
     bool ContainsWord(std::string) {
         return true;
     }
@@ -15,7 +17,7 @@ public:
     void Predict(std::list<std::string>, std::pair<std::string, double> &) {}
     void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int) {}
     double Prob (std::list<std::string>) {
-        return 0.25;
+        return prob;
     }
     void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &) {
         std::this_thread::sleep_for (std::chrono::seconds(1));
@@ -35,7 +37,7 @@ TEST(BenchmarkTest, Perplexity) {
     std::string test_file_name = "/tmp/benchmark_test_file";
     ::SetUpTestFile(test_file_name);
 
-    ConstantLanguageModelMock *lm = new ConstantLanguageModelMock();
+    ConstantLanguageModelMock *lm = new ConstantLanguageModelMock(0.25);
     Benchmark *under_test = new Benchmark(lm);
 
     ASSERT_DOUBLE_EQ(under_test->Perplexity(test_file_name, false), 4.0);
@@ -45,10 +47,20 @@ TEST(BenchmarkTest, PerplexityExp) {
     std::string test_file_name = "/tmp/benchmark_test_file";
     ::SetUpTestFile(test_file_name);
 
-    ConstantLanguageModelMock *lm = new ConstantLanguageModelMock();
+    ConstantLanguageModelMock *lm = new ConstantLanguageModelMock(0.25);
     Benchmark *under_test = new Benchmark(lm);
 
     ASSERT_DOUBLE_EQ(under_test->Perplexity(test_file_name, true), 4.0);
+}
+
+TEST(BenchmarkTest, PerplexityZero) {
+    std::string test_file_name = "/tmp/benchmark_test_file";
+    ::SetUpTestFile(test_file_name);
+
+    ConstantLanguageModelMock *lm = new ConstantLanguageModelMock(0);
+    Benchmark *under_test = new Benchmark(lm);
+
+    ASSERT_NEAR(under_test->Perplexity(test_file_name, true), 1e9, 1e-4);
 }
 
 class LengthLanguageModelMock : public LM {
@@ -116,7 +128,7 @@ TEST(BenchmarkTest, GuessingEntropy) {
 }
 
 TEST(BenchmarkTest, MemoryUsage) {
-    ConstantLanguageModelMock *lm = new ConstantLanguageModelMock();
+    ConstantLanguageModelMock *lm = new ConstantLanguageModelMock(0.25);
     Benchmark *under_test = new Benchmark(lm);
 
     ASSERT_GT(under_test->PhysicalMemoryUsageBytes(), 1e3);
@@ -127,7 +139,7 @@ TEST(BenchmarkTest, AverageInferenceTime) {
     std::string test_file_name = "/tmp/benchmark_test_file";
     ::SetUpTestFile(test_file_name);
 
-    ConstantLanguageModelMock *lm = new ConstantLanguageModelMock();
+    ConstantLanguageModelMock *lm = new ConstantLanguageModelMock(0.25);
     Benchmark *under_test = new Benchmark(lm);
 
     ASSERT_NEAR(under_test->AverageInferenceTimeMicroSeconds(test_file_name, 5), 1e6, 1e5);

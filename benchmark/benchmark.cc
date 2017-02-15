@@ -18,10 +18,15 @@ double Benchmark::Perplexity(std::string file_name, bool use_exp_calculation) {
             seq.pop_front();
         }
 
-        double prob;
         if (seq.size() > (language_model->ContextSize()).first &&
-            language_model->ContainsWord(word) &&
-            (prob = language_model->Prob(seq)) > 0) {
+            language_model->ContainsWord(word)) {
+            double prob = language_model->Prob(seq);
+            if (prob <= 0) {
+                // To avoid division by 0, we instead set the probability to be a small value. It means that the
+                // perplexity for language models that run into this case aren't mathematically exact, but it does give
+                // results that are easier to compare.
+                prob = 1e-9;
+            }
 
             num_words++;
             double tmp;
