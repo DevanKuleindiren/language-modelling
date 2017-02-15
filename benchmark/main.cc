@@ -118,7 +118,7 @@ int main(int argc, char* argv[]) {
     start = std::chrono::steady_clock::now();
     std::cout << "Calculating guessing entropy..." << std::endl;
     double guessing_entropy = benchmark->GuessingEntropy(test_data_path, 1000);
-    std::cout << "Guessing entropy = " << average_keys_saved << std::endl;
+    std::cout << "Guessing entropy = " << guessing_entropy << std::endl;
     std::cout << "Completed in ";
     std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
     std::cout << " seconds." << std::endl;
