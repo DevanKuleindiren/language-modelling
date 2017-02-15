@@ -117,7 +117,7 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
                 }
             }
 
-            if (num_words > 0 && num_words % 1000 == 0) {
+            if (num_words > 0 && num_words % 100 == 0) {
                 std::cout << "Processed " << num_words << " words." << std::endl;
             }
         }
@@ -171,7 +171,7 @@ double Benchmark::GuessingEntropy(std::string file_name, int max_words) {
 
             total_entropy += log2(num_higher + 1);
 
-            if (num_words > 0 && num_words % 1000 == 0) {
+            if (num_words > 0 && num_words % 100 == 0) {
                 std::cout << "Processed " << num_words << " words." << std::endl;
             }
         }
@@ -217,7 +217,7 @@ long Benchmark::AverageInferenceTimeMicroSeconds(std::string file_name, int max_
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
             total_duration += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
-            if (num_words > 0 && num_words % 1000 == 0) {
+            if (num_words > 0 && num_words % 100 == 0) {
                 std::cout << "Processed " << num_words << " words." << std::endl;
             }
         }
