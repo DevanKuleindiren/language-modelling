@@ -18,36 +18,33 @@ double Benchmark::Perplexity(std::string file_name, bool use_exp_calculation) {
             seq.pop_front();
         }
 
-        if (seq.size() > (language_model->ContextSize()).first &&
-            language_model->ContainsWord(word)) {
-            double prob = language_model->Prob(seq);
-            if (prob <= 0) {
-                // To avoid division by 0, we instead set the probability to be a small value. It means that the
-                // perplexity for language models that run into this case aren't mathematically exact, but it does give
-                // results that are easier to compare.
-                prob = 1e-9;
-            }
+        double prob = language_model->Prob(seq);
+        if (prob <= 0) {
+            // To avoid division by 0, we instead set the probability to be a small value. It means that the
+            // perplexity for language models that run into this case aren't mathematically exact, but it does give
+            // results that are easier to compare.
+            prob = 1e-9;
+        }
 
-            num_words++;
-            double tmp;
-            double new_batch;
-            if (use_exp_calculation) {
-                tmp = log(prob);
-                new_batch = batch + tmp;
-            } else {
-                tmp = 1 / prob;
-                new_batch = batch * tmp;
-            }
-            if (isinf(new_batch)) {
-                batches.push_back(batch);
-                batch = tmp;
-            } else {
-                batch = new_batch;
-            }
+        num_words++;
+        double tmp;
+        double new_batch;
+        if (use_exp_calculation) {
+            tmp = log(prob);
+            new_batch = batch + tmp;
+        } else {
+            tmp = 1 / prob;
+            new_batch = batch * tmp;
+        }
+        if (isinf(new_batch)) {
+            batches.push_back(batch);
+            batch = tmp;
+        } else {
+            batch = new_batch;
+        }
 
-            if (num_words > 0 && num_words % 1000 == 0) {
-                std::cout << "Processed " << num_words << " words." << std::endl;
-            }
+        if (num_words > 0 && num_words % 1000 == 0) {
+            std::cout << "Processed " << num_words << " words." << std::endl;
         }
     }
 
