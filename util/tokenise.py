@@ -15,10 +15,10 @@ def main():
         # Read the file's text into a list of strings. If new_lines is set, then each string will be a sentence.
         # Otherwise, there will just be one string representing the whole file.
         if args.new_lines:
-            text = [f.read().decode("utf-8")]
-        else:
             tokeniser = nltk.data.load('tokenizers/punkt/english.pickle')
             text = tokeniser.tokenize(f.read().decode("utf-8"))
+        else:
+            text = [f.read().decode("utf-8")]
 
     with open(args.output_file_path, "w") as f:
         for s in text:
