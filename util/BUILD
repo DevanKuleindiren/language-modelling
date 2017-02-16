@@ -42,3 +42,9 @@ cc_test(
         "//tensorflow/core:test_main",
     ],
 )
+
+py_binary(
+    name = "tokenise",
+    srcs = ["tokenise.py"],
+    deps = [],
+)
