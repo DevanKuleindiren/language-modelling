@@ -28,6 +28,7 @@ public:
     CharTrie() : root(new Node(false)) {}
     void Insert(std::string, double);
     bool Update(std::string, double);
+    double GetProb(std::string);
     std::pair<std::string, double> GetMaxWithPrefix(std::string);
     std::list<std::pair<std::string, double>> GetMaxKWithPrefix(std::string prefix, int k);
     virtual bool Contains(std::string);

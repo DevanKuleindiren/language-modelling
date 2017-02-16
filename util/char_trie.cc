@@ -23,6 +23,13 @@ bool CharTrie::Update(std::string word, double prob) {
     }
 }
 
+double CharTrie::GetProb(std::string word) {
+    if (probs.count(word) > 0) {
+        return probs[word];
+    }
+    return 0;
+}
+
 std::pair<std::string, double> CharTrie::GetMaxWithPrefix(std::string prefix) {
     std::list<std::pair<std::string, double>> top = GetMaxKWithPrefix(prefix, 1);
     if (top.size() > 0) {

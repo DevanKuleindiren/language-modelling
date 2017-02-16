@@ -47,6 +47,12 @@ TEST_F(CharTrieTest, Update) {
     ASSERT_EQ(under_test->GetMaxWithPrefix("to").second, 0.7);
 }
 
+TEST_F(CharTrieTest, GetProb) {
+    ASSERT_DOUBLE_EQ(under_test->GetProb("blah"), 0);
+    ASSERT_DOUBLE_EQ(under_test->GetProb("they"), 0.38);
+    ASSERT_DOUBLE_EQ(under_test->GetProb("candle"), 0.64);
+}
+
 TEST_F(CharTrieTest, GetMaxWithPrefix) {
     ASSERT_STREQ(under_test->GetMaxWithPrefix("").first.c_str(), "and");
     ASSERT_EQ(under_test->GetMaxWithPrefix("").second, 0.78);
