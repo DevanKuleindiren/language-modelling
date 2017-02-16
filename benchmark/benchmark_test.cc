@@ -22,6 +22,7 @@ public:
     void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &) {
         std::this_thread::sleep_for (std::chrono::seconds(1));
     }
+    void ProbAllFollowing (std::list<std::string>, CharTrie *) {}
 };
 
 void SetUpTestFile(std::string test_file_name) {
@@ -85,6 +86,7 @@ public:
             seq.pop_back();
         }
     }
+    virtual void ProbAllFollowing (std::list<std::string>, CharTrie *) {};
 };
 
 TEST(BenchmarkTest, AverageKeysSavedCalculation) {

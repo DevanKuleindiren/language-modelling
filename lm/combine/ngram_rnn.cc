@@ -51,3 +51,15 @@ void NGramRNN::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair
         probs.push_back(std::make_pair(it_ngram->first, CombineFunction(it_ngram->second, it_rnn->second)));
     }
 }
+
+void NGramRNN::ProbAllFollowing (std::list<std::string> seq, CharTrie *char_trie) {
+    ProbAllFollowing(seq, char_trie, true);
+}
+
+void NGramRNN::ProbAllFollowing (std::list<std::string> seq, CharTrie *char_trie, bool use_prev_state) {
+    std::list<std::pair<std::string, double>> probs;
+    ProbAllFollowing(seq, probs, use_prev_state);
+    for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {
+        char_trie->Update(it->first, it->second);
+    }
+}

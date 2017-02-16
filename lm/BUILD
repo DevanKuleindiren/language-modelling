@@ -10,6 +10,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":vocab",
+        "//tensorflow/Source/util:char_trie",
         "//tensorflow/Source/util:prediction_compare",
     ],
 )

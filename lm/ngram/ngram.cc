@@ -29,6 +29,16 @@ void NGram::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<st
     }
 }
 
+void NGram::ProbAllFollowing (std::list<std::string> seq, CharTrie *char_trie) {
+    std::list<size_t> seq_ids = WordsToIds(seq);
+    seq_ids = Trim(seq_ids, n - 1);
+    for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
+        seq_ids.push_back(it->second);
+        char_trie->Update(it->first, Prob(seq_ids));
+        seq_ids.pop_back();
+    }
+}
+
 bool NGram::operator==(const NGram &to_compare) {
     return (n == to_compare.n)
         && (*prob_trie == *to_compare.prob_trie)

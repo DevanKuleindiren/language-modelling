@@ -71,6 +71,29 @@ TEST(NGramTestProb, ProbTrigramWithMinFreq) {
     ASSERT_DOUBLE_EQ(under_test->Prob(std::list<std::string>({"blah", "blah", "blah"})), 0.0);
 }
 
+TEST(NGramTest, ProbAllFollowing) {
+    NGram *under_test = new NGram(::SetUp(), 3, 1);
+    std::list<std::pair<std::string, double>> probs;
+
+    under_test->ProbAllFollowing(std::list<std::string>({"<s>", "the"}), probs);
+    ASSERT_EQ(probs.size(), 11);
+}
+
+TEST(NGramTest, ProbAllFollowingCharTrie) {
+    NGram *under_test = new NGram(::SetUp(), 3, 1);
+
+    CharTrie *char_trie = new CharTrie();
+    char_trie->Insert("cat", 0.0);
+    char_trie->Insert("sat", 0.0);
+    char_trie->Insert("dog", 0.0);
+
+    under_test->ProbAllFollowing(std::list<std::string>({"<s>", "the"}), char_trie);
+
+    ASSERT_DOUBLE_EQ(char_trie->GetProb("cat"), 2/3.0);
+    ASSERT_DOUBLE_EQ(char_trie->GetProb("dog"), 1/3.0);
+    ASSERT_DOUBLE_EQ(char_trie->GetProb("sat"), 0.0);
+}
+
 TEST(NGramTest, PredictTrigram) {
     NGram *under_test = new NGram(::SetUp(), 3, 1);
     std::pair<std::string, double> prediction;

@@ -7,6 +7,7 @@
 #include <queue>
 #include <string>
 #include <utility>
+#include "tensorflow/Source/util/char_trie.h"
 #include "tensorflow/Source/util/prediction_compare.h"
 #include "vocab.h"
 
@@ -28,6 +29,7 @@ public:
     virtual void PredictTopK(std::list<std::string>, std::list<std::pair<std::string, double>> &, int);
     virtual double Prob (std::list<std::string>) = 0;
     virtual void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &) = 0;
+    virtual void ProbAllFollowing (std::list<std::string>, CharTrie *) = 0;
 };
 
 #endif // lm.h

@@ -31,6 +31,7 @@ public:
     virtual double Prob(std::list<std::string>);
     virtual double Prob(std::list<size_t>);
     virtual void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &);
+    virtual void ProbAllFollowing (std::list<std::string>, CharTrie *);
     virtual bool operator==(const NGram &);
     virtual tensorflow::Source::lm::ngram::NGramProto *ToProto();
     virtual void Save(std::string);

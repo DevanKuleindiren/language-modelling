@@ -20,6 +20,8 @@ public:
     virtual double Prob(std::list<std::string>, bool);
     virtual void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &);
     virtual void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &, bool);
+    virtual void ProbAllFollowing (std::list<std::string>, CharTrie *);
+    virtual void ProbAllFollowing (std::list<std::string>, CharTrie *, bool);
 };
 
 class NGramRNNAverage : public NGramRNN {
