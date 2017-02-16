@@ -15,7 +15,7 @@ cc_library(
         "//tensorflow/Source/lm/ngram:ngram",
         "//tensorflow/Source/lm/rnn:rnn_inference",
         "//tensorflow/Source/util:char_trie",
-        "//tensorflow/Source/util:reader",
+        "//tensorflow/Source/util:dual_reader",
     ],
 )
 

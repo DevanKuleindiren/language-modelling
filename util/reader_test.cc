@@ -10,8 +10,7 @@ TEST(FileReaderTest, ReadsCorrectly) {
     test_file << " the dog sat on the cat . \n";
     test_file.close();
 
-    std::ifstream test_file_stream (test_file_name);
-    FileReader *under_test = new FileReader(test_file_stream);
+    FileReader *under_test = new FileReader(test_file_name);
 
     std::list<std::string> expected_words ({"<s>", "the", "cat", "sat", "on", "the", "mat", ".",
                                             "<s>", "the", "cat", "ate", "the", "mouse", ".",

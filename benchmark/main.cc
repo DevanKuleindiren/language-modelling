@@ -15,10 +15,11 @@
 
 void usage(char* const argv_0) {
     std::cerr << "Usage: " << argv_0;
-    std::cerr << " --ngram_path=PATH --rnn_path=PATH --test_data_path=TEST --save_path=SAVE --comb_type=TYPE" << std::endl;
+    std::cerr << " --ngram_path=PATH --rnn_path=PATH --test_input_path=INPT --test_target_path=TARG --save_path=SAVE --comb_type=TYPE" << std::endl;
     std::cerr << "Where:" << std::endl;
     std::cerr << "    PATH is the path the directory containing the model protos." << std::endl;
-    std::cerr << "    TEST is the file path of the test data to run the benchmarking against." << std::endl;
+    std::cerr << "    INPT is the file path of the input data to run the benchmarking against." << std::endl;
+    std::cerr << "    TARG is the file path of the target data to run the benchmarking against." << std::endl;
     std::cerr << "    SAVE is the path the directory to save the benchmark proto." << std::endl;
     std::cerr << "    TYPE is the type of combination used for the language models (one of: ";
     std::cerr << COMB_AVR << " or " << COMB_MAX << ")." << std::endl;
@@ -30,14 +31,16 @@ int main(int argc, char* argv[]) {
 
     std::string ngram_path;
     std::string rnn_path;
-    std::string test_data_path;
+    std::string test_input_path;
+    std::string test_target_path;
     std::string save_path;
     std::string comb_type;
 
     const bool parse_result = tensorflow::ParseFlags(&argc, argv, {
         tensorflow::Flag("ngram_path", &ngram_path),
         tensorflow::Flag("rnn_path", &rnn_path),
-        tensorflow::Flag("test_data_path", &test_data_path),
+        tensorflow::Flag("test_input_path", &test_input_path),
+        tensorflow::Flag("test_target_path", &test_target_path),
         tensorflow::Flag("save_path", &save_path),
         tensorflow::Flag("comb_type", &comb_type),
     });
@@ -63,10 +66,13 @@ int main(int argc, char* argv[]) {
             return -1;
         }
     }
-    if (test_data_path.empty()) {
-        std::cerr << "Error: --test_data_path must be set." << std::endl;
+    if (test_input_path.empty()) {
+        std::cerr << "Error: --test_input_path must be set." << std::endl;
         usage(argv[0]);
         return -1;
+    }
+    if (test_target_path.empty()) {
+        test_target_path = test_input_path;
     }
 
     LM *lm;
@@ -101,7 +107,7 @@ int main(int argc, char* argv[]) {
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     std::cout << "Calculating perplexity..." << std::endl;
-    double perplexity = benchmark->Perplexity(test_data_path, false);
+    double perplexity = benchmark->Perplexity(test_input_path, test_target_path, false);
     std::cout << "Perplexity = " << perplexity << std::endl;
     std::cout << "Completed in ";
     std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
@@ -109,7 +115,7 @@ int main(int argc, char* argv[]) {
 
     start = std::chrono::steady_clock::now();
     std::cout << "Calculating average keys saved..." << std::endl;
-    double average_keys_saved = benchmark->AverageKeysSaved(test_data_path, 1000);
+    double average_keys_saved = benchmark->AverageKeysSaved(test_input_path, test_target_path, 1000);
     std::cout << "Average keys saved = " << average_keys_saved << std::endl;
     std::cout << "Completed in ";
     std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
@@ -117,7 +123,7 @@ int main(int argc, char* argv[]) {
 
     start = std::chrono::steady_clock::now();
     std::cout << "Calculating guessing entropy..." << std::endl;
-    double guessing_entropy = benchmark->GuessingEntropy(test_data_path, 1000);
+    double guessing_entropy = benchmark->GuessingEntropy(test_input_path, test_target_path, 1000);
     std::cout << "Guessing entropy = " << guessing_entropy << std::endl;
     std::cout << "Completed in ";
     std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
@@ -125,7 +131,7 @@ int main(int argc, char* argv[]) {
 
     start = std::chrono::steady_clock::now();
     std::cout << "Calculating average inference time..." << std::endl;
-    long average_inference_time_us = benchmark->AverageInferenceTimeMicroSeconds(test_data_path, 50);
+    long average_inference_time_us = benchmark->AverageInferenceTimeMicroSeconds(test_input_path, 50);
     std::cout << "Average inference time = " << average_inference_time_us << "us" << std::endl;
     std::cout << "Completed in ";
     std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();

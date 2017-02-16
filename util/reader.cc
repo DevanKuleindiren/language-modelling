@@ -6,7 +6,7 @@ bool FileReader::GetNextWord(std::string *next_word) {
     } else {
         std::string line;
         input_line.clear();
-        if (std::getline(input_file, line)) {
+        if (std::getline(*input_file, line)) {
             input_line << line << std::flush;
             *next_word = "<s>";
             return true;

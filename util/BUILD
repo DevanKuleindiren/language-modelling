@@ -43,6 +43,24 @@ cc_test(
     ],
 )
 
+cc_library(
+    name = "dual_reader",
+    hdrs = ["dual_reader.h"],
+    visibility = ["//visibility:public"],
+    deps = [":reader"],
+)
+
+cc_test(
+    name = "dual_reader_test",
+    size = "small",
+    srcs = ["dual_reader_test.cc"],
+    deps = [
+        ":dual_reader",
+        "//tensorflow/core:test",
+        "//tensorflow/core:test_main",
+    ],
+)
+
 py_binary(
     name = "tokenise",
     srcs = ["tokenise.py"],

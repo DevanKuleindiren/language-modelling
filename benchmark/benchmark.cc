@@ -1,18 +1,18 @@
 #include "benchmark.h"
 
-double Benchmark::Perplexity(std::string file_name, bool use_exp_calculation) {
-    std::ifstream file_stream (file_name);
-    FileReader *file_reader = new FileReader(file_stream);
-    int num_words = 0;
+double Benchmark::Perplexity(std::string input_file_name, std::string target_file_name, bool use_exp_calculation) {
+    DualFileReader *dual_file_reader = PrepareDualReader(input_file_name, target_file_name);
 
     // If using the product method, then x represents a product, otherwise, it represents a sum.
     double batch = use_exp_calculation ? 0 : 1;
+    int num_words = 0;
     std::list<double> batches;
     std::list<std::string> seq;
-    std::string word;
+    std::string input_word;
+    std::string target_word;
 
-    while (file_reader->GetNextWord(&word)) {
-        seq.push_back(word);
+    while (dual_file_reader->GetNextInputTargetWordPair(&input_word, &target_word)) {
+        seq.push_back(target_word);
 
         while (seq.size() > language_model->ContextSize().second) {
             seq.pop_front();
@@ -25,6 +25,10 @@ double Benchmark::Perplexity(std::string file_name, bool use_exp_calculation) {
             // results that are easier to compare.
             prob = 1e-9;
         }
+
+        // Swap the target word for the input word now that the probability has been estimated.
+        seq.pop_back();
+        seq.push_back(input_word);
 
         num_words++;
         double tmp;
@@ -61,17 +65,18 @@ double Benchmark::Perplexity(std::string file_name, bool use_exp_calculation) {
     return perplexity;
 }
 
-double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
+double Benchmark::AverageKeysSaved(std::string input_file_name, std::string target_file_name, int max_words) {
     // The average number of characters saved (per word), where 'saved' characters are those characters of the word
     // that don't need to be typed as a result of the correct word being predicted in the top 3.
 
-    std::ifstream file_stream (file_name);
-    FileReader *file_reader = new FileReader(file_stream);
+    DualFileReader *dual_file_reader = PrepareDualReader(input_file_name, target_file_name);
+
     int num_words = 0;
     double num_chars = 0;
     double keys_saved = 0;
     std::list<std::string> seq;
-    std::string word;
+    std::string input_word;
+    std::string target_word;
 
     CharTrie *char_trie = new CharTrie();
     for (std::unordered_map<std::string, size_t>::const_iterator it = language_model->GetVocab()->begin(); it != language_model->GetVocab()->end(); ++it) {
@@ -84,35 +89,29 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
         use_rnn = true;
     }
 
-    while (file_reader->GetNextWord(&word) && num_words < max_words) {
-        seq.push_back(word);
-
-        while (seq.size() > language_model->ContextSize().second) {
+    while (dual_file_reader->GetNextInputTargetWordPair(&input_word, &target_word) && num_words < max_words) {
+        while (seq.size() >= language_model->ContextSize().second) {
             seq.pop_front();
         }
 
-        if (seq.size() > (language_model->ContextSize()).first) {
+        if (seq.size() >= (language_model->ContextSize()).first) {
             num_words++;
-            num_chars += seq.back().size();
+            num_chars += target_word.size();
 
-            std::string to_predict = seq.back();
-            seq.pop_back();
             // Avoid evaluating the softmax layer in RNN models.
             if (use_rnn) {
                 rnn->LogitsAllFollowing(seq, char_trie);
             } else {
                 language_model->ProbAllFollowing(seq, char_trie);
             }
-            seq.push_back(to_predict);
-
 
             bool next_word_predicted = false;
-            for (int i = 0; i <= to_predict.length() && !next_word_predicted; ++i) {
-                std::list<std::pair<std::string, double>> top_3 = char_trie->GetMaxKWithPrefix(to_predict.substr(0, i), 3);
+            for (int i = 0; i <= target_word.length() && !next_word_predicted; ++i) {
+                std::list<std::pair<std::string, double>> top_3 = char_trie->GetMaxKWithPrefix(target_word.substr(0, i), 3);
 
                 for (std::list<std::pair<std::string, double>>::iterator it = top_3.begin(); it != top_3.end(); ++it) {
-                    if (to_predict.compare(it->first) == 0) {
-                        keys_saved += to_predict.length() - i;
+                    if (target_word.compare(it->first) == 0) {
+                        keys_saved += target_word.length() - i;
                         next_word_predicted = true;
                         break;
                     }
@@ -123,6 +122,7 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
                 std::cout << "Processed " << num_words << " words." << std::endl;
             }
         }
+        seq.push_back(input_word);
     }
 
     if (num_chars > 0) {
@@ -132,13 +132,14 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
     }
 }
 
-double Benchmark::GuessingEntropy(std::string file_name, int max_words) {
-    std::ifstream file_stream (file_name);
-    FileReader *file_reader = new FileReader(file_stream);
+double Benchmark::GuessingEntropy(std::string input_file_name, std::string target_file_name, int max_words) {
+    DualFileReader *dual_file_reader = PrepareDualReader(input_file_name, target_file_name);
+
     int num_words = 0;
     double total_entropy = 0;
     std::list<std::string> seq;
-    std::string word;
+    std::string input_word;
+    std::string target_word;
 
     RNN *rnn;
     bool use_rnn = false;
@@ -146,18 +147,14 @@ double Benchmark::GuessingEntropy(std::string file_name, int max_words) {
         use_rnn = true;
     }
 
-    while (file_reader->GetNextWord(&word) && num_words < max_words) {
-        seq.push_back(word);
-
-        while (seq.size() > language_model->ContextSize().second) {
+    while (dual_file_reader->GetNextInputTargetWordPair(&input_word, &target_word) && num_words < max_words) {
+        while (seq.size() >= language_model->ContextSize().second) {
             seq.pop_front();
         }
 
-        if (seq.size() > (language_model->ContextSize()).first) {
+        if (seq.size() >= (language_model->ContextSize()).first) {
             num_words++;
 
-            std::string to_predict = seq.back();
-            seq.pop_back();
             std::list<std::pair<std::string, double>> probs;
             // Avoid evaluating the softmax layer in RNN models.
             if (use_rnn) {
@@ -165,19 +162,18 @@ double Benchmark::GuessingEntropy(std::string file_name, int max_words) {
             } else {
                 language_model->ProbAllFollowing(seq, probs);
             }
-            seq.push_back(to_predict);
 
-            double prob_of_to_predict;
+            double prob_of_target;
             for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {
-                if (to_predict.compare(it->first) == 0) {
-                    prob_of_to_predict = it->second;
+                if (target_word.compare(it->first) == 0) {
+                    prob_of_target = it->second;
                 }
             }
 
             // Count the number of words with a higher probability than to_predict.
             int num_higher = 0;
             for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {
-                if (it->second > prob_of_to_predict) {
+                if (it->second > prob_of_target) {
                     num_higher++;
                 }
             }
@@ -188,6 +184,7 @@ double Benchmark::GuessingEntropy(std::string file_name, int max_words) {
                 std::cout << "Processed " << num_words << " words." << std::endl;
             }
         }
+        seq.push_back(input_word);
     }
 
     if (num_words > 0) {
@@ -207,8 +204,7 @@ long Benchmark::PhysicalMemoryUsageBytes() {
 }
 
 long Benchmark::AverageInferenceTimeMicroSeconds(std::string file_name, int max_words) {
-    std::ifstream file_stream (file_name);
-    FileReader *file_reader = new FileReader(file_stream);
+    FileReader *file_reader = new FileReader(file_name);
     int num_words = 0;
     std::list<std::string> seq;
     std::string word;
@@ -240,5 +236,13 @@ long Benchmark::AverageInferenceTimeMicroSeconds(std::string file_name, int max_
         return (total_duration / max_words);
     } else {
         return 0;
+    }
+}
+
+DualFileReader *Benchmark::PrepareDualReader(std::string input_file_name, std::string target_file_name) {
+    if (input_file_name.compare(target_file_name) == 0) {
+        return new DuplicatedDualFileReader(input_file_name);
+    } else {
+        return new DifferentDualFileReader(input_file_name, target_file_name);
     }
 }

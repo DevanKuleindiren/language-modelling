@@ -41,7 +41,7 @@ TEST(BenchmarkTest, Perplexity) {
     ConstantLanguageModelMock *lm = new ConstantLanguageModelMock(0.25);
     Benchmark *under_test = new Benchmark(lm);
 
-    ASSERT_DOUBLE_EQ(under_test->Perplexity(test_file_name, false), 4.0);
+    ASSERT_DOUBLE_EQ(under_test->Perplexity(test_file_name, test_file_name, false), 4.0);
 }
 
 TEST(BenchmarkTest, PerplexityExp) {
@@ -51,7 +51,7 @@ TEST(BenchmarkTest, PerplexityExp) {
     ConstantLanguageModelMock *lm = new ConstantLanguageModelMock(0.25);
     Benchmark *under_test = new Benchmark(lm);
 
-    ASSERT_DOUBLE_EQ(under_test->Perplexity(test_file_name, true), 4.0);
+    ASSERT_DOUBLE_EQ(under_test->Perplexity(test_file_name, test_file_name, true), 4.0);
 }
 
 TEST(BenchmarkTest, PerplexityZero) {
@@ -61,7 +61,7 @@ TEST(BenchmarkTest, PerplexityZero) {
     ConstantLanguageModelMock *lm = new ConstantLanguageModelMock(0);
     Benchmark *under_test = new Benchmark(lm);
 
-    ASSERT_NEAR(under_test->Perplexity(test_file_name, true), 1e9, 1e-4);
+    ASSERT_NEAR(under_test->Perplexity(test_file_name, test_file_name, true), 1e9, 1e-4);
 }
 
 class LengthLanguageModelMock : public LM {
@@ -107,7 +107,7 @@ TEST(BenchmarkTest, AverageKeysSavedCalculation) {
     LengthLanguageModelMock *lm = new LengthLanguageModelMock(test_file_name);
     Benchmark *under_test = new Benchmark(lm);
 
-    ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, 1000), 46/64.0);
+    ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, test_file_name, 1000), 46/64.0);
 }
 
 TEST(BenchmarkTest, AverageKeysSavedEndToEnd) {
@@ -117,7 +117,7 @@ TEST(BenchmarkTest, AverageKeysSavedEndToEnd) {
     LM *ngram = new NGram(test_file_name, 2, 1);
     Benchmark *under_test = new Benchmark(ngram);
 
-    ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, 1000), 57/58.0);
+    ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, test_file_name, 1000), 57/58.0);
 }
 
 TEST(BenchmarkTest, GuessingEntropy) {
@@ -130,7 +130,7 @@ TEST(BenchmarkTest, GuessingEntropy) {
     LengthLanguageModelMock *lm = new LengthLanguageModelMock(test_file_name);
     Benchmark *under_test = new Benchmark(lm);
 
-    ASSERT_DOUBLE_EQ(under_test->GuessingEntropy(test_file_name, 1000), log2(14336) / 7.0);
+    ASSERT_DOUBLE_EQ(under_test->GuessingEntropy(test_file_name, test_file_name, 1000), log2(14336) / 7.0);
 }
 
 TEST(BenchmarkTest, MemoryUsage) {
