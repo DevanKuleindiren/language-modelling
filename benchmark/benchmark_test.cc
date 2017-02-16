@@ -65,9 +65,10 @@ TEST(BenchmarkTest, PerplexityZero) {
 }
 
 class LengthLanguageModelMock : public LM {
-    std::list<std::string> pseudo_vocab;
 public:
-    LengthLanguageModelMock(std::list<std::string> pseudo_vocab) : LM(), pseudo_vocab(pseudo_vocab) {}
+    LengthLanguageModelMock(std::string file_name) : LM(1) {
+        vocab->ProcessFile(file_name);
+    }
     bool ContainsWord(std::string) {
         return true;
     }
@@ -80,13 +81,19 @@ public:
         return (seq.back().length() / 10.0);
     }
     void ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &probs) {
-        for (std::list<std::string>::iterator it = pseudo_vocab.begin(); it != pseudo_vocab.end(); ++it) {
-            seq.push_back(*it);
-            probs.push_back(std::make_pair(*it, Prob(seq)));
+        for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
+            seq.push_back(it->first);
+            probs.push_back(std::make_pair(it->first, Prob(seq)));
             seq.pop_back();
         }
     }
-    virtual void ProbAllFollowing (std::list<std::string>, CharTrie *) {};
+    virtual void ProbAllFollowing (std::list<std::string> seq, CharTrie *char_trie) {
+        for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
+            seq.push_back(it->first);
+            char_trie->Update(it->first, Prob(seq));
+            seq.pop_back();
+        }
+    };
 };
 
 TEST(BenchmarkTest, AverageKeysSavedCalculation) {
@@ -97,9 +104,7 @@ TEST(BenchmarkTest, AverageKeysSavedCalculation) {
     test_file << " then he saw a wealthy penguin .\n";
     test_file.close();
 
-    LengthLanguageModelMock *lm = new LengthLanguageModelMock(std::list<std::string>({
-        "<unk>", "<s>", "the", "wolf", "walked", "west", "on", "top", "of", "world", ".",
-        "then", "he", "saw", "a", "wealthy", "penguin"}));
+    LengthLanguageModelMock *lm = new LengthLanguageModelMock(test_file_name);
     Benchmark *under_test = new Benchmark(lm);
 
     ASSERT_DOUBLE_EQ(under_test->AverageKeysSaved(test_file_name, 1000), 46/64.0);
@@ -122,8 +127,7 @@ TEST(BenchmarkTest, GuessingEntropy) {
     test_file << " a wolf walked carefully in fear . \n";
     test_file.close();
 
-    LengthLanguageModelMock *lm = new LengthLanguageModelMock(std::list<std::string>({
-        "<unk>", "<s>", "a", "wolf", "walked", "carefully", "in", "fear", "."}));
+    LengthLanguageModelMock *lm = new LengthLanguageModelMock(test_file_name);
     Benchmark *under_test = new Benchmark(lm);
 
     ASSERT_DOUBLE_EQ(under_test->GuessingEntropy(test_file_name, 1000), log2(14336) / 7.0);

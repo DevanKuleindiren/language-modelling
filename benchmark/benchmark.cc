@@ -73,9 +73,16 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
     std::list<std::string> seq;
     std::string word;
 
-    // Only populate once, and then afterwards only call Update() for efficiency.
     CharTrie *char_trie = new CharTrie();
-    bool char_trie_populated = false;
+    for (std::unordered_map<std::string, size_t>::const_iterator it = language_model->GetVocab()->begin(); it != language_model->GetVocab()->end(); ++it) {
+        char_trie->Insert(it->first, 0);
+    }
+
+    RNN *rnn;
+    bool use_rnn = false;
+    if ((rnn = dynamic_cast<RNN*>(language_model))) {
+        use_rnn = true;
+    }
 
     while (file_reader->GetNextWord(&word) && num_words < max_words) {
         seq.push_back(word);
@@ -90,19 +97,14 @@ double Benchmark::AverageKeysSaved(std::string file_name, int max_words) {
 
             std::string to_predict = seq.back();
             seq.pop_back();
-            std::list<std::pair<std::string, double>> probs;
-            language_model->ProbAllFollowing(seq, probs);
+            // Avoid evaluating the softmax layer in RNN models.
+            if (use_rnn) {
+                rnn->LogitsAllFollowing(seq, char_trie);
+            } else {
+                language_model->ProbAllFollowing(seq, char_trie);
+            }
             seq.push_back(to_predict);
 
-            if (char_trie_populated) {
-                for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {
-                    char_trie->Update(it->first, it->second);
-                }
-            } else {
-                for (std::list<std::pair<std::string, double>>::iterator it = probs.begin(); it != probs.end(); ++it) {
-                    char_trie->Insert(it->first, it->second);
-                }
-            }
 
             bool next_word_predicted = false;
             for (int i = 0; i <= to_predict.length() && !next_word_predicted; ++i) {
@@ -138,6 +140,12 @@ double Benchmark::GuessingEntropy(std::string file_name, int max_words) {
     std::list<std::string> seq;
     std::string word;
 
+    RNN *rnn;
+    bool use_rnn = false;
+    if ((rnn = dynamic_cast<RNN*>(language_model))) {
+        use_rnn = true;
+    }
+
     while (file_reader->GetNextWord(&word) && num_words < max_words) {
         seq.push_back(word);
 
@@ -151,7 +159,12 @@ double Benchmark::GuessingEntropy(std::string file_name, int max_words) {
             std::string to_predict = seq.back();
             seq.pop_back();
             std::list<std::pair<std::string, double>> probs;
-            language_model->ProbAllFollowing(seq, probs);
+            // Avoid evaluating the softmax layer in RNN models.
+            if (use_rnn) {
+                rnn->LogitsAllFollowing(seq, probs);
+            } else {
+                language_model->ProbAllFollowing(seq, probs);
+            }
             seq.push_back(to_predict);
 
             double prob_of_to_predict;

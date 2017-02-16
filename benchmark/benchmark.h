@@ -10,6 +10,7 @@
 #include <thread>
 #include <time.h>
 #include "tensorflow/Source/lm/lm.h"
+#include "tensorflow/Source/lm/rnn/rnn.h"
 #include "tensorflow/Source/util/char_trie.h"
 #include "tensorflow/Source/util/reader.h"
 
