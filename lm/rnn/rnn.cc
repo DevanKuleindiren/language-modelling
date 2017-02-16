@@ -37,6 +37,7 @@ RNN::RNN(std::string directory_path) {
     }
 
     input_tensor_name = rnn_proto.input_tensor_name();
+    logits_tensor_name = rnn_proto.logits_tensor_name();
     predictions_tensor_name = rnn_proto.predictions_tensor_name();
     for (int i = 0; i < rnn_proto.h_size(); ++i) {
         tensorflow::Source::lm::rnn::RNNProto::TensorNamePair h_pair = rnn_proto.h(i);
@@ -84,7 +85,7 @@ double RNN::Prob(std::list<std::string> seq, bool use_prev_state) {
     seq_ids.pop_back();
 
     std::vector<tensorflow::Tensor> outputs;
-    RunInference(seq_ids, outputs, use_prev_state);
+    RunInference(seq_ids, outputs, predictions_tensor_name, use_prev_state);
     auto predictions = outputs[0].tensor<float, 2>();
 
     return predictions(0, next_word_id);
@@ -98,7 +99,7 @@ void RNN::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std:
     std::list<size_t> seq_ids = WordsToIds(seq);
 
     std::vector<tensorflow::Tensor> outputs;
-    RunInference(seq_ids, outputs, use_prev_state);
+    RunInference(seq_ids, outputs, predictions_tensor_name, use_prev_state);
     auto predictions = outputs[0].tensor<float, 2>();
 
     for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
@@ -114,11 +115,43 @@ void RNN::ProbAllFollowing (std::list<std::string> seq, CharTrie *char_trie, boo
     std::list<size_t> seq_ids = WordsToIds(seq);
 
     std::vector<tensorflow::Tensor> outputs;
-    RunInference(seq_ids, outputs, use_prev_state);
+    RunInference(seq_ids, outputs, predictions_tensor_name, use_prev_state);
     auto predictions = outputs[0].tensor<float, 2>();
 
     for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
         char_trie->Update(it->first, predictions(0, it->second));
+    }
+}
+
+void RNN::LogitsAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &logits) {
+    LogitsAllFollowing(seq, logits, true);
+}
+
+void RNN::LogitsAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &logits, bool use_prev_state) {
+    std::list<size_t> seq_ids = WordsToIds(seq);
+
+    std::vector<tensorflow::Tensor> outputs;
+    RunInference(seq_ids, outputs, logits_tensor_name, use_prev_state);
+    auto logits_tensor = outputs[0].tensor<float, 2>();
+
+    for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
+        logits.push_back(std::make_pair(it->first, logits_tensor(0, it->second)));
+    }
+}
+
+void RNN::LogitsAllFollowing (std::list<std::string> seq, CharTrie *char_trie) {
+    LogitsAllFollowing(seq, char_trie, true);
+}
+
+void RNN::LogitsAllFollowing (std::list<std::string> seq, CharTrie *char_trie, bool use_prev_state) {
+    std::list<size_t> seq_ids = WordsToIds(seq);
+
+    std::vector<tensorflow::Tensor> outputs;
+    RunInference(seq_ids, outputs, logits_tensor_name, use_prev_state);
+    auto logits_tensor = outputs[0].tensor<float, 2>();
+
+    for (std::unordered_map<std::string, size_t>::const_iterator it = vocab->begin(); it != vocab->end(); ++it) {
+        char_trie->Update(it->first, logits_tensor(0, it->second));
     }
 }
 
@@ -134,7 +167,7 @@ void RNN::ResetState() {
     }
 }
 
-void RNN::RunInference(size_t seq_id, std::vector<tensorflow::Tensor> &outputs, bool use_prev_state) {
+void RNN::RunInference(size_t seq_id, std::vector<tensorflow::Tensor> &outputs, std::string output_tensor_name, bool use_prev_state) {
     // Create and populate the RNN input tensor.
     tensorflow::Tensor seq_tensor(tensorflow::DT_INT32, tensorflow::TensorShape({1, 1}));
     auto seq_tensor_raw = seq_tensor.tensor<int, 2>();
@@ -153,7 +186,7 @@ void RNN::RunInference(size_t seq_id, std::vector<tensorflow::Tensor> &outputs, 
 
     // Run the inference to the softmax predictions node.
     std::vector<tensorflow::string> output_tensor_names;
-    output_tensor_names.push_back(predictions_tensor_name);
+    output_tensor_names.push_back(output_tensor_name);
     for (std::list<std::pair<std::string, std::string>>::iterator it = state_tensor_names.begin(); it != state_tensor_names.end(); ++it) {
         output_tensor_names.push_back(it->second);
     }
@@ -170,11 +203,11 @@ void RNN::RunInference(size_t seq_id, std::vector<tensorflow::Tensor> &outputs, 
     }
 }
 
-void RNN::RunInference(std::list<size_t> seq_ids, std::vector<tensorflow::Tensor> &outputs, bool use_prev_state) {
+void RNN::RunInference(std::list<size_t> seq_ids, std::vector<tensorflow::Tensor> &outputs, std::string output_tensor_name, bool use_prev_state) {
     assert(seq_ids.size() > 0);
-    RunInference(seq_ids.front(), outputs, use_prev_state);
+    RunInference(seq_ids.front(), outputs, output_tensor_name, use_prev_state);
     seq_ids.pop_front();
     for (std::list<size_t>::iterator it = seq_ids.begin(); it != seq_ids.end(); ++it) {
-        RunInference(*it, outputs, true);
+        RunInference(*it, outputs, output_tensor_name, true);
     }
 }

@@ -202,6 +202,10 @@ class RNN:
         return self._input_data
 
     @property
+    def logits(self):
+        return self._logits
+
+    @property
     def predictions(self):
         return self._predictions
 
@@ -332,6 +336,7 @@ def main(_):
             rnn_proto = rnn_pb2.RNNProto()
             rnn_proto.type = cell_type
             rnn_proto.input_tensor_name = inference_model.inputs.name
+            rnn_proto.logits_tensor_name = inference_model.logits.name
             rnn_proto.predictions_tensor_name = inference_model.predictions.name
             if cell_type == CellType.VANILLA or cell_type == CellType.GRU:
                 for i, (h_0, h_1) in enumerate(zip(inference_model.initial_state, inference_model.final_state)):

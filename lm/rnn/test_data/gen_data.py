@@ -39,6 +39,7 @@ def main(_):
         rnn_proto = rnn_pb2.RNNProto()
         rnn_proto.type = 2
         rnn_proto.input_tensor_name = input_data.name
+        rnn_proto.logits_tensor_name = predictions.name
         rnn_proto.predictions_tensor_name = predictions.name
 
         rnn_proto.h.add(

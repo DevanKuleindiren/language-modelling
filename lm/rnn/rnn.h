@@ -25,11 +25,12 @@ protected:
     enum Type { VANILLA, GRU, LSTM };
     Type type;
     std::string input_tensor_name;
+    std::string logits_tensor_name;
     std::string predictions_tensor_name;
     std::list<std::pair<std::string, std::string>> state_tensor_names;
     virtual void ResetState();
-    virtual void RunInference(size_t, std::vector<tensorflow::Tensor> &, bool);
-    virtual void RunInference(std::list<size_t>, std::vector<tensorflow::Tensor> &, bool);
+    virtual void RunInference(size_t, std::vector<tensorflow::Tensor> &, std::string, bool);
+    virtual void RunInference(std::list<size_t>, std::vector<tensorflow::Tensor> &, std::string, bool);
 public:
     RNN(std::string);
     virtual std::pair<int, int> ContextSize();
@@ -39,6 +40,10 @@ public:
     virtual void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &, bool);
     virtual void ProbAllFollowing (std::list<std::string>, CharTrie *);
     virtual void ProbAllFollowing (std::list<std::string>, CharTrie *, bool);
+    virtual void LogitsAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &);
+    virtual void LogitsAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &, bool);
+    virtual void LogitsAllFollowing (std::list<std::string>, CharTrie *);
+    virtual void LogitsAllFollowing (std::list<std::string>, CharTrie *, bool);
 };
 
 #endif // rnn.h

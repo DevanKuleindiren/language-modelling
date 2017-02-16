@@ -9,18 +9,21 @@ message RNNProto {
     // The name of the input placeholder tensor.
     string input_tensor_name = 2;
 
+    // The name of the logits tensor.
+    string logits_tensor_name = 3;
+
     // The name of the softmax predictions op.
-    string predictions_tensor_name = 3;
+    string predictions_tensor_name = 4;
 
     message TensorNamePair {
         string initial = 1;
         string final = 2;
     }
     // The names of the tensors storing the state of the RNN.
-    repeated TensorNamePair h = 4;
+    repeated TensorNamePair h = 5;
 
     // This is only set if the type is LSTM (which has additional state).
-    repeated TensorNamePair c = 5;
+    repeated TensorNamePair c = 6;
 }
 
 enum Type {
