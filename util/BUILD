@@ -66,3 +66,9 @@ py_binary(
     srcs = ["tokenise.py"],
     deps = [],
 )
+
+py_binary(
+    name = "count_same",
+    srcs = ["count_same.py"],
+    deps = [],
+)
