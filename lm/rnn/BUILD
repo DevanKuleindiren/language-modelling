@@ -73,6 +73,7 @@ filegroup(
         "test_data/rnn.pbtxt",
         "test_data/vocab.pbtxt",
     ],
+    visibility = ["//visibility:public"],
 )
 
 py_binary(

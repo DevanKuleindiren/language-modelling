@@ -48,6 +48,7 @@ cc_binary(
         "//tensorflow/core:framework_internal",
         "//tensorflow/core:framework_headers_lib",
         "//tensorflow/Source/lm/combine:ngram_rnn",
+        "//tensorflow/Source/lm/error_prone:error_rnn",
         "//tensorflow/Source/lm/ngram:load",
         "//tensorflow/Source/lm/rnn:rnn_inference",
     ],

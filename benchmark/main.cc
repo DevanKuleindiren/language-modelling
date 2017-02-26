@@ -7,6 +7,7 @@
 #include "tensorflow/Source/benchmark/benchmark.h"
 #include "tensorflow/Source/benchmark/benchmark.pb.h"
 #include "tensorflow/Source/lm/combine/ngram_rnn.h"
+#include "tensorflow/Source/lm/error_prone/error_rnn.h"
 #include "tensorflow/Source/lm/ngram/load.h"
 #include "tensorflow/Source/lm/rnn/rnn.h"
 
@@ -15,7 +16,8 @@
 
 void usage(char* const argv_0) {
     std::cerr << "Usage: " << argv_0;
-    std::cerr << " --ngram_path=PATH --rnn_path=PATH --test_input_path=INPT --test_target_path=TARG --save_path=SAVE --comb_type=TYPE" << std::endl;
+    std::cerr << " --ngram_path=PATH --rnn_path=PATH --test_input_path=INPT --test_target_path=TARG";
+    std::cerr << " --save_path=SAVE --comb_type=TYPE --error_rnn=BOOL" << std::endl;
     std::cerr << "Where:" << std::endl;
     std::cerr << "    PATH is the path the directory containing the model protos." << std::endl;
     std::cerr << "    INPT is the file path of the input data to run the benchmarking against." << std::endl;
@@ -23,6 +25,7 @@ void usage(char* const argv_0) {
     std::cerr << "    SAVE is the path the directory to save the benchmark proto." << std::endl;
     std::cerr << "    TYPE is the type of combination used for the language models (one of: ";
     std::cerr << COMB_AVR << " or " << COMB_MAX << ")." << std::endl;
+    std::cerr << "    BOOL is set to 'true' if the rnn_path refers to an error-correcting RNN." << std::endl;
     std::cerr << "(Note: --save_path and --comb_type are only required if both --ngram_path and --rnn_path are set.)" << std::endl;
 }
 
@@ -35,6 +38,7 @@ int main(int argc, char* argv[]) {
     std::string test_target_path;
     std::string save_path;
     std::string comb_type;
+    std::string error_rnn;
 
     const bool parse_result = tensorflow::ParseFlags(&argc, argv, {
         tensorflow::Flag("ngram_path", &ngram_path),
@@ -43,6 +47,7 @@ int main(int argc, char* argv[]) {
         tensorflow::Flag("test_target_path", &test_target_path),
         tensorflow::Flag("save_path", &save_path),
         tensorflow::Flag("comb_type", &comb_type),
+        tensorflow::Flag("error_rnn", &error_rnn),
     });
     if (!parse_result) {
         usage(argv[0]);
@@ -82,7 +87,11 @@ int main(int argc, char* argv[]) {
         ngram_lm = Load(ngram_path);
     }
     if (!rnn_path.empty()) {
-        rnn_lm = new RNN(rnn_path);
+        if (error_rnn.empty()) {
+            rnn_lm = new RNN(rnn_path);
+        } else {
+            rnn_lm = new ErrorCorrectingRNN(rnn_path);
+        }
     }
 
     if (!ngram_path.empty()) {
