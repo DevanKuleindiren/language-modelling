@@ -72,3 +72,9 @@ py_binary(
     srcs = ["count_same.py"],
     deps = [],
 )
+
+py_binary(
+    name = "align",
+    srcs = ["align.py"],
+    deps = [],
+)
