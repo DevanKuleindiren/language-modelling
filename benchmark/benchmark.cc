@@ -10,6 +10,8 @@ double Benchmark::Perplexity(std::string input_file_name, std::string target_fil
     std::list<std::string> seq;
     std::string input_word;
     std::string target_word;
+    dual_file_reader->GetNextInputTargetWordPair(&input_word, &target_word);
+    seq.push_back(input_word);
 
     while (dual_file_reader->GetNextInputTargetWordPair(&input_word, &target_word)) {
         seq.push_back(target_word);
@@ -77,6 +79,8 @@ double Benchmark::AverageKeysSaved(std::string input_file_name, std::string targ
     std::list<std::string> seq;
     std::string input_word;
     std::string target_word;
+    dual_file_reader->GetNextInputTargetWordPair(&input_word, &target_word);
+    seq.push_back(input_word);
 
     CharTrie *char_trie = new CharTrie();
     for (std::unordered_map<std::string, size_t>::const_iterator it = language_model->GetVocab()->begin(); it != language_model->GetVocab()->end(); ++it) {
@@ -140,6 +144,8 @@ double Benchmark::GuessingEntropy(std::string input_file_name, std::string targe
     std::list<std::string> seq;
     std::string input_word;
     std::string target_word;
+    dual_file_reader->GetNextInputTargetWordPair(&input_word, &target_word);
+    seq.push_back(input_word);
 
     RNN *rnn;
     bool use_rnn = false;
