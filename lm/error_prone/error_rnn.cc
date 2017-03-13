@@ -1,6 +1,16 @@
 #include "error_rnn.h"
 
 
+ErrorCorrectingRNN::ErrorCorrectingRNN(std::string directory_path, std::string dictionary_path) : RNN(directory_path) {
+    std::ifstream f (dictionary_path);
+    std::string word;
+
+    while (f >> word) {
+        dict.insert(word);
+    }
+    f.close();
+}
+
 double ErrorCorrectingRNN::Prob(std::list<std::string> seq) {
     return Prob(seq, true);
 }
@@ -95,7 +105,7 @@ int ErrorCorrectingRNN::EditDistance(std::string a, std::string b) {
 
 void ErrorCorrectingRNN::RunCorrection(std::string word, std::vector<tensorflow::Tensor> &outputs, std::string output_tensor_name, bool use_prev_state) {
     size_t correct_word_id = vocab->Get(word);
-    if (!vocab->ContainsWord(word) && previous_predictions.NumElements() > 0 && use_prev_state) {
+    if (!vocab->ContainsWord(word) && dict.count(word) == 0 && previous_predictions.NumElements() > 0 && use_prev_state) {
         // Find replacement.
         auto previous_predictions_tensor = previous_predictions.tensor<float, 2>();
 

@@ -17,11 +17,12 @@
 
 class ErrorCorrectingRNN : public RNN {
 protected:
+    std::set<std::string> dict;
     tensorflow::Tensor previous_predictions;
     virtual void RunCorrection(std::string, std::vector<tensorflow::Tensor> &, std::string, bool);
     virtual void RunCorrections(std::list<std::string>, std::vector<tensorflow::Tensor> &, std::string, bool);
 public:
-    ErrorCorrectingRNN(std::string directory_path) : RNN(directory_path) {}
+    ErrorCorrectingRNN(std::string, std::string);
     virtual double Prob(std::list<std::string>);
     virtual double Prob(std::list<std::string>, bool);
     virtual void ProbAllFollowing (std::list<std::string>, std::list<std::pair<std::string, double>> &);

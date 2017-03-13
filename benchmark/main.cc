@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
         if (error_rnn.empty()) {
             rnn_lm = new RNN(rnn_path);
         } else {
-            rnn_lm = new ErrorCorrectingRNN(rnn_path);
+            rnn_lm = new ErrorCorrectingRNN(rnn_path, "/Users/devankuleindiren/Downloads/words.txt");
         }
     }
 
