@@ -9,7 +9,14 @@
 class ErrorCorrectingRNNTest : public ::testing::Test {
 protected:
     virtual void SetUp() {
-        under_test = new ErrorCorrectingRNN("tensorflow/Source/lm/rnn/test_data");
+        std::ofstream test_file;
+        std::string test_file_name = "/tmp/error_rnn_test_file";
+        test_file.open (test_file_name, std::ofstream::out | std::ofstream::trunc);
+        test_file << "<unk>\n";
+        test_file << "<s>\n";
+        test_file << "the\n";
+        test_file.close();
+        under_test = new ErrorCorrectingRNN("tensorflow/Source/lm/rnn/test_data", "/tmp/error_rnn_test_file");
     }
 
     ErrorCorrectingRNN *under_test;
