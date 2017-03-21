@@ -7,11 +7,9 @@ NGram *Load(std::string directory_path) {
 
     Vocab *vocab = Vocab::Load(directory_path + "vocab.pbtxt");
 
-    std::ifstream ifs (directory_path + "ngram.pbtxt", std::ios::in);
+    std::fstream ifs (directory_path + "ngram.pb", std::ios::in | std::ios::binary);
     tensorflow::Source::lm::ngram::NGramProto *ngram_proto = new tensorflow::Source::lm::ngram::NGramProto();
-
-    google::protobuf::io::IstreamInputStream isis(&ifs);
-    if (!google::protobuf::TextFormat::Parse(&isis, ngram_proto)) {
+    if (!ngram_proto->ParseFromIstream(&ifs)) {
         std::cerr << "Failed to read ngram proto." << std::endl;
     } else {
         std::cout << "Read ngram proto." << std::endl;

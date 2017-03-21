@@ -60,9 +60,8 @@ void NGram::Save(std::string directory_path) {
     vocab->Save(directory_path + "vocab.pbtxt");
 
     tensorflow::Source::lm::ngram::NGramProto *ngram_proto = ToProto();
-    std::ofstream ofs (directory_path + "ngram.pbtxt", std::ios::out | std::ios::trunc);
-    google::protobuf::io::OstreamOutputStream osos(&ofs);
-    if (!google::protobuf::TextFormat::Print(*ngram_proto, &osos)) {
+    std::fstream ofs (directory_path + "ngram.pb", std::ios::out | std::ios::trunc | std::ios::binary);
+    if (!ngram_proto->SerializeToOstream(&ofs)) {
         std::cerr << "Failed to write ngram proto." << std::endl;
     } else {
         std::cout << "Saved ngram proto." << std::endl;

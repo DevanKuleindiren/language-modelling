@@ -213,11 +213,13 @@ TEST(NGramTest, Save) {
 
     Vocab *vocab_loaded = Vocab::Load("/tmp/vocab.pbtxt");
 
-    std::ifstream ifs ("/tmp/ngram.pbtxt", std::ios::in);
+    std::ifstream ifs ("/tmp/ngram.pb", std::ios::in | std::ios::binary);
     tensorflow::Source::lm::ngram::NGramProto *ngram_proto = new tensorflow::Source::lm::ngram::NGramProto();
-
-    google::protobuf::io::IstreamInputStream isis(&ifs);
-    google::protobuf::TextFormat::Parse(&isis, ngram_proto);
+    if (!ngram_proto->ParseFromIstream(&ifs)) {
+        std::cerr << "Failed to read ngram proto." << std::endl;
+    } else {
+        std::cout << "Read ngram proto." << std::endl;
+    }
     ifs.close();
 
     int n_loaded = ngram_proto->n();
