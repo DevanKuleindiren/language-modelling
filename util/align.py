@@ -14,7 +14,7 @@ def main():
          open(args.error_free_output, "w") as free_out, \
          open(args.error_prone_output, "w") as prone_out:
         for free_s, prone_s in zip(free_in, prone_in):
-            if len(free_s.split()) == len(prone_s.split()):
+            if len(free_s.split()) == len(prone_s.split()) and free_s != prone_s:
                 d = 0
                 for w1, w2 in zip(free_s.split(), prone_s.split()):
                     if w1 != w2:
