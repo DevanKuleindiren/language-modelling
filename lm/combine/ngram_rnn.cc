@@ -35,7 +35,7 @@ void NGramRNN::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair
 void NGramRNN::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair<std::string, double>> &probs, bool use_prev_state) {
     if (use_prev_state) {
         prev_words.insert(prev_words.end(), seq.begin(), seq.end());
-        while (prev_words.size() > ngram_lm->ContextSize().second) {
+        while (prev_words.size() >= ngram_lm->ContextSize().second) {
             prev_words.pop_front();
         }
     } else {
@@ -48,10 +48,12 @@ void NGramRNN::ProbAllFollowing (std::list<std::string> seq, std::list<std::pair
     ngram_lm->ProbAllFollowing(prev_words, ngram_probs);
     rnn_lm->ProbAllFollowing(seq, rnn_probs, use_prev_state);
 
-    std::list<std::pair<std::string, double>>::iterator it_ngram = ngram_probs.begin();
-    std::list<std::pair<std::string, double>>::iterator it_rnn = rnn_probs.begin();
-    for (; it_ngram != ngram_probs.end() && it_rnn != rnn_probs.end(); ++it_ngram, ++it_rnn) {
-        probs.push_back(std::make_pair(it_ngram->first, CombineFunction(it_ngram->second, it_rnn->second)));
+    std::unordered_map<std::string, double> ngram_probs_map;
+    for (std::list<std::pair<std::string, double>>::iterator it = ngram_probs.begin(); it != ngram_probs.end(); ++it) {
+        ngram_probs_map[it->first] = it->second;
+    }
+    for (std::list<std::pair<std::string, double>>::iterator it = rnn_probs.begin(); it != rnn_probs.end(); ++it) {
+        probs.push_back(std::make_pair(it->first, CombineFunction(ngram_probs_map[it->first], it->second)));
     }
 }
 
