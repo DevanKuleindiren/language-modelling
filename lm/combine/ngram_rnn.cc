@@ -15,6 +15,9 @@ double NGramRNN::Prob(std::list<std::string> seq) {
 
 double NGramRNN::Prob(std::list<std::string> seq, bool use_prev_state) {
     if (use_prev_state) {
+        if (!prev_words.empty()) {
+            prev_words.pop_back();
+        }
         prev_words.insert(prev_words.end(), seq.begin(), seq.end());
         while (prev_words.size() > ngram_lm->ContextSize().second) {
             prev_words.pop_front();
