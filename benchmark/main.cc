@@ -1,6 +1,7 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 #include <time.h>
 #include "tensorflow/core/platform/init_main.h"
 #include "tensorflow/core/util/command_line_flags.h"
@@ -13,19 +14,21 @@
 
 #define COMB_AVR std::string("avr")
 #define COMB_MAX std::string("max")
+#define COMB_ITP std::string("itp")
 
 void usage(char* const argv_0) {
     std::cerr << "Usage: " << argv_0;
     std::cerr << " --ngram_path=PATH --rnn_path=PATH --test_input_path=INPT --test_target_path=TARG";
-    std::cerr << " --save_path=SAVE --comb_type=TYPE --error_rnn=BOOL" << std::endl;
+    std::cerr << " --save_path=SAVE --comb_type=TYPE --error_rnn=BOOL --lambda=LMDA" << std::endl;
     std::cerr << "Where:" << std::endl;
     std::cerr << "    PATH is the path the directory containing the model protos." << std::endl;
     std::cerr << "    INPT is the file path of the input data to run the benchmarking against." << std::endl;
     std::cerr << "    TARG is the file path of the target data to run the benchmarking against." << std::endl;
     std::cerr << "    SAVE is the path the directory to save the benchmark proto." << std::endl;
     std::cerr << "    TYPE is the type of combination used for the language models (one of: ";
-    std::cerr << COMB_AVR << " or " << COMB_MAX << ")." << std::endl;
+    std::cerr << COMB_AVR << ", " << COMB_MAX << " or " << COMB_ITP << ")." << std::endl;
     std::cerr << "    BOOL is set to 'true' if the rnn_path refers to an error-correcting RNN." << std::endl;
+    std::cerr << "    LMDA is the lambda value used if the interpolated combination model is selected." << std::endl;
     std::cerr << "(Note: --save_path and --comb_type are only required if both --ngram_path and --rnn_path are set.)" << std::endl;
 }
 
@@ -39,6 +42,7 @@ int main(int argc, char* argv[]) {
     std::string save_path;
     std::string comb_type;
     std::string error_rnn;
+    std::string lambda;
 
     const bool parse_result = tensorflow::ParseFlags(&argc, argv, {
         tensorflow::Flag("ngram_path", &ngram_path),
@@ -48,6 +52,7 @@ int main(int argc, char* argv[]) {
         tensorflow::Flag("save_path", &save_path),
         tensorflow::Flag("comb_type", &comb_type),
         tensorflow::Flag("error_rnn", &error_rnn),
+        tensorflow::Flag("lambda", &lambda),
     });
     if (!parse_result) {
         usage(argv[0]);
@@ -100,6 +105,14 @@ int main(int argc, char* argv[]) {
                 lm = new NGramRNNAverage(ngram_lm, rnn_lm);
             } else if (comb_type.compare(COMB_MAX) == 0) {
                 lm = new NGramRNNMax(ngram_lm, rnn_lm);
+            } else if (comb_type.compare(COMB_ITP) == 0) {
+                double lambda_val = 0.5;
+                if (!lambda.empty()) {
+                    lambda_val = atof(lambda.c_str());
+                    if (lambda_val < 0) lambda_val = 0;
+                    if (lambda_val > 1) lambda_val = 1;
+                }
+                lm = new NGramRNNInterp(ngram_lm, rnn_lm, lambda_val);
             } else {
                 std::cerr << "Error: " << comb_type << " is not a valid --comb_type." << std::endl;
                 usage(argv[0]);
