@@ -1,3 +1,4 @@
+#include <time.h>
 #include <vector>
 #include "ngram.h"
 #include "smoothing/absolute_discounting.h"
@@ -64,6 +65,7 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     NGram *lm;
     if (smoothing.compare(ABSD) == 0) {
         lm = new AbsoluteDiscounting(training_path, n, min_frequency);
@@ -78,5 +80,8 @@ int main(int argc, char* argv[]) {
     } else {
         lm = new NGram(training_path, n, min_frequency);
     }
+    std::cout << "Completed in ";
+    std::cout << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
+    std::cout << " seconds." << std::endl;
     lm->Save(save_path);
 }
