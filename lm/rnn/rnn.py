@@ -11,6 +11,7 @@ from tensorflow.Source.lm.rnn import rnn_pb2
 
 tf.flags.DEFINE_string("type", None, "The type of RNN you want to train (one of: rnn, gru, lstm).")
 tf.flags.DEFINE_string("training_data_path", None, "The file path of the training data.")
+tf.flags.DEFINE_string("valid_data_path", None, "The file path of the validation data.")
 tf.flags.DEFINE_string("test_data_path", None, "The file path of the test data.")
 tf.flags.DEFINE_string("save_path", None, "The directory path to save the model in.")
 tf.flags.DEFINE_string("size", None, "The size of the model (one of: small, large).")
@@ -18,52 +19,104 @@ tf.flags.DEFINE_string("size", None, "The size of the model (one of: small, larg
 FLAGS = tf.flags.FLAGS
 
 
-class SmallConfig:
-    """
-    The hyperparameters used in the model:
-    - batch_size - The batch size.
-    - hidden_size - The number of RNN units.
-    - init_scale - The initial scale of the weights.
-    - keep_prob - The probability of keeping weights in the dropout layer.
-    - lr - The initial value of the learning rate.
-    - lr_decay - The decay of the learning rate for each epoch after "max_epoch".
-    - max_grad_norm - The maximum permissible norm of the gradient.
-    - max_epoch - The number of epochs trained with the initial learning rate.
-    - max_max_epoch - The total number of epochs for training.
-    - min_frequency - The minimum number of times a word needs to be seen to be considered part of the vocabulary.
-    - num_layers - The number of RNN layers.
-    - num_steps - The number of unrolled steps of the RNN for each chunk of the training data.
-    """
+"""
+The hyperparameters used in the model:
+- batch_size - The batch size.
+- decay_threshold - The threshold on the performance improvement during training, below which learning rate decay is applied.
+- hidden_size - The number of RNN units.
+- init_scale - The initial scale of the weights.
+- keep_prob - The probability of keeping weights in the dropout layer.
+- lr - The initial value of the learning rate.
+- lr_decay - The decay of the learning rate for each epoch after "max_epoch".
+- max_grad_norm - The maximum permissible norm of the gradient.
+- min_frequency - The minimum number of times a word needs to be seen to be considered part of the vocabulary.
+- num_layers - The number of RNN layers.
+- num_steps - The number of unrolled steps of the RNN for each chunk of the training data.
+- stop_threshold - The threshold on the performance improvement, below which training is stopped.
+"""
+class RNN256Config:
     batch_size = 20
-    hidden_size = 200
+    decay_threshold = 0.005
+    hidden_size = 16
     init_scale = 0.1
     keep_prob = 1.0
-    lr = 1.0
+    lr = 0.1
     lr_decay = 0.5
-    max_epoch = 4
     max_grad_norm = 5
-    max_max_epoch = 13
     min_frequency = 1
     num_layers = 2
     num_steps = 20
+    stop_threshold = 0.001
 
-
-class LargeConfig:
-    """
-    The hyperparameters used in the model are as specified above.
-    """
+class RNN512Config:
     batch_size = 20
-    hidden_size = 1500
-    init_scale = 0.04
-    keep_prob = 0.35
-    lr = 1.0
-    lr_decay = 1 / 1.15
-    max_epoch = 14
-    max_grad_norm = 10
-    max_max_epoch = 55
+    decay_threshold = 0.05
+    hidden_size = 512
+    init_scale = 0.05
+    keep_prob = 1.0
+    lr = 0.1
+    lr_decay = 0.7
+    max_grad_norm = 5
     min_frequency = 1
     num_layers = 2
-    num_steps = 35
+    num_steps = 20
+    stop_threshold = 0.005
+
+class GRU256Config:
+    batch_size = 20
+    decay_threshold = 0.005
+    hidden_size = 256
+    init_scale = 0.1
+    keep_prob = 1.0
+    lr = 0.1
+    lr_decay = 0.5
+    max_grad_norm = 5
+    min_frequency = 1
+    num_layers = 2
+    num_steps = 20
+    stop_threshold = 0.001
+
+class GRU512Config:
+    batch_size = 20
+    decay_threshold = 0.005
+    hidden_size = 512
+    init_scale = 0.05
+    keep_prob = 0.9
+    lr = 0.1
+    lr_decay = 0.75
+    max_grad_norm = 5
+    min_frequency = 1
+    num_layers = 2
+    num_steps = 20
+    stop_threshold = 0.001
+
+class LSTM256Config:
+    batch_size = 20
+    decay_threshold = 0.05
+    hidden_size = 256
+    init_scale = 0.1
+    keep_prob = 1.0
+    lr = 0.5
+    lr_decay = 0.5
+    max_grad_norm = 5
+    min_frequency = 1
+    num_layers = 2
+    num_steps = 20
+    stop_threshold = 0.001
+
+class LSTM512Config:
+    batch_size = 20
+    decay_threshold = 0.01
+    hidden_size = 512
+    init_scale = 0.05
+    keep_prob = 0.5
+    lr = 1.0
+    lr_decay = 0.8
+    max_grad_norm = 5
+    min_frequency = 1
+    num_layers = 2
+    num_steps = 20
+    stop_threshold = 0.0001
 
 
 class CellType:
@@ -266,6 +319,8 @@ def main(_):
         raise ValueError("Must set --type.")
     if not FLAGS.training_data_path:
         raise ValueError("Must set --training_data_path.")
+    if not FLAGS.valid_data_path:
+        raise ValueError("Must set --valid_data_path.")
     if not FLAGS.save_path:
         raise ValueError("Must set --save_path.")
     if not FLAGS.size:
@@ -282,17 +337,32 @@ def main(_):
             raise ValueError("%s is not a valid --type." % FLAGS.type)
 
         if FLAGS.size == "small":
-            train_config = SmallConfig()
-            infer_config = SmallConfig()
+            if FLAGS.type == "rnn":
+                train_config = RNN256Config()
+                infer_config = RNN256Config()
+            elif FLAGS.type == "gru":
+                train_config = GRU256Config()
+                infer_config = GRU256Config()
+            else:
+                train_config = LSTM256Config()
+                infer_config = LSTM256Config()
         elif FLAGS.size == "large":
-            train_config = LargeConfig()
-            infer_config = LargeConfig()
+            if FLAGS.type == "rnn":
+                train_config = RNN512Config()
+                infer_config = RNN512Config()
+            elif FLAGS.type == "gru":
+                train_config = GRU512Config()
+                infer_config = GRU512Config()
+            else:
+                train_config = LSTM512Config()
+                infer_config = LSTM512Config()
         else:
             raise ValueError("%s is not a valid --size." % FLAGS.size)
         infer_config.batch_size = 1
         infer_config.num_steps = 1
 
         train_data, word_to_id = reader.raw_data(FLAGS.training_data_path, train_config.min_frequency)
+        valid_data, _ = reader.raw_data(FLAGS.valid_data_path, train_config.min_frequency, word_to_id)
         id_to_word = dict(zip(word_to_id.values(), word_to_id.keys()))
         epoch_size_scalar = ((len(train_data) // train_config.batch_size) - 1) // train_config.num_steps
 
@@ -310,12 +380,37 @@ def main(_):
             tf.initialize_all_variables().run()
             start_time = time.time()
 
-            for i in xrange(train_config.max_max_epoch):
-                lr_decay = train_config.lr_decay ** max(i + 1 - train_config.max_epoch, 0.0)
+            epoch = 1
+            valid_perplexity_prev = 10e20
+            valid_perplexity_drop = 1.0
+            training_model.assign_lr(sess, train_config.lr)
+            while valid_perplexity_drop > train_config.decay_threshold:
+                train_perplexity = training_model.run_epoch(sess, train_data)
+                print "Epoch: %d, Train perplexity: %.3f" % (epoch, train_perplexity)
+
+                valid_perplexity = training_model.run_epoch(sess, valid_data, is_training=False)
+                print "Epoch: %d, Valid perplexity: %.3f" % (epoch, valid_perplexity)
+
+                valid_perplexity_drop = (valid_perplexity_prev - valid_perplexity) / valid_perplexity_prev
+                valid_perplexity_prev = valid_perplexity
+                epoch += 1
+
+            valid_perplexity_drop = 1.0
+            i = 1
+            while valid_perplexity_drop > train_config.stop_threshold:
+                lr_decay = train_config.lr_decay ** i
                 training_model.assign_lr(sess, train_config.lr * lr_decay)
 
                 train_perplexity = training_model.run_epoch(sess, train_data)
-                print "Epoch: %d, Train perplexity: %.3f" % (i + 1, train_perplexity)
+                print "Epoch: %d, Train perplexity: %.3f" % (epoch, train_perplexity)
+
+                valid_perplexity = training_model.run_epoch(sess, valid_data, is_training=False)
+                print "Epoch: %d, Valid perplexity: %.3f" % (epoch, valid_perplexity)
+
+                valid_perplexity_drop = (valid_perplexity_prev - valid_perplexity) / valid_perplexity_prev
+                valid_perplexity_prev = valid_perplexity
+                i += 1
+                epoch += 1
 
             print "Trained in %d seconds." % (time.time() - start_time)
 
