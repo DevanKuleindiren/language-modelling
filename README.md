@@ -21,11 +21,13 @@ In your desired directory:
 ## Running the Code
 
 The code in this project is designed to be run using [Bazel](https://bazel.build). The project is split up into a
-hierarchy of targets. From within the Source directory, running a target named `a/b:c` can be done as follows
+hierarchy of targets. From within the Source directory, building a target named `a/b:c` can be done as follows
 
-    ```
-    bazel run a/b:c -- ARGS
-    ```
+    bazel build a/b:c
+
+Then, to running the compiled target can be done as follows:
+
+    ../../bazel-bin/tensorflow/Source/a/b/c -- ARGS
 
 where `ARGS` is replaced with the relevant arguments for the program. The main targets in this project are:
 
