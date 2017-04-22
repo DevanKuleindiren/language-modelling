@@ -4,7 +4,3 @@ h {
   initial: "inference/rnn/zeros:0"
   final: "inference/rnn/RNN/MultiRNNCell/Cell0/BasicRNNCell/Tanh:0"
 }
-h {
-  initial: "inference/rnn/zeros_1:0"
-  final: "inference/rnn/RNN/MultiRNNCell/Cell1/BasicRNNCell/Tanh:0"
-}
