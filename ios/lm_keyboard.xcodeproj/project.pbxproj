@@ -15,9 +15,9 @@
 		350657051E3C35A10016F8CA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59A3D0131CF4E82500C4259F /* CoreGraphics.framework */; };
 		3520A9871E3C0120008457AA /* KeyboardViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3520A9861E3C0120008457AA /* KeyboardViewController.mm */; };
 		3520A98B1E3C0120008457AA /* keyboard.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 3520A9831E3C0120008457AA /* keyboard.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		3545AA521EAAD75E00F94F42 /* graph.pb in Resources */ = {isa = PBXBuildFile; fileRef = 3545AA4F1EAAD75E00F94F42 /* graph.pb */; };
-		3545AA531EAAD75E00F94F42 /* rnn.pbtxt in Resources */ = {isa = PBXBuildFile; fileRef = 3545AA501EAAD75E00F94F42 /* rnn.pbtxt */; };
-		3545AA541EAAD75E00F94F42 /* vocab.pbtxt in Resources */ = {isa = PBXBuildFile; fileRef = 3545AA511EAAD75E00F94F42 /* vocab.pbtxt */; };
+		3545AA581EAAE44B00F94F42 /* graph.pb in Resources */ = {isa = PBXBuildFile; fileRef = 3545AA551EAAE44B00F94F42 /* graph.pb */; };
+		3545AA591EAAE44B00F94F42 /* rnn.pbtxt in Resources */ = {isa = PBXBuildFile; fileRef = 3545AA561EAAE44B00F94F42 /* rnn.pbtxt */; };
+		3545AA5A1EAAE44B00F94F42 /* vocab.pbtxt in Resources */ = {isa = PBXBuildFile; fileRef = 3545AA571EAAE44B00F94F42 /* vocab.pbtxt */; };
 		354709951E43E8E9005ACFA0 /* Enter.png in Resources */ = {isa = PBXBuildFile; fileRef = 354709931E43E8E9005ACFA0 /* Enter.png */; };
 		3547099D1E43EF28005ACFA0 /* Delete.png in Resources */ = {isa = PBXBuildFile; fileRef = 3547099C1E43EF28005ACFA0 /* Delete.png */; };
 		3547099F1E43F7F1005ACFA0 /* Globe.png in Resources */ = {isa = PBXBuildFile; fileRef = 3547099E1E43F7F1005ACFA0 /* Globe.png */; };
@@ -68,9 +68,9 @@
 		3520A9851E3C0120008457AA /* KeyboardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardViewController.h; sourceTree = "<group>"; };
 		3520A9861E3C0120008457AA /* KeyboardViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = KeyboardViewController.mm; sourceTree = "<group>"; };
 		3520A9881E3C0120008457AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		3545AA4F1EAAD75E00F94F42 /* graph.pb */ = {isa = PBXFileReference; lastKnownFileType = file; path = graph.pb; sourceTree = "<group>"; };
-		3545AA501EAAD75E00F94F42 /* rnn.pbtxt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rnn.pbtxt; sourceTree = "<group>"; };
-		3545AA511EAAD75E00F94F42 /* vocab.pbtxt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vocab.pbtxt; sourceTree = "<group>"; };
+		3545AA551EAAE44B00F94F42 /* graph.pb */ = {isa = PBXFileReference; lastKnownFileType = file; path = graph.pb; sourceTree = "<group>"; };
+		3545AA561EAAE44B00F94F42 /* rnn.pbtxt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rnn.pbtxt; sourceTree = "<group>"; };
+		3545AA571EAAE44B00F94F42 /* vocab.pbtxt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vocab.pbtxt; sourceTree = "<group>"; };
 		354709931E43E8E9005ACFA0 /* Enter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Enter.png; sourceTree = "<group>"; };
 		3547099C1E43EF28005ACFA0 /* Delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Delete.png; sourceTree = "<group>"; };
 		3547099E1E43F7F1005ACFA0 /* Globe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Globe.png; sourceTree = "<group>"; };
@@ -148,9 +148,9 @@
 		354B813F1E3CB428004EFFE0 /* data */ = {
 			isa = PBXGroup;
 			children = (
-				3545AA4F1EAAD75E00F94F42 /* graph.pb */,
-				3545AA501EAAD75E00F94F42 /* rnn.pbtxt */,
-				3545AA511EAAD75E00F94F42 /* vocab.pbtxt */,
+				3545AA551EAAE44B00F94F42 /* graph.pb */,
+				3545AA561EAAE44B00F94F42 /* rnn.pbtxt */,
+				3545AA571EAAE44B00F94F42 /* vocab.pbtxt */,
 				3547099E1E43F7F1005ACFA0 /* Globe.png */,
 				3547099C1E43EF28005ACFA0 /* Delete.png */,
 				354709931E43E8E9005ACFA0 /* Enter.png */,
@@ -277,9 +277,9 @@
 			files = (
 				357EBD181E411C4A007CD6A3 /* Lower.png in Resources */,
 				357EBD191E411C4A007CD6A3 /* Shift.png in Resources */,
-				3545AA541EAAD75E00F94F42 /* vocab.pbtxt in Resources */,
-				3545AA521EAAD75E00F94F42 /* graph.pb in Resources */,
-				3545AA531EAAD75E00F94F42 /* rnn.pbtxt in Resources */,
+				3545AA5A1EAAE44B00F94F42 /* vocab.pbtxt in Resources */,
+				3545AA581EAAE44B00F94F42 /* graph.pb in Resources */,
+				3545AA591EAAE44B00F94F42 /* rnn.pbtxt in Resources */,
 				3547099D1E43EF28005ACFA0 /* Delete.png in Resources */,
 				354709951E43E8E9005ACFA0 /* Enter.png in Resources */,
 				3547099F1E43F7F1005ACFA0 /* Globe.png in Resources */,
