@@ -120,11 +120,21 @@
     rnn = new RNN(std::string([[model_path substringToIndex: range.location] UTF8String]));
     
     charTrie = new CharTrie();
+    std::list<std::string> blackList = std::list<std::string>({".", ",", "?", "!", "'", "\"", "/", "\\", ":", ";", "(", ")", "{", "}", "@", "#", "£", "$", "%", "^", "&", "*", "-", "_", "+", "=", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
     for (std::unordered_map<std::string, size_t>::const_iterator it = rnn->GetVocab()->begin(); it != rnn->GetVocab()->end(); ++it) {
         if (!(it->first.compare("<unk>") == 0 ||
               it->first.compare("N") == 0 ||
               it->first.compare("<s>") == 0)) {
-            charTrie->Insert(it->first, 0);
+            bool containsBlacklistedChar = false;
+            for (std::list<std::string>::iterator itBl = blackList.begin(); itBl != blackList.end(); ++itBl) {
+                if (it->first.find(*itBl) != std::string::npos) {
+                    containsBlacklistedChar = true;
+                    break;
+                }
+            }
+            if (!containsBlacklistedChar) {
+                charTrie->Insert(it->first, 0);
+            }
         }
     }
     rnn->ProbAllFollowing(std::list<std::string>({"<s>"}), charTrie, false);
