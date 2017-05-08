@@ -1,11 +1,3 @@
-//
-//  KeyboardViewController.h
-//  keyboard
-//
-//  Created by Devan Kuleindiren on 27/01/2017.
-//  Copyright © 2017 Google. All rights reserved.
-//
-
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 #include "tensorflow/Source/lm/rnn/rnn.h"

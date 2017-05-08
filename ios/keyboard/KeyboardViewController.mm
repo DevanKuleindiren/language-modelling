@@ -1,11 +1,3 @@
-//
-//  KeyboardViewController.m
-//  keyboard
-//
-//  Created by Devan Kuleindiren on 27/01/2017.
-//  Copyright © 2017 Google. All rights reserved.
-//
-
 #import "KeyboardViewController.h"
 
 #include <list>
@@ -19,7 +11,7 @@
 
 - (void)updateViewConstraints {
     [super updateViewConstraints];
-    
+
     // Add custom view sizing constraints here
     if (self.view.frame.size.width == 0 || self.view.frame.size.height == 0)
         return;
@@ -36,17 +28,17 @@
     if (self) {
         // Init here.
     }
-    
+
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     usePrevStateRNN = false;
 
     predictionButtons = [[NSArray alloc] initWithObjects:firstPrediction, secondPrediction, thirdPrediction, nil];
-    
+
     // Initialise the shift button.
     shiftButtonState = SHIFT;
     UITapGestureRecognizer *shiftSingleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(shiftSingleTap)];
@@ -118,7 +110,7 @@
     NSString* model_path = [[NSBundle mainBundle] pathForResource:@"graph" ofType:@"pb"];
     NSRange range = [model_path rangeOfString: @"/" options: NSBackwardsSearch];
     rnn = new RNN(std::string([[model_path substringToIndex: range.location] UTF8String]));
-    
+
     charTrie = new CharTrie();
     std::list<std::string> blackList = std::list<std::string>({".", ",", "?", "!", "'", "\"", "/", "\\", ":", ";", "(", ")", "{", "}", "@", "#", "£", "$", "%", "^", "&", "*", "-", "_", "+", "=", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
     for (std::unordered_map<std::string, size_t>::const_iterator it = rnn->GetVocab()->begin(); it != rnn->GetVocab()->end(); ++it) {
@@ -201,7 +193,7 @@
     if (![sender isKindOfClass:[UIButton class]]) {
         return;
     }
-    
+
     NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
     for (int i = 0; i < [[tokens lastObject] length];i++) {
         [self.textDocumentProxy deleteBackward];
@@ -299,10 +291,10 @@
 
 - (void)newPredictions {
     std::list<std::string> seq;
-    
+
     NSArray *tokens = [self.textDocumentProxy.documentContextBeforeInput componentsSeparatedByString:@" "];
     unsigned long numTokens = [tokens count];
-    
+
     if (usePrevStateRNN) {
         seq.push_back(std::string([[[tokens objectAtIndex:(numTokens - 2)] lowercaseString] UTF8String]));
     } else {
@@ -311,11 +303,11 @@
             seq.push_back(std::string([[s lowercaseString] UTF8String]));
         }
     }
-    
+
     rnn->ProbAllFollowing(seq, charTrie, usePrevStateRNN);
     std::list<std::pair<std::string, double>> top3 = charTrie->GetMaxKWithPrefix([[tokens lastObject] UTF8String], 3);
     [self setPredictionsWithTop3:&top3];
-    
+
     if (!usePrevStateRNN) {
         usePrevStateRNN = true;
     }
