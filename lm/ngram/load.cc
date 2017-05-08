@@ -9,7 +9,13 @@ NGram *Load(std::string directory_path) {
 
     std::fstream ifs (directory_path + "ngram.pb", std::ios::in | std::ios::binary);
     tensorflow::Source::lm::ngram::NGramProto *ngram_proto = new tensorflow::Source::lm::ngram::NGramProto();
-    if (!ngram_proto->ParseFromIstream(&ifs)) {
+
+    int fd = open((directory_path + "ngram.pb").c_str(), O_RDONLY);
+    google::protobuf::io::ZeroCopyInputStream *raw_input = new google::protobuf::io::FileInputStream(fd);
+    google::protobuf::io::CodedInputStream *coded_input = new google::protobuf::io::CodedInputStream(raw_input);
+    coded_input->SetTotalBytesLimit(650000000, -1);
+
+    if (!ngram_proto->ParseFromCodedStream(coded_input)) {
         std::cerr << "Failed to read ngram proto." << std::endl;
     } else {
         std::cout << "Read ngram proto." << std::endl;
@@ -50,6 +56,5 @@ NGram *Load(std::string directory_path) {
         }
     }
 
-    ifs.close();
     return ngram;
 }

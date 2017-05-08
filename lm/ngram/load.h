@@ -2,6 +2,7 @@
 #define load_h
 
 #include <fstream>
+#include <google/protobuf/io/coded_stream.h>
 #include <iostream>
 #include <string>
 #include "ngram.h"
